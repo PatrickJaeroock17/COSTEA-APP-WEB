@@ -3,8 +3,8 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
-// Cuadros extraídos del video de Kling (interpolados a 48 fps) en public/chef/f001.webp … f191.webp
-const FRAMES = 191;
+// Los 97 cuadros originales del video de Kling (1440×812, WebP calidad 85) en public/chef/f001.webp … f097.webp
+const FRAMES = 97;
 const REST = Math.round((FRAMES - 1) * 0.52); // de frente (≈2,1 s del video original)
 const LERP = 0.24; // por cuadro a 60 fps; se ajusta por tiempo
 const CONCURRENCY = 6;
@@ -23,10 +23,12 @@ const loadOrder = [REST, 0, FRAMES - 1, ...Array.from({ length: FRAMES }, (_, i)
 export function ChefScrub({ className }: { className?: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const wrap = wrapRef.current;
     const canvas = canvasRef.current;
+    const img = imgRef.current;
     const ctx = canvas?.getContext("2d");
     if (!wrap || !canvas || !ctx) return;
 
@@ -51,25 +53,40 @@ export function ChefScrub({ className }: { className?: string }) {
       return -1;
     };
 
-    const draw = (i: number) => {
-      const j = nearest(i);
-      if (j < 0 || j === drawn) return;
-      const bmp = bitmaps[j]!;
-      if (canvas.width !== bmp.width) {
-        canvas.width = bmp.width;
-        canvas.height = bmp.height;
+    /** Dibuja la posición fraccionaria `pos`, mezclando los dos cuadros vecinos para que el giro sea continuo. */
+    const draw = (pos: number) => {
+      const key = Math.round(pos * 8); // 8 pasos entre cuadros
+      if (key === drawn) return;
+      const p = key / 8;
+      const lo = Math.floor(p);
+      const a = p - lo;
+      const j0 = nearest(lo);
+      if (j0 < 0) return;
+      const b0 = bitmaps[j0]!;
+      if (canvas.width !== b0.width) {
+        canvas.width = b0.width;
+        canvas.height = b0.height;
       }
-      ctx.drawImage(bmp, 0, 0);
-      drawn = j;
+      ctx.globalAlpha = 1;
+      ctx.drawImage(b0, 0, 0);
+      if (a > 0) {
+        const j1 = nearest(Math.min(lo + 1, FRAMES - 1));
+        if (j1 >= 0 && j1 !== j0) {
+          ctx.globalAlpha = a;
+          ctx.drawImage(bitmaps[j1]!, 0, 0);
+          ctx.globalAlpha = 1;
+        }
+      }
+      drawn = key;
+      if (img) img.style.opacity = "0"; // el cuadro de respaldo ya no hace falta
     };
-
     const tick = (now: number) => {
       raf = 0;
       const dt = last ? Math.min((now - last) / 16.667, 4) : 1;
       last = now;
       current += (target - current) * (1 - Math.pow(1 - LERP, dt));
-      if (Math.abs(target - current) < 0.02) current = target;
-      draw(Math.round(current));
+      if (Math.abs(target - current) < 0.01) current = target;
+      draw(current);
       if (current !== target) raf = requestAnimationFrame(tick);
       else last = 0;
     };
@@ -88,7 +105,7 @@ export function ChefScrub({ className }: { className?: string }) {
           if (!alive) return bmp.close();
           bitmaps[i] = bmp;
           // Si el recién llegado es lo que se está mostrando (o más cerca), repintar.
-          if (Math.abs(i - current) < Math.abs(drawn - current) || drawn < 0) {
+          if (Math.abs(i - current) < 2) {
             drawn = -1;
             kick();
           }
@@ -131,14 +148,15 @@ export function ChefScrub({ className }: { className?: string }) {
   }, []);
 
   const media =
-    "absolute inset-0 h-full w-full object-cover object-[60%_center] [mask-image:linear-gradient(to_right,transparent_0%,black_30%)]";
+    "absolute inset-0 h-full w-full object-cover object-[60%_center] ";
 
   return (
-    <div ref={wrapRef} className={cn("relative overflow-hidden", className)}>
+    <div ref={wrapRef} className={cn("relative overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_30%)]", className)}>
       {/* Cuadro de frente: se ve al instante, mientras cargan los demás y con movimiento reducido */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src(REST)} alt="Chef de costea" className={media} fetchPriority="high" />
+      <img ref={imgRef} src={src(REST)} alt="Chef de costea" className={media} fetchPriority="high" />
       <canvas ref={canvasRef} aria-hidden className={media} />
     </div>
   );
 }
+
