@@ -148,7 +148,7 @@ export function ChefScrub({ className }: { className?: string }) {
   }, []);
 
   const media =
-    "absolute inset-0 h-full w-full [filter:saturate(1.22)_contrast(1.06)_brightness(1.02)] object-cover object-[45%_center] ";
+    "absolute inset-0 h-full w-full object-cover object-[45%_center] ";
 
   return (
     <div ref={wrapRef} className={cn("relative overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,rgb(0_0_0/0.3)_10%,rgb(0_0_0/0.72)_24%,black_40%)]", className)}>
@@ -159,6 +159,7 @@ export function ChefScrub({ className }: { className?: string }) {
     </div>
   );
 }
+
 
 
 
