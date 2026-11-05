@@ -15,7 +15,7 @@ export function HowItWorks() {
             <li key={s.title} className="rounded-[var(--radius-card)] bg-white p-6 shadow-sm shadow-brand-900/5">
               <span className="grid size-10 place-items-center rounded-full bg-brand-600 font-brand text-lg font-bold text-white">{i + 1}</span>
               <h3 className="mt-4 font-semibold text-brand-900">{s.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted">{s.text}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-brand-700">{s.text}</p>
             </li>
           ))}
         </ol>
@@ -23,3 +23,4 @@ export function HowItWorks() {
     </section>
   );
 }
+

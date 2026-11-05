@@ -17,7 +17,7 @@ export function Features() {
     <section id="incluye" className="scroll-mt-4 bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <h2 className="font-brand text-3xl font-extrabold tracking-tight text-brand-900 sm:text-4xl">Qué incluye</h2>
-        <p className="mt-3 max-w-2xl text-muted">Todo lo que necesitas para costear tu restaurante, en un mismo sistema.</p>
+        <p className="mt-3 max-w-2xl text-brand-700">Todo lo que necesitas para costear tu restaurante, en un mismo sistema.</p>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map(({ icon: Icon, title, text }) => (
             <article key={title} className="rounded-[var(--radius-card)] border border-line bg-surface p-6 transition-shadow hover:shadow-md hover:shadow-brand-900/5">
@@ -25,7 +25,7 @@ export function Features() {
                 <Icon className="size-5" aria-hidden />
               </span>
               <h3 className="mt-4 font-semibold text-brand-900">{title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-brand-700">{text}</p>
             </article>
           ))}
         </div>
@@ -33,3 +33,4 @@ export function Features() {
     </section>
   );
 }
+

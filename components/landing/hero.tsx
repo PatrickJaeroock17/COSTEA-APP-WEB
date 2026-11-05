@@ -12,7 +12,7 @@ export function Hero() {
 
       {/* Tarjetas flotantes (valores de ejemplo) */}
       <div className="pointer-events-none absolute right-[6%] top-[34%] z-10 hidden rounded-2xl bg-white px-4 py-3 shadow-lg shadow-brand-900/10 md:block">
-        <p className="text-[11px] text-muted">Costo completo (ejemplo)</p>
+        <p className="text-[11px] text-brand-700">Costo completo (ejemplo)</p>
         <p className="font-brand text-xl font-bold text-brand-900">S/ 10.00</p>
       </div>
       <div className="pointer-events-none absolute bottom-[22%] right-[38%] z-10 hidden rounded-2xl bg-brand-600 px-4 py-3 text-white shadow-lg shadow-brand-900/20 md:block">
@@ -28,7 +28,7 @@ export function Hero() {
           <h1 className="mt-5 font-brand text-4xl font-extrabold leading-[1.08] tracking-tight text-brand-900 sm:text-5xl lg:text-6xl">
             Sabe cuánto cuesta cada plato y cuánto te deja.
           </h1>
-          <p className="mt-6 max-w-md text-base leading-relaxed text-muted sm:text-lg">
+          <p className="mt-6 max-w-md text-base leading-relaxed text-brand-700 sm:text-lg">
             Costea reúne tus insumos, recetas, personal y gastos para calcular el costo real de tu carta, fijar precios
             con margen y planear cada mes con números claros.
           </p>
@@ -49,12 +49,13 @@ export function Hero() {
               Ver cómo funciona
             </a>
           </div>
-          <p className="mt-5 text-xs text-muted">Hecho para restaurantes en Perú · Precios con IGV del 18 %</p>
+          <p className="mt-5 text-xs text-brand-700">Hecho para restaurantes en Perú · Precios con IGV del 18 %</p>
         </div>
-        <p className="mt-10 hidden items-center gap-1.5 text-xs text-muted md:flex">
+        <p className="mt-10 hidden items-center gap-1.5 text-xs text-brand-700 md:flex">
           <MousePointer2 className="size-3.5" aria-hidden /> Mueve el cursor: el chef te sigue.
         </p>
       </div>
     </section>
   );
 }
+

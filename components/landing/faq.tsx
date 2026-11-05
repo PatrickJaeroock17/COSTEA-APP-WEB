@@ -17,7 +17,7 @@ export function Faq() {
               <summary className="cursor-pointer list-none font-semibold text-brand-900 marker:hidden after:float-right after:text-brand-600 after:content-['+'] group-open:after:content-['–']">
                 {f.q}
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-muted">{f.a}</p>
+              <p className="mt-3 text-sm leading-relaxed text-brand-700">{f.a}</p>
             </details>
           ))}
         </div>
@@ -25,3 +25,4 @@ export function Faq() {
     </section>
   );
 }
+

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 const REST = 0.52; // proporción de la duración donde el chef mira de frente
-const LERP = 0.14;
+const LERP = 0.24;
 
 /**
  * Video del chef que NO se reproduce: se mueve `currentTime` según la posición
@@ -31,12 +31,19 @@ export function ChefScrub({ className }: { className?: string }) {
       video.currentTime = current;
     };
 
-    const tick = () => {
+    let last = 0;
+    const tick = (now: number) => {
       raf = 0;
-      current += (target - current) * LERP;
-      if (Math.abs(target - current) < 0.002) current = target;
-      if (Math.abs(video.currentTime - current) > 0.001) video.currentTime = current;
-      if (current !== target) raf = requestAnimationFrame(tick);
+      // Suavizado independiente de la tasa de cuadros (referencia: 60 fps).
+      const dt = last ? Math.min((now - last) / 16.667, 4) : 1;
+      last = now;
+      const k = 1 - Math.pow(1 - LERP, dt);
+      current += (target - current) * k;
+      if (Math.abs(target - current) < 0.004) current = target;
+      // No encolar saltos: solo buscar un nuevo cuadro cuando el anterior terminó.
+      if (!video.seeking && Math.abs(video.currentTime - current) > 0.001) video.currentTime = current;
+      if (current !== target || video.seeking) raf = requestAnimationFrame(tick);
+      else last = 0;
     };
     const kick = () => {
       if (!raf) raf = requestAnimationFrame(tick);
@@ -47,8 +54,8 @@ export function ChefScrub({ className }: { className?: string }) {
       if (!d) return;
       const r = wrap.getBoundingClientRect();
       const cx = r.left + r.width / 2;
-      // Distancia al centro del chef, normalizada: ±0.9 anchos = giro completo.
-      const reach = Math.max(r.width * 0.9, 1);
+      // Distancia al centro del chef, normalizada: ±0.5 anchos = giro completo.
+      const reach = Math.max(r.width * 0.5, 1);
       const s = Math.max(-1, Math.min(1, (clientX - cx) / reach));
       const rest = d * REST;
       target = s < 0 ? rest + s * rest : rest + s * (d - rest);
@@ -103,4 +110,5 @@ export function ChefScrub({ className }: { className?: string }) {
     </div>
   );
 }
+
 
