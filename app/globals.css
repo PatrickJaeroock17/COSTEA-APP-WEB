@@ -38,8 +38,8 @@
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-brand: var(--font-nunito), ui-rounded, system-ui, sans-serif;
 
-  --color-cream: #fbf3e1;
-  --color-cream-deep: #f5e6c4;
+  --color-cream: #faefd5;
+  --color-cream-deep: #f2dfb4;
 
   --radius-card: 1rem;
   --radius-control: 0.75rem;
@@ -168,5 +168,6 @@
     @apply font-sans;
   }
 }
+
 
 
