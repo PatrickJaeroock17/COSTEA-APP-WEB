@@ -8,17 +8,7 @@ export function Hero() {
   return (
     <section className="relative flex min-h-screen flex-col overflow-hidden bg-cream md:block">
       {/* Chef: a la derecha en escritorio; debajo del texto en celular */}
-      <ChefScrub className="order-2 aspect-video w-full md:absolute md:inset-y-0 md:right-0 md:aspect-auto md:w-[80%]" />
-
-      {/* Tarjetas flotantes (valores de ejemplo) */}
-      <div className="pointer-events-none absolute right-[6%] top-[34%] z-10 hidden rounded-2xl bg-white px-4 py-3 shadow-lg shadow-brand-900/10 md:block">
-        <p className="text-[11px] text-brand-700">Costo completo (ejemplo)</p>
-        <p className="font-brand text-xl font-bold text-brand-900">S/ 10.00</p>
-      </div>
-      <div className="pointer-events-none absolute bottom-[22%] right-[38%] z-10 hidden rounded-2xl bg-brand-600 px-4 py-3 text-white shadow-lg shadow-brand-900/20 md:block">
-        <p className="text-[11px] opacity-90">Margen (ejemplo)</p>
-        <p className="font-brand text-xl font-bold">33 %</p>
-      </div>
+      <ChefScrub className="order-2 aspect-video w-full md:absolute md:bottom-0 md:right-0 md:w-[min(100%,177.78vh)]" />
 
       <div className="relative z-10 order-1 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-5 pb-10 pt-28 sm:px-8 md:min-h-screen md:pb-24 md:pt-24">
         <div className="max-w-xl">
@@ -58,5 +48,6 @@ export function Hero() {
     </section>
   );
 }
+
 
 
