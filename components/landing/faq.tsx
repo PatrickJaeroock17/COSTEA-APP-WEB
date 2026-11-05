@@ -8,12 +8,12 @@
 
 export function Faq() {
   return (
-    <section id="preguntas" className="scroll-mt-4 bg-white py-20 sm:py-28">
+    <section id="preguntas" className="scroll-mt-4 bg-cream py-20 sm:py-28">
       <div className="mx-auto max-w-3xl px-5 sm:px-8">
         <h2 className="font-brand text-3xl font-extrabold tracking-tight text-brand-900 sm:text-4xl">Preguntas</h2>
         <div className="mt-10 space-y-3">
           {faqs.map((f) => (
-            <details key={f.q} className="group rounded-[var(--radius-card)] border border-line bg-surface px-5 py-4 open:bg-white">
+            <details key={f.q} className="group rounded-[var(--radius-card)] border border-brand-100 bg-white/80 px-5 py-4 open:bg-white">
               <summary className="cursor-pointer list-none font-semibold text-brand-900 marker:hidden after:float-right after:text-brand-600 after:content-['+'] group-open:after:content-['–']">
                 {f.q}
               </summary>
@@ -25,4 +25,5 @@ export function Faq() {
     </section>
   );
 }
+
 

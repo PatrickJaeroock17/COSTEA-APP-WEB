@@ -7,7 +7,7 @@
 
 export function HowItWorks() {
   return (
-    <section id="como-funciona" className="scroll-mt-4 bg-cream py-20 sm:py-28">
+    <section id="como-funciona" className="scroll-mt-4 bg-cream-deep/50 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <h2 className="font-brand text-3xl font-extrabold tracking-tight text-brand-900 sm:text-4xl">Cómo funciona</h2>
         <ol className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -23,4 +23,5 @@ export function HowItWorks() {
     </section>
   );
 }
+
 

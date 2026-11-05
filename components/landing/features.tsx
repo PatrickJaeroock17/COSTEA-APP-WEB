@@ -14,13 +14,13 @@ const features = [
 
 export function Features() {
   return (
-    <section id="incluye" className="scroll-mt-4 bg-white py-20 sm:py-28">
+    <section id="incluye" className="scroll-mt-4 bg-cream py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <h2 className="font-brand text-3xl font-extrabold tracking-tight text-brand-900 sm:text-4xl">Qué incluye</h2>
         <p className="mt-3 max-w-2xl text-brand-700">Todo lo que necesitas para costear tu restaurante, en un mismo sistema.</p>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map(({ icon: Icon, title, text }) => (
-            <article key={title} className="rounded-[var(--radius-card)] border border-line bg-surface p-6 transition-shadow hover:shadow-md hover:shadow-brand-900/5">
+            <article key={title} className="rounded-[var(--radius-card)] border border-brand-100 bg-white/80 p-6 transition-shadow hover:shadow-md hover:shadow-brand-900/5">
               <span className="grid size-11 place-items-center rounded-xl bg-brand-100 text-brand-600">
                 <Icon className="size-5" aria-hidden />
               </span>
@@ -33,4 +33,5 @@ export function Features() {
     </section>
   );
 }
+
 

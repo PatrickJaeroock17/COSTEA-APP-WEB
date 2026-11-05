@@ -8,7 +8,7 @@ export function Hero() {
   return (
     <section className="relative flex min-h-screen flex-col overflow-hidden bg-cream md:block">
       {/* Chef: a la derecha en escritorio; debajo del texto en celular */}
-      <ChefScrub className="order-2 aspect-video w-full md:absolute md:inset-y-0 md:right-0 md:aspect-auto md:w-[64%]" />
+      <ChefScrub className="order-2 aspect-video w-full md:absolute md:inset-y-0 md:right-0 md:aspect-auto md:w-[80%]" />
 
       {/* Tarjetas flotantes (valores de ejemplo) */}
       <div className="pointer-events-none absolute right-[6%] top-[34%] z-10 hidden rounded-2xl bg-white px-4 py-3 shadow-lg shadow-brand-900/10 md:block">
@@ -22,7 +22,7 @@ export function Hero() {
 
       <div className="relative z-10 order-1 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-5 pb-10 pt-28 sm:px-8 md:min-h-screen md:pb-24 md:pt-24">
         <div className="max-w-xl">
-          <span className="inline-block rounded-full bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-brand-700">
+          <span className="inline-block rounded-full bg-cream-deep/70 px-3.5 py-1.5 text-xs font-semibold text-brand-700">
             Costos y presupuestos para restaurantes
           </span>
           <h1 className="mt-5 font-brand text-4xl font-extrabold leading-[1.08] tracking-tight text-brand-900 sm:text-5xl lg:text-6xl">
@@ -43,7 +43,7 @@ export function Hero() {
               href="#como-funciona"
               className={cn(
                 buttonVariants({ variant: "outline" }),
-                "h-12 rounded-xl border-brand-600/30 bg-white/70 px-6 text-base font-semibold text-brand-700 hover:bg-white",
+                "h-12 rounded-xl border-brand-600/30 bg-cream/70 px-6 text-base font-semibold text-brand-700 hover:bg-cream",
               )}
             >
               Ver cómo funciona
@@ -58,4 +58,5 @@ export function Hero() {
     </section>
   );
 }
+
 
