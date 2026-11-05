@@ -8,14 +8,14 @@ export function Logo({ variant = "light", className }: { variant?: "light" | "da
       <Image
         src={variant === "light" ? "/brand/costea-symbol.svg" : "/brand/costea-symbol-white.svg"}
         alt=""
-        width={32}
-        height={32}
+        width={40}
+        height={40}
         priority
       />
       <span
         className={cn(
-          "font-brand text-2xl font-bold leading-none tracking-tight",
-          variant === "light" ? "text-brand-600" : "text-white",
+          "font-brand text-[28px] font-extrabold leading-none tracking-tight",
+          variant === "light" ? "text-[#006b4b]" : "text-white",
         )}
       >
         costea
@@ -23,3 +23,4 @@ export function Logo({ variant = "light", className }: { variant?: "light" | "da
     </Link>
   );
 }
+

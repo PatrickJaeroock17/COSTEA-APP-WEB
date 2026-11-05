@@ -1,7 +1,5 @@
 ﻿import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 const links = [
   { href: "#incluye", label: "Qué incluye" },
@@ -13,22 +11,22 @@ const links = [
 export function SiteHeader() {
   return (
     <header className="absolute inset-x-0 top-0 z-20">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
+      <div className="flex h-[88px] items-center justify-between px-5 sm:px-8 md:px-16">
         <Logo />
-        <nav className="hidden items-center gap-8 text-sm font-medium text-brand-900 md:flex">
+        <nav className="hidden items-center gap-9 text-[15px] font-semibold text-[#12251f] md:flex">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="transition-colors hover:text-brand-600">
+            <a key={l.href} href={l.href} className="transition-colors hover:text-[#006b4b]">
               {l.label}
             </a>
           ))}
         </nav>
-        <div className="flex items-center gap-2 sm:gap-4">
-          <Link href="/ingresar" className="hidden text-sm font-semibold text-brand-600 hover:underline sm:inline">
+        <div className="flex items-center gap-3 sm:gap-5">
+          <Link href="/ingresar" className="hidden text-[15px] font-semibold text-[#006b4b] hover:underline sm:inline">
             Iniciar sesión
           </Link>
           <Link
             href="/registro"
-            className={cn(buttonVariants(), "h-10 rounded-xl bg-brand-600 px-5 text-sm font-semibold hover:bg-brand-700")}
+            className="rounded-xl bg-[#006b4b] px-5 py-2.5 text-[15px] font-bold text-white transition-colors hover:bg-[#00563d]"
           >
             Crear cuenta
           </Link>

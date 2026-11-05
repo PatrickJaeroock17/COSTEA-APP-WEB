@@ -171,3 +171,15 @@
 
 
 
+
+/* Tarjetas flotantes del hero */
+@keyframes hero-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.hero-bob {
+  animation: hero-bob var(--bob-dur, 5s) ease-in-out var(--bob-delay, 0s) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-bob { animation: none; }
+}
