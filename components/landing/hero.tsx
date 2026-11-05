@@ -8,7 +8,7 @@ export function Hero() {
   return (
     <section className="relative flex min-h-screen flex-col overflow-hidden bg-cream md:block">
       {/* Chef: a la derecha en escritorio; debajo del texto en celular */}
-      <ChefScrub className="order-2 aspect-video w-full md:absolute md:bottom-0 md:right-0 md:w-[min(100%,177.78vh)]" />
+      <ChefScrub className="order-2 aspect-video w-full md:absolute md:bottom-0 md:-right-[16%] md:w-[min(100%,177.78vh)]" />
 
       <div className="relative z-10 order-1 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-5 pb-10 pt-28 sm:px-8 md:min-h-screen md:pb-24 md:pt-24">
         <div className="max-w-xl">
@@ -48,6 +48,7 @@ export function Hero() {
     </section>
   );
 }
+
 
 
 

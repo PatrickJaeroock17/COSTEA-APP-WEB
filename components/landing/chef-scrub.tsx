@@ -151,7 +151,7 @@ export function ChefScrub({ className }: { className?: string }) {
     "absolute inset-0 h-full w-full object-cover object-[45%_center] ";
 
   return (
-    <div ref={wrapRef} className={cn("relative overflow-hidden [mask-composite:intersect] [mask-image:linear-gradient(to_right,transparent_0%,rgb(0_0_0/0.3)_10%,rgb(0_0_0/0.72)_24%,black_40%),linear-gradient(to_bottom,transparent_0%,black_10%)]", className)}>
+    <div ref={wrapRef} className={cn("relative overflow-hidden [mask-composite:intersect] [mask-image:linear-gradient(to_right,transparent_0%,rgb(0_0_0/0.3)_8%,rgb(0_0_0/0.72)_20%,black_34%),linear-gradient(to_bottom,transparent_0%,black_10%)]", className)}>
       {/* Cuadro de frente: se ve al instante, mientras cargan los demás y con movimiento reducido */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img ref={imgRef} src={src(REST)} alt="Chef de costea" className={media} fetchPriority="high" />
@@ -159,6 +159,7 @@ export function ChefScrub({ className }: { className?: string }) {
     </div>
   );
 }
+
 
 
 
