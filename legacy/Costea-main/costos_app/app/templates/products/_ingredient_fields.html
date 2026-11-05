@@ -1,0 +1,18 @@
+{% from 'companies/_fields.html' import input %}
+{% macro fields(form, quick, material=None) %}
+<div class="form-grid">
+{% if quick %}{{ input(form.name, 'Se guardará también en tu catálogo para usarlo en otros productos.') }}{% endif %}
+{{ input(form.quantity, 'Cantidad para todas las porciones o unidades del lote, no por cada una.', maxlength=19) }}
+{{ input(form.unit_key, 'La cantidad y el precio pueden usar unidades distintas si son compatibles.') }}
+{% if quick %}
+{{ input(form.price, 'Por ejemplo: 80 si el precio es 80 por kg. Excluye el impuesto recuperable.', maxlength=19) }}
+{{ input(form.price_unit_code, 'El costo de la fila se calcula con la conversión correcta, por ejemplo g a kg.') }}
+{{ input(form.effective_on, type='date') }}{{ input(form.source, '', maxlength=500) }}
+{% else %}
+{{ input(form.cost_id, 'Este precio queda como referencia de la receta. Si el kardex tiene entradas valoradas, el cálculo del plato usa su promedio ponderado vigente.') }}
+{{ input(form.new_price, 'En ' ~ material.company.currency ~ ' por 1 ' ~ material.base_unit.symbol ~ ', sin impuesto recuperable. Vacío conserva el precio elegido; 0 es un precio cero. Si lo completas, se registra una nueva versión en el catálogo.', maxlength=19) }}
+{{ input(form.effective_on, 'Se usa únicamente si ingresas un nuevo precio.', type='date') }}
+{% endif %}
+</div>
+<details class="recipe-advanced" {% if form.mode.errors or form.percent.errors or form.mode.data != 'gross' %}open{% endif %}><summary>Merma y rendimiento del ingrediente</summary><div class="form-grid">{{ input(form.mode) }}{{ input(form.percent, 'Para cantidad neta: rendimiento = 100 % − merma; compra necesaria = cantidad neta ÷ rendimiento. Ejemplo: 250 g netos con 20 % de merma requieren 312,5 g de compra. Indica 0 % si no hay merma. No la apliques dos veces.', maxlength=19) }}</div></details>
+{% endmacro %}

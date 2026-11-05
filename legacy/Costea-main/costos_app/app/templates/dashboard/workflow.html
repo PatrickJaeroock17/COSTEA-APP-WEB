@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block title %}Costos de tu restaurante{% endblock %}
+{% block breadcrumb %}Inicio{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Costos de tu restaurante</h1><p>Elige el restaurante para empezar. Cada uno conserva sus recetas, precios y gastos por separado.</p></div><a class="btn btn-primary" href="{{ url_for('companies.create') }}">Crear restaurante</a></div>
+<section class="surface"><h2>Seleccionar restaurante</h2>{% for company in companies %}<form class="form-actions" method="post" action="{{ url_for('companies.select_company') }}">{{ action_form.hidden_tag() }}<input type="hidden" name="company_id" value="{{ company.id }}"><button class="btn btn-outline-primary">{{ company.display_name }}</button></form>{% else %}<p>Crea tu primer restaurante para registrar sus platos.</p>{% endfor %}</section>
+{% if active_company %}<section class="surface planning-section"><h2>Cómo completar el costo</h2><ol>
+<li><a href="{{ url_for('products.index',company_id=active_company.id) }}">Seleccionar un plato base o gestionar una receta propia</a>.</li>
+<li><a href="{{ url_for('materials.index',company_id=active_company.id) }}">Insumos y Materia Prima</a>: catálogo general, costos locales, cantidades, merma y unidades.</li>
+<li><a href="{{ url_for('planning.employees',company_id=active_company.id) }}">Mano de obra directa</a>: chef, cocinero, ayudante y otros trabajadores; asigna sus tiempos desde la receta.</li>
+<li><a href="{{ url_for('planning.concept_edit',company_id=active_company.id,tipo='cif') }}">CIF</a>: gas, luz, agua y otros costos de cocina.</li>
+<li><a href="{{ url_for('planning.concept_edit',company_id=active_company.id,tipo='admin') }}">Gastos administrativos</a>.</li>
+<li><a href="{{ url_for('planning.concept_edit',company_id=active_company.id,tipo='sales') }}">Gastos de venta</a>.</li>
+<li><a href="{{ url_for('worksheet.index',company_id=active_company.id) }}">Costo total y precio de venta</a>: indica porciones previstas para repartir los costos mensuales.</li>
+<li><a href="{{ url_for('planning.plans',company_id=active_company.id) }}">Plan de Producción</a>: elige platos y cantidades, revisa insumos, ingresos y utilidad estimada.</li>
+</ol></section>{% endif %}
+{% if plan %}<p>Escenario activo: <a href="{{ url_for('planning.plan_detail',company_id=plan.company_id,plan_id=plan.id) }}">{{ plan.name }}</a></p>{% endif %}
+{% endblock %}

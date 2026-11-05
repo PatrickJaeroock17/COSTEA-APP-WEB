@@ -1,0 +1,200 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, scope with context %}
+{% block title %}{{ material.display_name }} · Materiales{% endblock %}
+{% block breadcrumb %}Detalle del insumo en uso{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">{{ company.display_name }} · Insumo privado {{ material.code }}</p>
+    <h1>{{ material.display_name }}</h1>
+    <p>{{ material.category }} · {{ material.base_unit.name }} · {{ 'Activo' if material.active else 'Archivado' }}</p>
+  </div>
+  <a class="text-link" href="{{ url_for('materials.index', company_id=company.id, tab='mios') }}">Volver a Insumos y Materia Prima</a>
+</div>
+{{ scope(company) }}
+
+<section class="surface material-summary">
+  <div>
+    <span class="eyebrow">PRECIO VIGENTE AL {{ on_date }}</span>
+    <h2 class="decimal-cell">
+      {% if version %}{{ version.currency }} {{ version_result(version)|decimal }} / {{ material.base_unit.symbol }}{% else %}Sin costo vigente{% endif %}
+    </h2>
+    <p class="form-section-description">Cada cambio conserva su fecha y sustento. Los precios futuros solo se aplican desde su vigencia.</p>
+  </div>
+  <form method="get" class="material-date">
+    <label class="form-label" for="fecha">Consultar otra fecha</label>
+    <input type="date" id="fecha" name="fecha" value="{{ on_date }}" class="form-control" required>
+    <button class="btn btn-outline-primary">Consultar</button>
+  </form>
+</section>
+
+<div class="material-actions">
+  {% if material.active %}
+  {% if material.external_insumo_id is not none %}<form method="post" action="{{ url_for('catalog.select', company_id=company.id, ingredient_id=material.external_insumo_id) }}">{{ action_form.hidden_tag() }}<button class="btn btn-outline-primary">Traer precio actualizado del catálogo</button></form>{% endif %}
+  <button class="btn btn-primary" type="button" data-dialog-open="price-update-dialog">Actualizar precio de compra</button>
+  <button class="btn btn-outline-primary" type="button" data-dialog-open="inventory-entry-dialog">Registrar compra o entrada</button>
+  <a class="text-link" href="{{ url_for('materials.edit', company_id=company.id, material_id=material.id) }}">Editar datos</a>
+  {% endif %}
+  <form method="post" action="{{ url_for('materials.toggle', company_id=company.id, material_id=material.id) }}">
+    {{ action_form.hidden_tag() }}
+    <input type="hidden" name="state" value="{{ 'archived' if material.active else 'active' }}">
+    <button class="btn btn-outline-primary">{{ 'Archivar material' if material.active else 'Restaurar material' }}</button>
+  </form>
+</div>
+{% if material.external_insumo_id is not none %}<p class="settings-note">Las recetas ya guardadas conservan su precio anterior. Edita cada fila de receta para elegir la nueva versión si deseas recalcularla.</p>{% endif %}
+
+<section class="surface price-history" id="price-history">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">COMPRAS</p>
+      <h2>Historial de Precios de Compra</h2>
+    </div>
+    <span class="count-pill">{{ material.costs|length }}</span>
+  </div>
+  <p class="form-section-description">Evolución del precio por {{ material.base_unit.symbol }}. Los importes se calculan y guardan sin redondeos intermedios.</p>
+
+  {% if price_chart %}
+  <div class="price-chart" role="img" aria-label="Evolución del precio de compra de {{ material.display_name }}">
+    <svg viewBox="0 0 800 250" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <line class="price-chart-axis" x1="58" y1="24" x2="58" y2="208"></line>
+      <line class="price-chart-axis" x1="58" y1="208" x2="778" y2="208"></line>
+      <line class="price-chart-grid" x1="58" y1="24" x2="778" y2="24"></line>
+      <polyline class="price-chart-line" points="{{ price_chart.polyline }}"></polyline>
+      {% for point in price_chart.points %}
+      <circle class="price-chart-point" cx="{{ point.x }}" cy="{{ point.y }}" r="5">
+        <title>{{ point.date }} · {{ company.currency }} {{ point.value_text }} / {{ material.base_unit.symbol }}</title>
+      </circle>
+      {% endfor %}
+      <text class="price-chart-label" x="8" y="29">{{ price_chart.high }}</text>
+      <text class="price-chart-label" x="8" y="212">{{ price_chart.low }}</text>
+      <text class="price-chart-label" x="58" y="238">{{ price_chart.first_date }}</text>
+      <text class="price-chart-label price-chart-label-end" x="778" y="238">{{ price_chart.last_date }}</text>
+    </svg>
+  </div>
+  {% else %}
+  <p class="empty-copy">Aún no hay precios registrados. Usa “Actualizar precio de compra” para crear el primero.</p>
+  {% endif %}
+
+  <div class="table-responsive material-history-table">
+    <table class="table align-middle">
+      <thead><tr><th>Fecha de vigencia</th><th>Precio / unidad base</th><th>Proveedor / Sustento</th><th>Origen</th></tr></thead>
+      <tbody>
+      {% for cost in material.costs %}
+      <tr>
+        <td>{{ cost.effective_on }}{% if cost.effective_on > on_date %}<span class="record-status ms-2">Futuro</span>{% endif %}</td>
+        <td class="decimal-cell"><strong>{{ cost.currency }} {{ version_result(cost)|decimal }}</strong> / {{ material.base_unit.symbol }}</td>
+        <td>{{ cost.source }}</td>
+        <td>
+          {{ 'Actualización rápida' if cost.mode == 'direct' else 'Compra detallada' }}
+          {% if cost.mode == 'purchase' %}
+          <details class="price-advanced">
+            <summary>Ver opciones avanzadas</summary>
+            {% set result = acquisition_cost(cost.quantity, cost.factor, cost.net_amount, cost.nonrecoverable_tax, cost.attributable_cost, cost.recoverable_tax) %}
+            <dl class="record-details">
+              <div><dt>Compra</dt><dd>{{ cost.quantity|decimal }} × {{ cost.purchase_unit }}</dd></div>
+              <div><dt>Cantidad base</dt><dd>{{ result.base_quantity|decimal }} {{ material.base_unit.symbol }}</dd></div>
+              <div><dt>Importe neto</dt><dd>{{ cost.net_amount|decimal }}</dd></div>
+              <div><dt>Impuesto no recuperable</dt><dd>{{ cost.nonrecoverable_tax|decimal }}</dd></div>
+              <div><dt>Otros costos atribuibles</dt><dd>{{ cost.attributable_cost|decimal }}</dd></div>
+              <div><dt>Impuesto recuperable</dt><dd>{{ cost.recoverable_tax|decimal }}</dd></div>
+            </dl>
+          </details>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4">Sin precios registrados.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="surface material-kardex" id="kardex">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">INVENTARIO</p>
+      <h2>Compras y Entradas (Kardex)</h2>
+    </div>
+    {% if material.active %}<button class="btn btn-outline-primary" type="button" data-dialog-open="inventory-entry-dialog">Nueva entrada</button>{% endif %}
+  </div>
+  <p class="form-section-description">Las entradas se convierten a {{ material.base_unit.symbol }} y actualizan el promedio ponderado móvil. Las ventas y la producción confirmada descuentan el consumo de las recetas estandarizadas.</p>
+  <div class="kardex-summary">
+    <div><span>Existencia</span><strong>{{ inventory_balance.quantity|decimal if inventory_balance else '0' }} {{ material.base_unit.symbol }}</strong></div>
+    <div><span>Costo promedio</span><strong>{% if inventory_balance and inventory_balance.average is not none %}{{ company.currency }} {{ inventory_balance.average|decimal }}{% else %}Pendiente{% endif %}</strong></div>
+    <div><span>Valor del saldo</span><strong>{% if inventory_balance and inventory_balance.value is not none %}{{ company.currency }} {{ inventory_balance.value|decimal }}{% else %}Pendiente{% endif %}</strong></div>
+  </div>
+  <div class="table-responsive">
+    <table class="table material-kardex-table align-middle">
+      <thead><tr><th>Fecha / Referencia</th><th>Movimiento</th><th>Cantidad</th><th>Costo unitario aplicado</th><th>Saldo</th><th>Promedio móvil</th></tr></thead>
+      <tbody>
+      {% for row in inventory_rows %}
+      <tr>
+        <td>{{ row.movement.movement_on }}<small class="d-block">{{ row.movement.reference }}</small></td>
+        <td><span class="record-status {{ 'material-entry-out' if row.movement.kind == 'out' }}">{{ 'Entrada' if row.movement.kind == 'in' else 'Salida' }}</span></td>
+        <td>{{ row.movement.quantity|decimal }} {{ material.base_unit.symbol }}</td>
+        <td>{% if row.unit_cost is not none %}{{ company.currency }} {{ row.unit_cost|decimal }}{% else %}Pendiente{% endif %}</td>
+        <td>{{ row.quantity|decimal }} {{ material.base_unit.symbol }}</td>
+        <td>{% if row.average is not none %}{{ company.currency }} {{ row.average|decimal }}{% else %}Pendiente{% endif %}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6">Sin movimientos. La primera compra se registrará como inventario inicial.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="surface material-conversions">
+  <div class="section-heading">
+    <h2>Unidades y presentaciones de compra</h2>
+    {% if material.active %}<a class="text-link" href="{{ url_for('materials.conversion', company_id=company.id, material_id=material.id) }}">Agregar presentación</a>{% endif %}
+  </div>
+  {% for conversion in material.conversions %}
+  <div class="conversion-entry"><strong>1 {{ conversion.label }} = {{ conversion.factor|decimal }} {{ material.base_unit.symbol }}</strong><p>{{ conversion.evidence }}</p></div>
+  {% else %}
+  <p class="empty-copy">No hay presentaciones específicas. Las unidades universales compatibles siguen disponibles al registrar una compra.</p>
+  {% endfor %}
+</section>
+
+{% if material.active %}
+<dialog class="material-dialog" id="price-update-dialog" {% if open_dialog == 'price-update-dialog' %}data-open-on-load{% endif %}>
+  <div class="material-dialog-heading">
+    <div><p class="eyebrow">ACTUALIZACIÓN RÁPIDA</p><h2>Nuevo precio de compra</h2><p>Precio expresado por 1 {{ material.base_unit.symbol }}.</p></div>
+    <button class="icon-button" type="button" data-dialog-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <form method="post" action="{{ url_for('materials.update_price', company_id=company.id, material_id=material.id) }}" class="setup-form" novalidate>
+    {{ price_form.hidden_tag() }}
+    <div class="form-grid">
+      {{ input(price_form.unit_cost, 'Importe exacto por ' ~ material.base_unit.symbol ~ ', hasta 6 decimales.', maxlength=19) }}
+      {{ input(price_form.effective_on, 'Desde esta fecha se utilizará el nuevo precio.', type='date') }}
+      {{ input(price_form.source, 'Proveedor, comprobante, cotización u otro sustento.', maxlength=500) }}
+    </div>
+    <details class="recipe-advanced material-price-options">
+      <summary>Opciones avanzadas</summary>
+      <p class="form-section-description">Si necesitas separar impuestos recuperables, no recuperables, transporte u otros costos atribuibles, usa el registro detallado.</p>
+      <a class="text-link" href="{{ url_for('materials.add_cost', company_id=company.id, material_id=material.id, mode='purchase') }}">Abrir compra detallada</a>
+    </details>
+    <div class="form-actions"><button class="text-link border-0 bg-transparent" type="button" data-dialog-close>Cancelar</button><button class="btn btn-primary" type="submit">Guardar precio</button></div>
+  </form>
+</dialog>
+
+<dialog class="material-dialog" id="inventory-entry-dialog" {% if open_dialog == 'inventory-entry-dialog' %}data-open-on-load{% endif %}>
+  <div class="material-dialog-heading">
+    <div><p class="eyebrow">KARDEX</p><h2>Registrar compra o entrada</h2><p>La primera entrada establecerá el inventario inicial del insumo.</p></div>
+    <button class="icon-button" type="button" data-dialog-close aria-label="Cerrar"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <form method="post" action="{{ url_for('materials.add_inventory_entry', company_id=company.id, material_id=material.id) }}" class="setup-form" novalidate>
+    {{ entry_form.hidden_tag() }}
+    <div class="form-grid">
+      {{ input(entry_form.quantity, 'Número de unidades compradas, hasta 6 decimales.', maxlength=19) }}
+      {{ input(entry_form.purchase_unit, 'Selecciona la presentación a la que corresponde la cantidad y el precio.') }}
+      {{ input(entry_form.unit_price, 'Precio por una unidad de compra seleccionada, hasta 6 decimales.', maxlength=19) }}
+      {{ input(entry_form.movement_on, 'Fecha real de ingreso al inventario.', type='date') }}
+    </div>
+    <p class="settings-note">El sistema convertirá cantidad y precio a {{ material.base_unit.symbol }} y recalculará el promedio ponderado móvil sin conversiones a float.</p>
+    <div class="form-actions"><button class="text-link border-0 bg-transparent" type="button" data-dialog-close>Cancelar</button><button class="btn btn-primary" type="submit">Registrar entrada</button></div>
+  </form>
+</dialog>
+{% endif %}
+{% endblock %}

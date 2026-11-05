@@ -1,0 +1,27 @@
+{% macro amount(value) -%}
+{% if value is not none %}S/ {{ value|money }}{% else %}Sin cálculo{% endif %}
+{%- endmacro %}
+{% set labels = {
+  'DEPENDIENTE':'Dependiente', 'INDEPENDIENTE':'Independiente',
+  'REGISTRADO':'Registrado', 'NO_REGISTRADO':'No registrado', 'NO_APLICA':'No aplica',
+  'MENSUAL':'Mensual', 'HORA':'Por hora', 'SERVICIO':'Por servicio',
+  'ESSALUD':'EsSalud', 'EPS':'EPS', 'ONP':'ONP',
+  'AFP_FLUJO':'AFP por flujo', 'AFP_SALDO':'AFP por saldo',
+  'INDEFINIDO':'Indefinido', 'TIEMPO_PARCIAL':'Tiempo parcial',
+  'LOCACION_SERVICIOS':'Locación de servicios', 'GENERAL':'General',
+  'LOCACION_AUTONOMA':'Locación autónoma', 'SIN_REGISTRO_SIMULADO':'Sin registro (simulado)',
+  'CALENDARIO':'Calendario', 'LABORABLES':'Laborables',
+  'SUMA':'Suma al costo', 'INCLUIDO':'Incluido en otro concepto', 'DESCUENTO':'Descuento del trabajador'
+} %}
+{% macro field(worker, label, key, kind='text') -%}
+{% set value = worker.get(key) %}
+<div><dt>{{ label }}</dt><dd>
+{% if value is none %}Sin dato
+{% elif kind == 'money' %}{{ amount(value) }}
+{% elif kind == 'number' %}{{ value|decimal }}
+{% elif kind == 'percent' %}{{ value|decimal }} %
+{% elif kind == 'boolean' %}{{ 'Sí' if value else 'No' }}
+{% elif kind == 'active' %}{{ 'Activo' if value else 'Inactivo' }}
+{% else %}{{ labels.get(value, value) }}{% endif %}
+</dd></div>
+{%- endmacro %}

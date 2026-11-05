@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, scope with context %}
+{% block title %}Planilla mensual · {{ employee.name }}{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Planilla mensual · {{ employee.name }}</h1><p>{{ employee.role }} · {{ company.currency }}</p></div><a href="{{ url_for('planning.employees',company_id=company.id) }}">Volver a personal</a></div>
+{{ scope(company) }}
+<p class="settings-note">Registra el costo del empleador. En el desglose, julio y diciembre son los importes previstos de cada gratificación y la CTS es el total anual: se provisionan entre 12 meses, sin volver a sumar su pago. Ajusta beneficios, bases y seguros según el trabajador. Los importes consolidados anteriores se conservan hasta que los reemplaces expresamente.</p>
+<form method="post" class="surface setup-form" novalidate>{{ form.hidden_tag() }}
+<div class="form-grid">{{ input(form.period_id) }}{{ input(form.calculation_mode) }}{{ input(form.salary) }}{{ input(form.other) }}{{ input(form.source) }}</div>
+<section data-payroll-mode="detailed"><h2>Beneficios y seguros</h2><p>EsSalud parte de 9 %, editable. Indica la base mínima que corresponda. Si existe EPS, ingresa la prima y solo el crédito aplicable; no descuentes el mismo importe dos veces. La bonificación extraordinaria es configurable (por ejemplo 9 %, 6,75 % con EPS o 0 si no aplica).</p><div class="form-grid">{% for key in detail_fields %}{{ input(form[key]) }}{% endfor %}</div></section>
+<section data-payroll-mode="legacy"><h2>Importes mensuales consolidados</h2><p>Se utilizan únicamente en el modo de importes consolidados.</p><div class="form-grid">{% for key in ['allowances','provisions','charges'] %}{{ input(form[key]) }}{% endfor %}</div></section>
+<h2>Tiempo y distribución</h2><p>Minutos efectivos = (días × horas × 60 − minutos excluidos) × productividad. No descuentes una misma pausa en ambos campos. Revisa los días y horas propuestos antes de guardar.</p>
+<div class="form-grid">{% for key in ['days','hours','excluded','productive','direct_basis','planned_units','mod','cif','admin','sales','basis','justification'] %}{{ input(form[key]) }}{% endfor %}</div>
+<button class="btn btn-primary">Guardar planilla mensual</button></form>
+{% if result %}<section class="surface planning-section"><h2>Última configuración guardada</h2><p>Total mensual: <strong>{{ company.currency }} {{ result.total|money }}</strong> · Minutos MOD: {{ result.minutes|decimal }} · Costo por minuto: {{ result.rate|decimal }}</p><div class="table-responsive"><table class="table"><thead><tr><th>Componente mensual</th><th>Importe</th></tr></thead><tbody>{% for component in record.data.components %}<tr><td>{{ component.name }}</td><td>{{ component.amount|money }}</td></tr>{% endfor %}</tbody></table></div></section>{% endif %}
+{% endblock %}

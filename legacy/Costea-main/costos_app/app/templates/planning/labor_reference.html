@@ -1,0 +1,94 @@
+{% extends 'layout.html' %}
+{% from 'planning/_labor_fields.html' import amount, field, labels %}
+{% block title %}Trabajador · {{ worker.nombres }} {{ worker.apellidos }}{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="eyebrow">{{ company.display_name }} · {{ 'Personal personalizado' if worker.get('personalizado') else 'Personal base compartido' }}</p>
+    <h1>{{ worker.nombres }} {{ worker.apellidos }}</h1>
+    <p>{{ worker.cargo }} · {{ worker.area }} · {{ worker.clasificacion_costo }}</p>
+  </div>
+  <a href="{{ url_for('planning.employees',company_id=company.id) }}">Volver a Trabajadores</a>
+</div>
+<div class="form-actions"><a class="btn btn-primary" href="{{ url_for('planning.labor_profile_edit',company_id=company.id,scenario_id=worker.id_escenario,worker_code=worker.codigo_trabajador,contrato=worker.codigo_contrato) }}">Editar perfil</a><a class="btn btn-outline-primary" href="{{ url_for('planning.labor_profile_delete',company_id=company.id,scenario_id=worker.id_escenario,worker_code=worker.codigo_trabajador,contrato=worker.codigo_contrato) }}">Eliminar perfil</a></div>
+<section class="surface">
+  <h2>Datos del trabajador y contrato</h2>
+  <p class="settings-note">{{ 'Perfil personalizado para este restaurante.' if worker.get('personalizado') else 'Perfil inicial del personal base.' }} Al editarlo o eliminarlo, el cambio se aplica solo a {{ company.display_name }}. Los importes se muestran en soles.</p>
+  <dl class="record-details">
+    {{ field(worker,'Código de trabajador','codigo_trabajador') }}
+    {{ field(worker,'Código de contrato','codigo_contrato') }}
+    {{ field(worker,'Estado del trabajador','trabajador_activo','active') }}
+    {{ field(worker,'Estado del contrato','activo','active') }}
+    {{ field(worker,'Datos simulados','es_simulado','boolean') }}
+    {% for label,key in [('Vínculo','vinculo'),('Estado de planilla','estado_planilla'),('Modalidad de contratación','modalidad'),('Fecha de inicio','fecha_inicio'),('Tipo de pago','tipo_pago'),('Sistema de pensiones','pension'),('Cobertura de salud','salud')] %}
+      {{ field(worker,label,key) }}
+    {% endfor %}
+    {{ field(worker,'Tarifa contratada (' ~ labels.get(worker.tipo_pago,worker.tipo_pago) ~ ')','tarifa','money') }}
+    {{ field(worker,'Trabaja en feriados','trabaja_feriados','boolean') }}
+    {% if worker.vinculo == 'INDEPENDIENTE' %}{{ field(worker,'Suspensión de retenciones de cuarta categoría','tiene_suspension_cuarta','boolean') }}
+    {% else %}<div><dt>Suspensión de retenciones de cuarta categoría</dt><dd>No aplica al vínculo dependiente</dd></div>{% endif %}
+  </dl>
+  <h3>Supuestos del contrato</h3><p>{{ worker.get('observaciones') or 'Sin observaciones.' }}</p>
+</section>
+<section class="surface planning-section">
+  <h2>Costo del empleador y neto del trabajador</h2>
+  {% if not worker.get('costo_calculado',true) %}<p class="alert alert-warning">Este contrato no tiene una proyección de costos activa. Sus datos de contratación y beneficios siguen disponibles.</p>{% endif %}
+  <dl class="record-details">
+    {% for label,key in [('Sueldo básico mensual','remuneracion_basica_mes'),('Asignación familiar mensual','asignacion_familiar_mes'),('Remuneración ordinaria mensual','remuneracion_ordinaria_mes'),('Remuneración computable mensual','remuneracion_computable_mes'),('Costo mensual equivalente del empleador','costo_mensual_equivalente'),('Costo anual completo del empleador','costo_anual_completo'),('Desembolso anual simulado','desembolso_anual_simulado'),('Brecha anual de costeo','brecha_anual_costeo'),('Neto mensual promedio proyectado','neto_mensual_promedio_regularizado'),('Costo por hora efectiva','costo_hora_efectiva'),('Descuento mensual AFP / ONP','pension_descuento_mes'),('Retención mensual de cuarta categoría','cuarta_retencion_mes'),('Impuesto anual estimado de quinta categoría','quinta_impuesto_anual_estimado')] %}
+      <div><dt>{{ label }}</dt><dd>{{ amount(worker.get(key)) }}</dd></div>
+    {% endfor %}
+    <div><dt>Quinta categoría: promedio mensual estimado</dt><dd>{{ amount(worker.quinta_impuesto_anual_estimado / 12 if worker.get('quinta_impuesto_anual_estimado') is not none else none) }}</dd></div>
+    <div><dt>Renta bruta anual para quinta categoría</dt><dd>{{ amount(worker.get('renta_quinta_bruta_anual')) }}</dd></div>
+    <div><dt>Renta neta anual para quinta categoría</dt><dd>{{ amount(worker.get('renta_quinta_neta_anual')) }}</dd></div>
+  </dl>
+</section>
+<section class="surface planning-section">
+  <h2>Hijos y escolaridad</h2>
+  <p>{{ worker.get('hijos_asignacion', 'Sin cálculo') }} hijos acreditados para asignación familiar · {{ worker.get('hijos_escolaridad', 'Sin cálculo') }} con escolaridad en este escenario. Escolaridad anual: {{ amount(worker.get('escolaridad_anual')) }}.</p>
+  <p>Escolaridad anual por hijo seleccionado: {{ amount(worker.get('escolaridad_por_hijo_anual')) }}. Estado civil: no registrado en el modelo SQL.</p>
+  <div class="table-responsive"><table class="table"><thead><tr><th>Referencia</th><th>Edad al corte</th><th>Acreditado</th><th>Estudios superiores</th><th>Escolaridad</th><th>Observación</th></tr></thead>
+    <tbody>{% for child in children %}<tr><td>{{ child.codigo_hijo }}</td><td>{{ child.edad_al_corte }}</td><td>{{ 'Sí' if child.acreditado else 'No' }}</td><td>{{ 'Sí' if child.cursa_superiores else 'No' }}</td><td>{{ 'Sí' if child.escolaridad_simulada else 'No' }}</td><td>{{ child.observacion }}</td></tr>{% else %}<tr><td colspan="6">Sin hijos registrados.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+<section class="surface planning-section">
+  <h2>Jornada, calendario y vacaciones</h2>
+  {% set days = {1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado',7:'Domingo'} %}
+  <p><strong>Días de trabajo:</strong> {% for day in schedule %}{{ days[day] }}{{ ', ' if not loop.last }}{% else %}Sin jornada semanal registrada{% endfor %}.</p>
+  {% if schedule %}<p><strong>Descanso semanal:</strong> {% for day,name in days.items() if day not in schedule %}{{ name }}{{ ', ' if not loop.last }}{% else %}Sin descanso registrado{% endfor %}.</p>{% endif %}
+  <dl class="record-details">
+    {% for label,key in [('Horas diarias','horas_dia'),('Días semanales','dias_semana'),('Horas de servicio al mes','horas_servicio_mes'),('Factor productivo','factor_productivo'),('Horas extra al mes con recargo de 25 %','horas_extra_25_mes'),('Horas extra al mes con recargo de 35 %','horas_extra_35_mes'),('Horas ordinarias programadas al año','horas_programadas_ordinarias'),('Horas efectivas anuales','horas_efectivas_anual'),('Días del calendario','dias_calendario'),('Días de descanso semanal en el año','dias_descanso_semanal'),('Días de trabajo programados','dias_trabajados_programados'),('Feriados descansados','feriados_descansados'),('Feriados trabajados','feriados_trabajados'),('Días de vacaciones según contrato','dias_vacaciones_derecho'),('Días calendario de vacaciones','dias_vacaciones_calendario'),('Días de vacaciones dentro de la jornada','dias_vacaciones_en_jornada')] %}
+      {{ field(worker,label,key,'number') }}
+    {% endfor %}
+    {{ field(worker,'Tiene CTS en el escenario','aplica_cts','boolean') }}
+  </dl>
+  <div class="table-responsive"><table class="table"><thead><tr><th>Año</th><th>Inicio</th><th>Fin</th><th>Tipo de días</th><th>Observación</th></tr></thead><tbody>
+    {% for vacation in vacations %}<tr><td>{{ vacation.anio }}</td><td>{{ vacation.fecha_inicio }}</td><td>{{ vacation.fecha_fin }}</td><td>{{ labels.get(vacation.tipo_dias,vacation.tipo_dias) }}</td><td>{{ vacation.observacion }}</td></tr>{% else %}<tr><td colspan="5">Sin vacaciones programadas.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+<section class="surface planning-section">
+  <h2>Beneficios, aportes y seguros configurados</h2>
+  <dl class="record-details">
+    {% for label,key in [('Bono remunerativo mensual','bono_remunerativo_mes'),('Bolsa de víveres remunerativa mensual','bolsa_viveres_mes'),('Movilidad mensual como condición de trabajo','movilidad_condicion_mes'),('Alimentación mensual como condición de trabajo','alimentacion_condicion_mes'),('Canasta de Navidad anual','canasta_navidad_anual'),('Uniformes y EPP anuales','uniformes_epp_anual'),('Exámenes y capacitación anuales','examenes_capacitacion_anual'),('Prima mensual EPS asumida por la empresa','eps_empresa_mes'),('Prima mensual estimada de Seguro Vida Ley','vida_ley_mes_estimada'),('Prima mensual estimada de SCTR Salud','sctr_salud_mes_estimada'),('Prima mensual estimada de SCTR Pensión','sctr_pension_mes_estimada'),('Seguro adicional de accidentes mensual','accidente_adicional_mes'),('Utilidades anuales','utilidades_anual'),('Reemplazo durante vacaciones anual','reemplazo_vacaciones_anual'),('EsSalud bruto mensual','essalud_bruto_mes'),('Crédito mensual EPS contra EsSalud','credito_eps_mes'),('Pago mensual de horas extra','horas_extra_importe_mes'),('Provisión mensual de CTS','provision_cts_mes'),('Provisión mensual de gratificaciones y bonificación','provision_grati_mes'),('Vacaciones incluidas: asignación mensual de costeo','vacaciones_asignacion_costeo_mes')] %}
+      <div><dt>{{ label }}</dt><dd>{{ amount(worker.get(key)) }}</dd></div>
+    {% endfor %}
+  </dl>
+  <h3>Supuestos de los beneficios</h3><p>{{ worker.get('beneficios_observaciones') or 'Sin observaciones.' }}</p>
+</section>
+<section class="surface planning-section">
+  <h2>Desglose anual de costos y descuentos</h2>
+  <p>El equivalente mensual divide el importe anual entre 12. Los conceptos incluidos ya forman parte de otro importe; los descuentos corresponden al trabajador.</p>
+  <div class="table-responsive"><table class="table"><thead><tr><th>Concepto</th><th>Importe anual</th><th>Equivalente mensual</th><th>Tratamiento</th></tr></thead><tbody>
+    {% for component in breakdown %}<tr><th>{{ component.concepto }}</th><td>{{ amount(component.importe_anual) }}</td><td>{{ amount(component.importe_anual / 12 if component.importe_anual is not none else none) }}</td><td>{{ labels.get(component.tratamiento,component.tratamiento) }}</td></tr>{% else %}<tr><td colspan="4">Sin desglose calculado para este contrato.</td></tr>{% endfor %}
+  </tbody><tfoot><tr><th>Costo completo del empleador</th><td>{{ amount(worker.get('costo_anual_completo')) }}</td><td>{{ amount(worker.get('costo_mensual_equivalente')) }}</td><td></td></tr></tfoot></table></div>
+</section>
+<section class="surface planning-section">
+  <h2>Parámetros y supuestos del escenario</h2>
+  <p>{{ worker.escenario_nombre }} · Fecha de referencia: {{ worker.fecha_referencia }} · Calendario: {{ worker.anio_calendario }}</p>
+  <dl class="record-details">
+    {{ field(worker,'Régimen','regimen') }}{{ field(worker,'AFP de referencia','afp_referencia') }}
+    {{ field(worker,'Días semanales de la empresa','dias_semana_empresa','number') }}
+    {% for label,key in [('RMV del escenario','rmv'),('UIT del escenario','uit'),('Tope de prima AFP','tope_prima_afp'),('Límite de recibo sin retención de cuarta','limite_recibo_sin_retencion')] %}{{ field(worker,label,key,'money') }}{% endfor %}
+    {% for label,key in [('Asignación familiar','tasa_asignacion'),('Aporte EsSalud','tasa_essalud'),('Bonificación extraordinaria con EsSalud','tasa_bonificacion_grati_essalud'),('Bonificación extraordinaria con EPS','tasa_bonificacion_grati_eps'),('Crédito EPS','tasa_credito_eps'),('Aporte ONP','tasa_onp'),('Aporte AFP','tasa_afp_aporte'),('Prima AFP','tasa_afp_prima'),('Comisión AFP por flujo','tasa_afp_flujo'),('Retención de cuarta categoría','tasa_cuarta')] %}{{ field(worker,label,key,'percent') }}{% endfor %}
+  </dl>
+  <p>{{ worker.get('escenario_observaciones') or 'Sin observaciones.' }}</p>
+</section>
+{% endblock %}

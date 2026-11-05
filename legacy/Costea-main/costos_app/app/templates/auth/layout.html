@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block body_class %}auth-page{% endblock %}
+{% block body %}
+<div class="auth-layout">
+  <aside class="auth-story" aria-label="Acerca de Costea">
+    {% include 'components/brand.html' %}
+    <div class="story-content">
+      <p class="eyebrow light">COSTOS Y PRESUPUESTOS</p>
+      <h1>Las buenas decisiones <br>empiezan con <br><span>cuentas claras.</span></h1>
+      <p class="story-copy">Un espacio para entender tus costos,<br class="desktop-break"> planificar tu producción y dar forma a tu empresa.</p>
+      <div class="cost-illustration" aria-hidden="true">
+        <div class="illustration-top"><span><i class="bi bi-layers"></i> Cada parte cuenta</span><i class="bi bi-arrow-up-right"></i></div>
+        <div class="illustration-bars"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="illustration-rule"></div>
+        <div class="illustration-legend"><span><b></b> Materiales</span><span><b></b> Trabajo</span><span><b></b> Producción</span></div>
+      </div>
+      <div class="story-sectors"><span>Costos para restaurantes</span></div>
+    </div>
+    <div class="story-footer"><span>De los datos a las decisiones.</span><span>01 / Inicio</span></div>
+  </aside>
+  <main class="auth-main" id="main-content">
+    <div class="auth-topnote"><i class="bi bi-shield-check" aria-hidden="true"></i> Tu espacio de trabajo personal</div>
+    <div class="auth-form-container">
+      {% include 'components/messages.html' %}
+      {% block auth_content %}{% endblock %}
+    </div>
+    <footer class="auth-footer">Contabilidad de Costos y Presupuestos <span>·</span> Versión 1.0</footer>
+  </main>
+</div>
+{% endblock %}

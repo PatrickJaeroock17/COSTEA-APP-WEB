@@ -1,0 +1,143 @@
+name: Build and deploy Python app to Azure Web App - costea-cevicheria-web
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: production-costea-cevicheria-web
+  cancel-in-progress: false
+
+env:
+  AZURE_WEBAPP_NAME: costea-cevicheria-web
+  AZURE_RESOURCE_GROUP: CosteaApp
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Validate application
+        env:
+          SECRET_KEY: ci-only-secret-key-with-at-least-32-characters
+          DATABASE_URL: sqlite://
+        run: |
+          python -m ruff check application.py costos_app/app costos_app/config.py costos_app/tests/test_azure_deployment.py --config costos_app/pyproject.toml
+          python -m pytest costos_app/tests -q --basetemp=.pytest-tmp
+          python -c "from application import app; assert app.url_map"
+
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-app
+          path: |
+            application.py
+            requirements.txt
+            costos_app/
+            !costos_app/.env
+            !costos_app/tests/
+            !costos_app/pytest-cache-files-*/
+            !costos_app/**/__pycache__/
+          retention-days: 1
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: python-app
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B6458C3D53F541ACBBEEB2B6538AF757 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_0D26FF4F736B406992E7FF0A01462BB5 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8B4E2A4049714B7FBBB71EF5D28DF6F5 }}
+
+      - name: Validate App Service settings
+        shell: bash
+        run: |
+          secret_key="$(az webapp config appsettings list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$AZURE_WEBAPP_NAME" \
+            --query "[?name=='SECRET_KEY'].value | [0]" \
+            --output tsv)"
+          database_url="$(az webapp config appsettings list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$AZURE_WEBAPP_NAME" \
+            --query "[?name=='DATABASE_URL'].value | [0]" \
+            --output tsv)"
+
+          if (( ${#secret_key} < 32 )) || [[ "$secret_key" == replace-with-* ]]; then
+            echo "::error::SECRET_KEY is missing, too short, or still uses the placeholder."
+            exit 1
+          fi
+          if [[ -z "$database_url" ]]; then
+            echo "::error::Missing Azure App Service setting: DATABASE_URL"
+            exit 1
+          fi
+
+          normalized_database_url="${database_url,,}"
+          if [[ "$normalized_database_url" == *localhost* ]] || \
+             [[ "$normalized_database_url" == *trusted_connection=yes* ]]; then
+            echo "::error::DATABASE_URL must point to a SQL Server reachable from Azure."
+            exit 1
+          fi
+
+          unset secret_key database_url normalized_database_url
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: Production
+          package: .
+          startup-command: python -m flask --app application prepare-labor-profiles && python -m flask --app application sync-catalog-data && gunicorn --bind=0.0.0.0 --timeout 600 --workers 1 --access-logfile - --error-logfile - application:app
+          restart: true
+
+      - name: Verify deployment
+        env:
+          APP_URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+        run: |
+          if ! curl --fail --silent --show-error \
+            --retry 12 --retry-delay 10 --retry-all-errors \
+            "${APP_URL%/}/healthz"; then
+            echo "::error::Flask did not start. Review the App Service log stream."
+            exit 1
+          fi
+
+          if ! readiness_json="$(curl --fail --silent --show-error \
+            --retry 6 --retry-delay 10 --retry-all-errors \
+            "${APP_URL%/}/readyz")"; then
+            echo "::error::Flask is running, but Azure SQL is unavailable. Open the App Service log stream and request /readyz to capture the database error."
+            exit 1
+          fi
+          printf '%s' "$readiness_json" | python -c 'import json,sys; result=json.load(sys.stdin); assert result.get("catalog_sync") == "ready", "Opening stock synchronization was not verified"; print("Azure SQL y entradas iniciales del Kardex verificados.")'

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Iniciar sesión{% endblock %}
+{% block body_class %}login-page{% endblock %}
+{% block page_assets %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+<script defer src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}
+{% block body %}
+<div class="login-scene">
+  <aside class="login-art" aria-label="Costea, costos y presupuestos">
+    <img src="{{ url_for('static', filename='img/login-hero.png') }}" alt="Costea. Convierte tus decisiones en resultados. Analiza, planifica y gestiona los costos de tu empresa en un solo lugar. Control de costos, análisis de datos y mejores decisiones." width="1638" height="1536" fetchpriority="high">
+  </aside>
+  <main class="login-card" id="main-content" aria-labelledby="login-welcome">
+    <img class="login-brand" src="{{ url_for('static', filename='img/login-brand.png') }}" alt="Costea" width="390" height="124">
+    <h1 id="login-welcome">Bienvenido</h1>
+    {% include 'components/messages.html' %}
+    <form class="login-form" method="post" action="{{ url_for('auth.login') }}" novalidate>
+      {{ form.hidden_tag() }}
+      <h2>Iniciar sesión</h2>
+      <div class="login-field-group">
+        <label class="visually-hidden" for="email">Correo electrónico</label>
+        <div class="login-field{% if form.email.errors %} login-field-invalid{% endif %}">
+          <i class="bi bi-envelope" aria-hidden="true"></i>
+          {{ form.email(type='email', placeholder='Correo electrónico', autocomplete='username', inputmode='email', spellcheck='false', maxlength=254, required=true, aria_invalid='true' if form.email.errors else 'false', aria_describedby='email-errors' if form.email.errors else false) }}
+        </div>
+        {% if form.email.errors %}<div class="login-error" id="email-errors" role="alert">{% for error in form.email.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+      </div>
+      <div class="login-field-group">
+        <label class="visually-hidden" for="password">Contraseña</label>
+        <div class="login-field{% if form.password.errors %} login-field-invalid{% endif %}">
+          <i class="bi bi-lock" aria-hidden="true"></i>
+          {{ form.password(placeholder='Contraseña', autocomplete='current-password', maxlength=128, required=true, aria_invalid='true' if form.password.errors else 'false', aria_describedby='password-errors' if form.password.errors else false) }}
+          <button class="login-password-toggle" type="button" aria-label="Mostrar contraseña" aria-controls="password" aria-pressed="false" data-login-password-toggle hidden><i class="bi bi-eye-slash" aria-hidden="true"></i></button>
+        </div>
+        {% if form.password.errors %}<div class="login-error" id="password-errors" role="alert">{% for error in form.password.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+        <p class="login-caps" role="status" hidden>Bloq Mayús está activado.</p>
+      </div>
+      <div class="login-options">
+        <label class="login-remember" for="remember">{{ form.remember() }}<span>Recordar mi sesión</span></label>
+        <a class="login-forgot" href="#login-recovery" data-login-recovery>¿Olvidaste tu contraseña?</a>
+      </div>
+      <button class="login-submit" type="submit"><span>Iniciar sesión</span><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+    </form>
+    <div class="login-divider" aria-hidden="true"><span></span><span>o</span><span></span></div>
+    <a class="login-register" href="{{ url_for('auth.register') }}"><i class="bi bi-person-plus" aria-hidden="true"></i><span>Crear una cuenta</span></a>
+    <p class="login-security"><i class="bi bi-shield-check" aria-hidden="true"></i><span>Tu información está segura y protegida</span></p>
+    <section class="login-recovery" id="login-recovery" aria-labelledby="login-recovery-title" tabindex="-1">
+      <h2 id="login-recovery-title">Recuperar el acceso</h2>
+      <p>Para recuperar tu cuenta, contacta al administrador de Costea e indica el correo con el que te registraste.</p>
+      <p>La recuperación automática por correo todavía no está habilitada. Nunca compartas tu contraseña.</p>
+      <a href="#main-content">Volver al inicio de sesión</a>
+    </section>
+  </main>
+</div>
+<dialog class="login-recovery-dialog" aria-labelledby="login-recovery-dialog-title">
+  <div class="login-recovery-heading"><h2 id="login-recovery-dialog-title">Recuperar el acceso</h2><button type="button" class="login-dialog-close" data-dialog-close aria-label="Cerrar"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+  <p>Para recuperar tu cuenta, contacta al administrador de Costea e indica el correo con el que te registraste.</p>
+  <p>La recuperación automática por correo todavía no está habilitada. Nunca compartas tu contraseña.</p>
+  <button type="button" class="login-dialog-back" data-dialog-close>Volver al inicio de sesión</button>
+</dialog>
+{% endblock %}
+

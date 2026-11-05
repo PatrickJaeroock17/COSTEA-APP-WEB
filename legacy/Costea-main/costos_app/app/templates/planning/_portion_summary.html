@@ -1,0 +1,18 @@
+<section class="surface planning-section portion-summary">
+<h2>Resumen de costo y precio de 1 plato</h2>
+{% if summary %}<p><strong>{{ summary.name }}</strong> · Una unidad de salida ({{ summary.unit }}). {% if result %}Cálculo de la ficha actual.{% elif saved_plan %}{{ saved_plan.name }} · {{ saved_plan.period.label }} · receta versión {{ saved_line.recipe.number }}.{% endif %}</p>{% endif %}
+<p class="small-note">La materia prima y la mano de obra del lote se dividen entre su rendimiento. Los CIF y gastos asignados se dividen entre las porciones previstas del mes. No se carga todo el gasto mensual a un único plato.</p>
+{% if summary and not summary.complete %}<div class="alert alert-warning">Cálculo pendiente. Los componentes mostrados son parciales; completa estos datos para calcular el total y precio:<ul>{% for issue in summary.issues %}<li>{{ issue }}</li>{% endfor %}</ul></div>{% endif %}
+<div class="table-responsive"><table class="table portion-cost-table">
+<caption>Importes por 1 plato · {{ company.currency }}</caption>
+<tbody>
+{% if summary %}{% for label, amount in summary.components %}<tr><th scope="row">{{ label }}</th><td>{{ company.currency }} {{ amount|money }}</td></tr>{% endfor %}{% else %}{% for label in ['Materia prima','Mano de obra directa','CIF','Gastos administrativos','Gastos de ventas','Gastos financieros','Otros gastos'] %}<tr><th scope="row">{{ label }}</th><td>—</td></tr>{% endfor %}{% endif %}
+<tr class="portion-cost-total"><th scope="row">TOTAL COSTOS Y GASTOS DEL PRODUCTO</th><td>{{ company.currency }} {{ summary.total|money if summary else '—' }}</td></tr>
+<tr><th scope="row">GANANCIA</th><td>{{ company.currency }} {{ summary.profit|money if summary else '—' }}</td></tr>
+<tr><th scope="row">VALOR DE VENTA</th><td>{{ company.currency }} {{ summary.net|money if summary else '—' }}</td></tr>
+<tr><th scope="row">IMPUESTO GENERAL A LAS VENTAS{% if summary and summary.tax_rate is not none %} ({{ summary.tax_rate|rate_display }}){% endif %}</th><td>{{ company.currency }} {{ summary.tax|money if summary else '—' }}</td></tr>
+<tr class="portion-sale-total"><th scope="row">PRECIO DE VENTA</th><td>{{ company.currency }} {{ summary.final|money if summary else '—' }}</td></tr>
+</tbody></table></div>
+<p class="small-note">Ganancia = valor de venta sin IGV − costo total del plato. El precio usa el modo y objetivo elegidos, o el precio adoptado si lo indicas. Se calcula con precisión completa y se muestra a dos decimales.</p>
+{% if not summary %}<p>Selecciona un plan y plato guardados o completa la ficha inferior y pulsa «Calcular costo y precio».</p>{% endif %}
+</section>

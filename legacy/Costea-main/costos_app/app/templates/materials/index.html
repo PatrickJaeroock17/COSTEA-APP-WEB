@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, scope with context %}
+{% macro sort_menu(panel) -%}
+<details class="dropdown material-sort-dropdown" data-material-sort-menu>
+  <summary class="btn btn-outline-primary dropdown-toggle">Ordenar por...</summary>
+  <form class="dropdown-menu material-sort-menu" data-material-sort-form>
+    <label class="form-label" for="sort-field-{{ panel }}">Campo</label>
+    <select class="form-select form-select-sm" id="sort-field-{{ panel }}" data-sort-field>
+      <option value="1">Nombre</option><option value="2">Variedad</option><option value="3">Categoría</option><option value="0">ID</option>
+    </select>
+    <label class="form-label" for="sort-order-{{ panel }}">Sentido</label>
+    <select class="form-select form-select-sm" id="sort-order-{{ panel }}" data-sort-order>
+      <option value="ascending">Ascendente</option><option value="descending">Descendente</option>
+    </select>
+    <button class="btn btn-primary btn-sm" type="submit">Aplicar orden</button>
+  </form>
+</details>
+{%- endmacro %}
+{% block title %}Insumos y Materia Prima{% endblock %}
+{% block breadcrumb %}Insumos y Materia Prima{% endblock %}
+{% block content %}
+<div class="material-workspace" data-material-workspace data-active-tab="{{ active_tab }}">
+  <div class="page-heading">
+    <div><p class="eyebrow">{{ company.display_name }} · {{ company.currency }}</p><h1>Insumos y Materia Prima.</h1><p>Consulta el catálogo general y administra los costos propios desde un solo lugar.</p></div>
+    <button class="btn btn-primary" type="button" data-dialog-open="new-material-dialog"><i class="bi bi-plus-lg" aria-hidden="true"></i> Nuevo material</button>
+  </div>
+  {{ scope(company) }}
+  {% if product %}<div class="alert alert-info">Estás seleccionando materia prima para <strong>{{ product.name }}</strong>. Al elegir un insumo indicarás la cantidad utilizada en su receta.</div>{% endif %}
+
+  <form method="get" class="surface material-global-search" data-material-search-form>
+    {% if product %}<input type="hidden" name="plato" value="{{ product.id }}">{% endif %}
+    <input type="hidden" name="tab" value="{{ active_tab }}" data-active-tab-input>
+    <div class="material-search-main"><label for="material-global-search" class="form-label">Buscar en todo el catálogo</label><div class="material-search-box"><i class="bi bi-search" aria-hidden="true"></i><input class="form-control" name="q" id="material-global-search" value="{{ query }}" maxlength="180" placeholder="Nombre, variedad, código, categoría o unidad" autocomplete="off" data-material-search></div></div>
+    <div><label for="fecha" class="form-label">Costo local vigente al</label><input type="date" class="form-control" id="fecha" name="fecha" value="{{ on_date }}" required></div>
+    <div><label for="estado" class="form-label">Estado local</label><select class="form-select" name="estado" id="estado">{% for key, label in [('activos','Activos'),('archivados','Archivados'),('todos','Todos')] %}<option value="{{ key }}" {{ 'selected' if status == key }}>{{ label }}</option>{% endfor %}</select></div>
+    <button type="submit" class="btn btn-outline-primary">Aplicar</button>
+  </form>
+
+  <div class="material-tabs" role="tablist" aria-label="Origen de los insumos">
+    <button type="button" role="tab" data-material-tab="catalogo" aria-controls="material-panel-catalogo">Catálogo General <span class="count-pill" data-material-count="catalogo">{{ catalog_rows|length }}</span></button>
+    <button type="button" role="tab" data-material-tab="mios" aria-controls="material-panel-mios">Mis Insumos / En Uso <span class="count-pill" data-material-count="mios">{{ materials|length }}</span></button>
+  </div>
+
+  <section class="surface material-tab-panel" id="material-panel-catalogo" role="tabpanel" data-material-panel="catalogo">
+    <div class="section-heading material-section-heading"><div><h2>Catálogo General</h2><p class="form-section-description">Fuente maestra de IDs comerciales y precios mayoristas de SQL Server. Al usar un insumo, el restaurante conserva el mismo ID.</p></div>{{ sort_menu('catalogo') }}</div>
+    {% if catalog_error %}<div class="alert alert-warning" role="alert">{{ catalog_error }} Tus insumos locales siguen disponibles en la otra pestaña.</div>{% endif %}
+    <div class="table-responsive"><table class="table settings-table catalog-material-table" data-sortable-table><thead><tr><th scope="col">ID</th><th scope="col">Nombre</th><th scope="col">Variedad</th><th scope="col">Categoría</th><th scope="col">Unidad</th><th scope="col">Precio (PEN)</th><th scope="col">Actualización</th><th scope="col">Estado</th><th scope="col">Acción</th></tr></thead><tbody>
+    {% for row in catalog_rows %}{% set local = local_by_external.get(row.id_insumo) %}<tr data-material-row="catalogo" data-search="{{ row.codigo_comercial }} {{ row.nombre }} {{ row.variedad or '' }} {{ row.categoria or '' }} {{ row.unidad }}"><td class="material-id-cell" data-sort-value="{{ row.codigo_comercial }}"><code>{{ row.codigo_comercial }}</code></td><th scope="row" data-sort-value="{{ row.nombre }}">{{ row.nombre }}</th><td data-sort-value="{{ row.variedad or '' }}">{{ row.variedad or '—' }}</td><td data-sort-value="{{ row.categoria or '' }}">{{ row.categoria or 'Sin categoría' }}</td><td data-sort-value="{{ row.unidad_nombre or row.unidad }}">{{ row.unidad_nombre or row.unidad }}<small>{{ row.unidad }}</small></td><td class="decimal-cell" data-sort-value="{{ row.precio_mayorista|decimal }}">S/ {{ row.precio_mayorista|money }}<small class="d-block">Stock apertura: {{ row.get('stock_inicial')|decimal if row.get('stock_inicial') is not none else 'Pendiente' }} {{ row.unidad if row.get('stock_inicial') is not none else '' }}</small></td><td data-sort-value="{{ row.fecha_actualizacion.strftime('%Y-%m-%d') }}">{{ row.fecha_actualizacion.strftime('%Y-%m-%d') }}</td><td data-sort-value="activo"><span class="record-status">Activo</span></td><td>{% if local and product %}<a class="btn btn-outline-primary" href="{{ url_for('products.catalog_add', company_id=company.id, product_id=product.id, material_id=local.id) }}">Agregar a la receta</a>{% elif local %}<a class="btn btn-outline-primary" href="{{ url_for('materials.detail', company_id=company.id, material_id=local.id) }}">Gestionar insumo</a>{% else %}<form method="post" action="{{ url_for('catalog.select', company_id=company.id, ingredient_id=row.id_insumo) }}">{{ action_form.hidden_tag() }}{% if product %}<input type="hidden" name="plato" value="{{ product.id }}">{% endif %}<button class="btn btn-outline-primary">{{ 'Agregar a la receta' if product else 'Usar en mi restaurante' }}</button></form>{% endif %}</td></tr>{% else %}<tr data-static-empty><td colspan="9">{{ 'Catálogo temporalmente no disponible.' if catalog_error else 'No hay insumos para esta búsqueda.' }}</td></tr>{% endfor %}
+    <tr data-filter-empty="catalogo" hidden><td colspan="9">No hay insumos generales que coincidan con la búsqueda.</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="surface material-tab-panel" id="material-panel-mios" role="tabpanel" data-material-panel="mios">
+    <div class="section-heading material-section-heading"><div><h2>Mis Insumos / En Uso</h2><p class="form-section-description">Insumos privados de {{ company.display_name }}. Los provenientes del catálogo mantienen su ID comercial maestro; precios, inventario e historial siguen separados por restaurante.</p></div>{{ sort_menu('mios') }}</div>
+    <p class="settings-note">«Sin costo» significa que falta una versión vigente, no que el material sea gratuito.</p>
+    <div class="table-responsive material-table"><table class="table settings-table local-material-table" data-sortable-table><thead><tr><th scope="col">ID</th><th scope="col">Nombre</th><th scope="col">Variedad</th><th scope="col">Categoría</th><th scope="col">Unidad</th><th scope="col">Precio (PEN)</th><th scope="col">Actualización</th><th scope="col" class="material-status-cell text-nowrap px-2">Estado</th><th scope="col" class="material-action-cell text-nowrap px-2">Acción</th></tr></thead><tbody>
+    {% for material in materials %}{% set version = versions[material.id] %}{% set current_price = version_result(version) if version else none %}<tr data-material-row="mios" data-search="{{ material.code }} {{ material.name }} {{ material.variety or '' }} {{ material.category }} {{ material.base_unit.name }}"><td class="material-id-cell" data-sort-value="{{ material.code }}"><code>{{ material.code }}</code><small>{{ 'Catálogo General' if material.catalog_sourced else 'Privado' }}</small></td><th scope="row" data-sort-value="{{ material.name }}">{{ material.name }}</th><td data-sort-value="{{ material.variety or '' }}">{{ material.variety or '—' }}</td><td data-sort-value="{{ material.category }}">{{ material.category }}</td><td data-sort-value="{{ material.base_unit.name }}">{{ material.base_unit.name }}<small>{{ material.base_unit.symbol }}</small></td><td class="decimal-cell" data-sort-value="{{ current_price|decimal if current_price is not none else '' }}">{% if version %}{{ version.currency }} {{ current_price|decimal }}{% else %}Sin precio{% endif %}</td><td data-sort-value="{{ version.effective_on.isoformat() if version else material.updated_at.strftime('%Y-%m-%d') }}">{{ version.effective_on.isoformat() if version else material.updated_at.strftime('%Y-%m-%d') }}</td><td class="material-status-cell text-nowrap px-2" data-sort-value="{{ 'activo' if material.active else 'archivado' }}"><span class="record-status {{ 'material-status-archived' if not material.active }}">{{ 'Activo' if material.active else 'Archivado' }}</span></td><td class="material-action-cell text-nowrap px-2"><a class="btn btn-outline-primary" href="{{ url_for('materials.detail', company_id=company.id, material_id=material.id, fecha=on_date) }}">Gestionar insumo</a></td></tr>{% else %}<tr data-static-empty><td colspan="9">Todavía no hay materiales locales. Selecciona uno del catálogo o crea uno nuevo.</td></tr>{% endfor %}
+    <tr data-filter-empty="mios" hidden><td colspan="9">No hay insumos locales que coincidan con la búsqueda.</td></tr>
+    </tbody></table></div>
+  </section>
+</div>
+
+<dialog class="material-dialog" id="new-material-dialog" {% if open_quick_form %}data-open-on-load{% endif %}>
+  <div class="material-dialog-heading"><div><p class="eyebrow">INSUMO PRIVADO · {{ company.display_name }}</p><h2>Nuevo material</h2><p>Registra los mismos datos mostrados en “Mis Insumos”. Solo estarán disponibles en este restaurante.</p></div><button type="button" class="icon-button" data-dialog-close aria-label="Cerrar"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+  {% if not has_units %}<div class="alert alert-info">Primero <a href="{{ url_for('companies.units', company_id=company.id) }}">selecciona las unidades de tu empresa</a>.</div>{% endif %}
+  {% if not has_categories %}<div class="alert alert-warning">No se pudieron cargar las categorías de SQL Server.</div>{% endif %}
+  <form method="post" action="{{ url_for('materials.quick_create', company_id=company.id, tab='mios') }}" class="setup-form" novalidate>{{ quick_form.hidden_tag() }}<div class="form-grid">{{ input(quick_form.name, maxlength=100) }}{{ input(quick_form.variety, 'Opcional.', maxlength=100) }}{{ input(quick_form.category) }}{{ input(quick_form.base_unit_code) }}{{ input(quick_form.unit_cost, 'Importe exacto por la unidad seleccionada; admite hasta 6 decimales.') }}{{ input(quick_form.effective_on, 'Por defecto se usa el cierre del mes de trabajo activo.', type='date') }}</div><div class="form-actions"><button type="button" class="btn btn-outline-primary" data-dialog-close>Cancelar</button><button class="btn btn-primary" type="submit" {% if not has_units or not has_categories %}disabled{% endif %}>Guardar insumo privado</button></div></form>
+</dialog>
+{% endblock %}

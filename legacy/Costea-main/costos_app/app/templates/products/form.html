@@ -1,0 +1,8 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, scope with context %}
+{% block title %}{{ 'Editar ' ~ terms.singular if product else terms.create }}{% endblock %}
+{% block breadcrumb %}{{ terms.plural }}{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">{{ company.display_name }}</p><h1>{{ 'Editar ' ~ terms.singular if product else terms.create }}.</h1><p>{{ terms.example }}</p></div></div>{{ scope(company) }}
+<form method="post" class="surface setup-form" novalidate>{{ form.hidden_tag() }}{{ input(form.name) }}{{ input(form.description, '', maxlength=500) }}<div class="form-grid">{{ input(form.output_quantity, 'Si ingresarás los insumos de una sola porción o unidad, deja 1. Para una preparación de 20, ingresa 20.', maxlength=19) }}{{ input(form.output_unit_code, 'El rendimiento del plato se expresa en porciones. El costo se divide entre las porciones indicadas.') }}</div><div class="form-actions"><a class="text-link" href="{{ url_for('products.index', company_id=company.id) }}">Cancelar</a><button class="btn btn-primary">{{ 'Guardar cambios' if product else 'Crear y agregar insumos' }}</button></div></form>
+{% endblock %}

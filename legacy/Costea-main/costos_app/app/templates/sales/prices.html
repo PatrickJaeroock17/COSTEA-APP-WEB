@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, scope with context %}
+{% block title %}Precios de venta{% endblock %}
+{% block breadcrumb %}Precios de venta{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">PASO 6 · {{ company.display_name }}</p><h1>Precios de venta</h1><p>Define cuánto cobrará tu empresa por cada unidad. Todos los precios incluyen IGV del 18 %.</p></div></div>
+{{ scope(company) }}
+<form method="post" class="surface setup-form">{{ form.hidden_tag() }}<div class="form-grid">{{ input(form.product_id) }}{{ input(form.amount) }}</div><div class="form-actions"><button class="btn btn-primary">Guardar precio</button></div></form>
+<section class="surface planning-section">
+  <h2>Precios guardados · {{ company.currency }}</h2>
+  <p>Selecciona «Editar precio» para cargar el importe actual. Las ventas anteriores conservan su precio original.</p>
+  <div class="table-responsive"><table class="table">
+    <thead><tr><th>Plato o producto</th><th>Precio con IGV</th><th>Precio neto</th><th>Acciones</th></tr></thead>
+    <tbody>{% for p in products %}<tr>
+      <td>{{ p.name }}</td><td>{{ amounts[p.id].amount|money if amounts[p.id] else 'Sin asignar' }}</td>
+      <td>{{ (amounts[p.id].amount / decimal_igv)|money if amounts[p.id] else '—' }}</td>
+      <td><a href="{{ url_for('sales.prices',company_id=company.id,product_id=p.id) }}">Editar precio</a> · <a href="{{ url_for('products.detail',company_id=company.id,product_id=p.id) }}">Editar receta y costos</a></td>
+    </tr>{% else %}<tr><td colspan="4">Crea primero un plato o producto en el menú General.</td></tr>{% endfor %}</tbody>
+  </table></div>
+  <a class="btn btn-outline-primary" href="{{ url_for('sales.index',company_id=company.id) }}">Continuar: registrar ventas</a>
+</section>
+{% endblock %}

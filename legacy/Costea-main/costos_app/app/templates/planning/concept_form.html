@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}{% from 'companies/_fields.html' import input, scope with context %}
+{% block title %}CIF o gasto del periodo{% endblock %}
+{% block content %}<div class="page-heading"><h1>CIF o gasto del periodo</h1><a href="{{ url_for('planning.concepts',company_id=company.id) }}">Volver a CIF y gastos</a></div>{{ scope(company) }}
+<form method="post" class="surface setup-form" novalidate>{{ form.hidden_tag() }}
+<h2>Clasificación e importe</h2><p>Cocina: costo indirecto de fabricación. Oficina: gasto administrativo. Publicidad y reparto: gasto de ventas. No repitas costos del personal ni adquisiciones ya incluidas en los insumos.</p>
+<div class="form-grid">{% for key in ['kind','period_id','name','reference_key','amount','behavior','basis','justification'] %}{{ input(form[key],maxlength=500) }}{% endfor %}<div class="field-group">{{ form.targets.label(class_='form-label') }}{{ form.targets(class_='form-select',size=5) }}<small>Mantén Ctrl para elegir varios platos. Sin selección se reparte entre todos los del plan.</small>{% for error in form.targets.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div><label>{{ form.active() }} {{ form.active.label.text }}</label></div>
+<h2>Datos para calcular el reparto por plato</h2>
+<p>El porcentaje se calcula automáticamente: base del plato ÷ suma de las bases de los platos destinatarios. Para ventas se usan cantidad × venta de referencia sin IGV; para unidades equivalentes, cantidad × factor; para MOD, cantidad × minutos por porción guardados en la receta.</p>
+<p class="settings-note">Esta sección es opcional. Al elegir un plato y completar estos campos, se actualizan sus datos en ese plan de producción y se recalculan sus costos y precios. Los campos vacíos conservan los valores actuales, indicados en el selector. El plan debe corresponder al mismo periodo del concepto.</p>
+<div class="form-grid">{% for key in ['allocation_line_id','allocation_quantity','allocation_reference_price','allocation_equivalent_factor'] %}{{ input(form[key]) }}{% endfor %}</div>
+<p>Si todavía no hay platos en un plan, puedes guardar el concepto y <a href="{{ url_for('planning.plans',company_id=company.id) }}">crear el plan de producción</a> después. Para repartir por minutos, configura el trabajo en la receta.</p>
+<div class="form-actions"><button class="btn btn-primary">Guardar concepto</button></div></form>{% endblock %}

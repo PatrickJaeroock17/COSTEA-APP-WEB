@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+{% block title %}Vista general{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">TU ESPACIO DE TRABAJO</p><h1>Hola, {{ current_user.name.split()[0] }}<span class="greeting-dot">.</span></h1><p>{{ active_company.display_name ~ ' · ' ~ active_company.currency if active_company else 'Una base clara para las decisiones que vienen.' }}</p></div><span class="version-pill"><span></span> Versión 1.0</span></div>
+
+<section class="welcome-panel" aria-labelledby="welcome-title">
+  <div class="welcome-copy">
+    {% if active_company %}
+    <span class="eyebrow">TU EMPRESA, EN SU LUGAR</span><h2 id="welcome-title">{{ active_company.display_name }}</h2><p>{{ active_company.industry.name }} · {{ active_period.label if active_period else 'Crea tu primer periodo' }}<br>IGV del periodo: {{ (active_period.tax_rate|percent ~ ' %') if active_period and active_period.tax_rate is not none else 'Sin configurar' }}.</p><a href="{{ url_for('products.index', company_id=active_company.id) }}" class="btn btn-dark">{{ sector_terms(active_company).plural }} <i class="bi bi-arrow-right" aria-hidden="true"></i></a><div class="welcome-footnote"><i class="bi bi-check-circle" aria-hidden="true"></i> Cada empresa mantiene sus propios datos</div>
+    {% else %}
+    <span class="eyebrow">EL SIGUIENTE PASO</span><h2 id="welcome-title">Dale un espacio<br>a tu empresa.</h2><p>Elige tu rubro, define la moneda y crea el primer periodo. Todo comienza con una buena organización.</p><a href="{{ url_for('companies.create') }}" class="btn btn-dark">Crear mi primera empresa <i class="bi bi-arrow-right" aria-hidden="true"></i></a><div class="welcome-footnote"><i class="bi bi-check-circle" aria-hidden="true"></i> Tu cuenta ya está lista</div>
+    {% endif %}
+  </div>
+  <div class="welcome-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="art-document"><span class="art-doc-icon"><i class="bi bi-building"></i></span><div class="art-line long"></div><div class="art-line short"></div><div class="art-grid"><span></span><span></span><span></span></div><div class="art-doc-footer"><i class="bi bi-check2-circle"></i><span>Todo en su lugar</span></div></div><span class="art-float float-one"><i class="bi bi-layers"></i></span><span class="art-float float-two"><i class="bi bi-graph-up-arrow"></i></span></div>
+</section>
+
+{% if actual %}{% include 'sales/_results.html' %}{% endif %}
+
+{% if plan %}
+<div class="alert {{ 'alert-success' if result.status=='calculable' and fresh else 'alert-warning' }}">Plan activo: <a href="{{ url_for('planning.plan_detail',company_id=active_company.id,plan_id=plan.id) }}">{{ plan.name }}</a> · {{ 'Revisado' if fresh else 'Pendiente de recalcular y revisar' }} · {{ result.status }}. Solo se muestra este escenario.</div>
+<div class="planning-metrics">{% for key,label in [('sales','Ventas netas estimadas'),('costs','Costos del periodo'),('profit','Utilidad operativa estimada'),('idle','MOD no absorbida')] %}<section class="surface"><span class="eyebrow">{{ label }}</span><strong>{{ active_company.currency }} {{ result.totals[key]|money }}</strong></section>{% endfor %}</div>
+{% if result.issues %}<p class="settings-note">Hay {{ result.issues|length }} pendientes. Revisa el plan antes de interpretar los resultados como completos.</p>{% endif %}
+{% else %}<section class="surface planning-section"><h2>Elige tu plan mensual</h2><p>Registra tus productos, personal y costos. Crea un plan en Producción y pulsa «Usar en reportes» para ver aquí sus indicadores. No se suman escenarios alternativos.</p>{% if active_company %}<a class="btn btn-primary" href="{{ url_for('planning.plans',company_id=active_company.id) }}">Ir a producción y precios</a>{% endif %}</section>{% endif %}
+
+<div class="dashboard-columns">
+  <section class="surface steps-panel" id="next-steps" aria-labelledby="steps-title">
+    <div class="section-heading"><div><p class="eyebrow">PASO A PASO</p><h2 id="steps-title">El camino de tu proyecto</h2></div><span class="small-note">Desarrollo por etapas</span></div>
+    <ol class="steps-list">
+      <li class="step done"><span class="step-marker"><i class="bi bi-check-lg" aria-hidden="true"></i></span><div><h3>Crea tu espacio personal <span class="step-badge">Listo</span></h3><p>Tu cuenta y acceso seguro ya están disponibles.</p></div></li>
+      <li class="step {{ 'done' if active_company }}"><span class="step-marker">{% if active_company %}<i class="bi bi-check-lg" aria-hidden="true"></i>{% else %}02{% endif %}</span><div><h3>Organiza tu empresa <span class="step-badge">{{ 'Creada' if active_company else 'Disponible' }}</span></h3><p>Revisa sus datos, periodos y unidades desde Configuración.</p></div></li>
+      <li class="step"><span class="step-marker">03</span><div><h3>Registra materiales y recetas</h3><p>En GENERAL, configura unidades, agrega materias primas y crea tus productos con sus ingredientes, cantidades y costos. Cada cambio se guarda al confirmar el formulario.</p></div></li>
+      <li class="step"><span class="step-marker">04</span><div><h3>Completa los costos del mes</h3><p>En GESTIÓN Y PRESUPUESTOS, registra personal, costos y gastos. Clasifica cada costo como fijo o variable para calcular el equilibrio.</p></div></li>
+      <li class="step"><span class="step-marker">05</span><div><h3>Asigna precios y registra ventas</h3><p>En Precios de venta, indica el importe con IGV. Luego registra fecha y cantidad en Registro de ventas.</p></div></li>
+      <li class="step"><span class="step-marker">06</span><div><h3>Consulta tu dashboard final</h3><p>Selecciona el mes en el encabezado y revisa aquí ventas, costos, utilidad, equilibrio y productos más vendidos. Producción y presupuestos conservan los escenarios de planificación.</p></div></li>
+    </ol>
+  </section>
+  <section class="surface company-panel" aria-labelledby="companies-title">
+    <div class="section-heading"><h2 id="companies-title">Mis empresas</h2><span class="count-pill">{{ companies|length }}</span></div>
+    {% if companies %}
+      <ul class="company-list">{% for company in companies %}<li><i class="bi bi-building" aria-hidden="true"></i><div><strong>{{ company.trade_name or company.legal_name }}</strong><span>{{ company.industry.name }}</span></div><a href="{{ url_for('companies.edit', company_id=company.id) }}" class="company-list-edit" aria-label="Configurar {{ company.display_name }}"><i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></li>{% endfor %}</ul>
+      <a href="{{ url_for('companies.index') }}" class="text-link">Administrar empresas <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+    {% else %}
+      <div class="company-empty"><div class="empty-icon"><i class="bi bi-building-add" aria-hidden="true"></i></div><h3>Aquí crecerá tu proyecto</h3><p>Todavía no hay empresas activas.<br>Crea una nueva o restaura una archivada.</p><a href="{{ url_for('companies.index') }}" class="text-link">Ir a Mis empresas <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div>
+    {% endif %}
+  </section>
+</div>
+
+<section class="industries-section" aria-labelledby="industries-title"><div class="section-heading"><div><p class="eyebrow">UN MOTOR, DISTINTOS SECTORES</p><h2 id="industries-title">Pensado para tu rubro</h2></div></div>
+  <div class="industries-grid">{% set icons = {'textil':'scissors', 'muebles':'lamp', 'imprenta':'printer', 'restaurantes':'cup-hot'} %}{% for industry in industries %}<article class="industry-card"><span class="industry-icon"><i class="bi bi-{{ icons.get(industry.slug, 'building') }}" aria-hidden="true"></i></span><div><h3>{{ industry.name }}</h3><p>{{ industry.description }}</p></div></article>{% else %}<p class="small-note">El catálogo de rubros todavía no se ha inicializado.</p>{% endfor %}</div>
+</section>
+{% endblock %}

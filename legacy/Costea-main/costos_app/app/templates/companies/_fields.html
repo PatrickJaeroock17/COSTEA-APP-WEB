@@ -1,0 +1,25 @@
+{% macro input(field, help='', type='text', maxlength=180) %}
+<div class="field-group">
+  {{ field.label(class_='form-label') }}
+  {% if field.type == 'SelectField' %}
+    {{ field(class_='form-select' + (' is-invalid' if field.errors else ''), aria_describedby=field.id ~ '-feedback', aria_invalid='true' if field.errors else 'false') }}
+  {% else %}
+    {{ field(class_='form-control' + (' is-invalid' if field.errors else ''), type=type, maxlength=maxlength, aria_describedby=field.id ~ '-feedback', aria_invalid='true' if field.errors else 'false') }}
+  {% endif %}
+  <div id="{{ field.id }}-feedback">{% if help %}<div class="form-text">{{ help }}</div>{% endif %}{% for error in field.errors %}<div class="field-error" role="alert">{{ error }}</div>{% endfor %}</div>
+</div>
+{% endmacro %}
+
+{% macro tabs(company, selected) %}
+<nav class="settings-tabs" aria-label="Configuración de {{ company.display_name }}">
+  {% for endpoint, label, key in [('companies.edit', 'Datos del restaurante', 'company'), ('companies.periods', 'Periodos e impuesto', 'periods'), ('companies.units', 'Unidades', 'units')] %}
+  <a href="{{ url_for(endpoint, company_id=company.id) }}" class="{{ 'selected' if selected == key }}" {% if selected == key %}aria-current="page"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</nav>
+{% endmacro %}
+
+{% macro scope(company) %}
+{% if active_company and active_company.id != company.id %}
+<div class="alert alert-info" role="status">Estás configurando <strong>{{ company.display_name }}</strong>. La empresa activa del encabezado sigue siendo {{ active_company.display_name }}.</div>
+{% endif %}
+{% endmacro %}

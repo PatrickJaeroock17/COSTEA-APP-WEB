@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, tabs, scope with context %}
+{% block title %}{{ 'Configurar restaurante' if company else 'Nuevo restaurante' }}{% endblock %}
+{% block breadcrumb %}{{ 'Configurar restaurante' if company else 'Nuevo restaurante' }}{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>{{ company.display_name if company else 'Tu nuevo restaurante' }}</h1><p>Datos del restaurante y mes de trabajo.</p></div><a href="{{ url_for('companies.index') }}" class="text-link">Volver a restaurantes</a></div>
+{% if company %}{{ scope(company) }}{{ tabs(company, 'company') }}{% endif %}
+<form method="post" class="setup-form" novalidate>{{ form.hidden_tag() }}
+{% if form.errors %}<div class="alert alert-danger" role="alert">Revisa los campos señalados antes de guardar.</div>{% endif %}
+<section class="surface"><h2>Datos del restaurante</h2><div class="form-grid">{{ input(form.legal_name) }}{{ input(form.trade_name) }}{{ input(form.tax_id_kind) }}{{ input(form.tax_id, 'La validación comprueba el formato del documento.', maxlength=20) }}</div></section>
+<section class="surface"><h2>Moneda y periodo</h2><div class="form-grid">{{ input(form.currency, 'Se bloquea al registrar costos. Los precios del catálogo están en soles.') }}{{ input(form.tax_percent, 'Los platos del restaurante utilizan IGV del 18 %.', maxlength=8) }}{% if not company %}{{ input(form.initial_month, 'Mes para registrar los costos del restaurante.', type='month', maxlength=7) }}{% endif %}</div></section>
+<div class="form-actions"><a href="{{ url_for('companies.index') }}" class="btn btn-outline-secondary">Cancelar</a><button class="btn btn-primary" type="submit">{{ 'Guardar cambios' if company else 'Crear restaurante y continuar' }}</button></div>
+</form>{% endblock %}

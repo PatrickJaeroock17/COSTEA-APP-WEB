@@ -1,0 +1,5 @@
+<form method="post" action="{{ url_for('products.delete', company_id=company.id, product_id=product.id) }}" class="mt-3">
+  {{ action_form.hidden_tag() }}
+  <input type="hidden" name="revision" value="{{ product.revision }}">
+  <button type="submit" class="btn btn-outline-danger" data-confirm="¿Eliminar el plato {{ product.name }} y sus recetas? Esta acción no se puede deshacer.">Eliminar plato</button>
+</form>

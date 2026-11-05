@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, tabs, scope with context %}
+{% block title %}Periodos · {{ company.display_name }}{% endblock %}
+{% block breadcrumb %}Periodos{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">ORDENA EL TIEMPO DE TU EMPRESA</p><h1>Periodos de trabajo.</h1><p>{{ company.display_name }} · {{ company.currency }}</p></div><a href="{{ url_for('companies.index') }}" class="text-link">Mis empresas</a></div>
+{{ scope(company) }}{{ tabs(company, 'periods') }}
+<div class="settings-columns">
+  <section class="surface"><div class="section-heading"><h2>Periodos registrados</h2><span class="count-pill">{{ periods|length }}</span></div>
+    {% if periods %}<div class="table-responsive"><table class="table settings-table"><thead><tr><th scope="col">Periodo</th><th scope="col">IGV</th><th scope="col">Estado</th><th scope="col"><span class="visually-hidden">Acciones</span></th></tr></thead><tbody>
+    {% for period in periods %}<tr><th scope="row">{{ period.label }}</th><td>{{ (period.tax_rate|percent ~ ' %') if period.tax_rate is not none else 'Sin configurar' }}</td><td>{% if active_period and active_period.id == period.id %}<span class="record-status">En uso</span>{% else %}<span class="small-note">Disponible</span>{% endif %}</td><td><a href="{{ url_for('companies.period_tax', company_id=company.id, period_id=period.id) }}">Editar impuesto<span class="visually-hidden"> de {{ period.label }}</span></a></td></tr>{% endfor %}
+    </tbody></table></div><p class="settings-note">Cambia el periodo activo desde el selector del encabezado.</p>{% else %}<p class="empty-copy">Todavía no hay periodos. Crea el primero para organizar tu trabajo.</p>{% endif %}
+  </section>
+  <section class="surface"><div class="section-heading"><h2>Nuevo periodo</h2></div><form method="post" novalidate>{{ form.hidden_tag() }}{{ input(form.month_key, type='month', maxlength=7) }}{{ input(form.tax_percent, 'Se propone la tasa de la empresa. Puedes cambiarla o dejarla sin configurar.', maxlength=8) }}<button class="btn btn-primary" type="submit"><i class="bi bi-plus-lg" aria-hidden="true"></i> Crear periodo</button></form></section>
+</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+{% extends 'layout.html' %}
+{% block title %}Archivar empresa{% endblock %}
+{% block breadcrumb %}Archivar empresa{% endblock %}
+{% block content %}
+<section class="surface narrow-surface archive-confirm"><div class="empty-icon"><i class="bi bi-archive" aria-hidden="true"></i></div><p class="eyebrow">CONSERVA LO QUE HAS CONSTRUIDO</p><h1>¿Archivar esta empresa?</h1><h2>{{ company.display_name }}</h2><p>La empresa dejará de aparecer en los selectores de trabajo. Sus periodos, unidades y configuración se conservarán. Puedes restaurarla desde Mis empresas.</p><form method="post">{{ form.hidden_tag() }}<div class="form-actions"><a href="{{ url_for('companies.index') }}" class="btn btn-outline-secondary">Cancelar</a><button type="submit" class="btn btn-primary">Sí, archivar empresa</button></div></form></section>
+{% endblock %}

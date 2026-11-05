@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import scope with context %}
+{% from 'planning/_labor_fields.html' import amount, labels %}
+{% block title %}Personal{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">{{ company.display_name }}</p><h1>Personal y costo laboral.</h1><p>Trabajadores, contratación y costos.</p></div><a class="btn btn-primary" href="{{ url_for('planning.employee_edit',company_id=company.id) }}">Nuevo trabajador</a></div>
+{{ scope(company) }}
+{% if company.industry.slug == 'restaurantes' %}
+<section class="surface">
+  <h2>Trabajadores · Personal base compartido</h2>
+  <p class="settings-note">Todos los restaurantes comienzan con el personal base. Puedes editar o eliminar perfiles solo en este restaurante. Abre una ficha para consultar contratación, jornada, hijos, beneficios, seguros y descuentos.</p>
+  {% if reference_error %}<div class="alert alert-warning">{{ reference_error }}</div>{% endif %}
+  {% if reference_workers %}
+  <p><strong>{{ reference_workers|length }} contratos · Costo mensual equivalente: S/ {{ reference_total|money }}</strong></p>
+  <p class="settings-note">Proyección del personal base en soles. Las configuraciones mensuales de tu restaurante se gestionan más abajo y determinan los costos de sus planes.</p>
+  <div class="table-responsive material-table"><table class="table settings-table"><thead><tr><th>Trabajador / cargo / área</th><th>Estado</th><th>Contrato / pago</th><th>Jornada</th><th>Costo mensual</th><th>Ficha</th></tr></thead><tbody>
+  {% for row in reference_workers %}
+    <tr><th>{{ row.nombres }} {{ row.apellidos }}<small class="d-block">{{ row.cargo }} · {{ row.area }}</small><small class="d-block">{{ row.codigo_trabajador }} · {{ row.clasificacion_costo }}</small></th>
+    <td>{{ 'Activo' if row.trabajador_activo else 'Inactivo' }}<small class="d-block">{{ 'Datos simulados' if row.es_simulado else 'Datos no simulados' }}</small>{% if row.get('personalizado') %}<small class="d-block">Personalizado en este restaurante</small>{% endif %}</td>
+    <td>{{ row.codigo_contrato }} · {{ labels.get(row.vinculo,row.vinculo) }}<small class="d-block">Planilla: {{ labels.get(row.estado_planilla,row.estado_planilla) }}</small><small class="d-block">{{ labels.get(row.tipo_pago,row.tipo_pago) }} · {{ amount(row.get('tarifa')) }}</small><small class="d-block">Contrato {{ 'activo' if row.activo else 'inactivo' }}</small></td>
+    <td>{{ row.horas_dia|decimal }} h/día · {{ row.dias_semana }} días/semana{% if row.vinculo == 'INDEPENDIENTE' %}<small class="d-block">{{ row.horas_servicio_mes|decimal }} h/mes de servicio</small>{% endif %}</td>
+    <td>{{ amount(row.get('costo_mensual_equivalente')) }}<small class="d-block">Anual: {{ amount(row.get('costo_anual_completo')) }}</small></td>
+    <td><a href="{{ url_for('planning.labor_reference',company_id=company.id,scenario_id=row.id_escenario,worker_code=row.codigo_trabajador,contrato=row.codigo_contrato) }}">Ver ficha completa</a><br>
+      <a href="{{ url_for('planning.labor_profile_edit',company_id=company.id,scenario_id=row.id_escenario,worker_code=row.codigo_trabajador,contrato=row.codigo_contrato) }}">Editar</a> · <a href="{{ url_for('planning.labor_profile_delete',company_id=company.id,scenario_id=row.id_escenario,worker_code=row.codigo_trabajador,contrato=row.codigo_contrato) }}">Eliminar</a></td></tr>
+  {% endfor %}
+  </tbody></table></div>
+  {% elif not reference_error %}<p>No hay perfiles de personal base en este restaurante.</p>{% endif %}
+</section>
+{% endif %}
+<section class="surface planning-section"><h2>{{ 'Trabajadores adicionales del restaurante' if company.industry.slug == 'restaurantes' else 'Trabajadores' }}</h2>
+<div class="table-responsive material-table"><table class="table settings-table"><thead><tr><th>Nombre / cargo</th><th>Estado</th><th>Configuración</th></tr></thead><tbody>{% for employee in employees %}<tr><th>{{ employee.name }}<small class="d-block">{{ employee.role }}</small></th><td>{{ 'Activo' if employee.active else 'Inactivo' }}</td><td><a href="{{ url_for('planning.employee_edit',company_id=company.id,employee_id=employee.id) }}">Editar</a> · <a href="{{ url_for('planning.payroll',company_id=company.id,employee_id=employee.id) }}">Costo mensual</a> · <a href="{{ url_for('planning.employee_delete',company_id=company.id,employee_id=employee.id) }}">Eliminar</a></td></tr>{% else %}<tr><td colspan="3">Registra un trabajador y configura sus costos de cada mes.</td></tr>{% endfor %}</tbody></table></div></section>
+<section class="surface planning-section"><h2>Configuraciones mensuales</h2><p class="settings-note">La distribución de tiempo coincide con la distribución del costo. La parte CIF, administración o ventas se incluye automáticamente en los planes del mes; no la dupliques como otro concepto. Desactivar al trabajador no elimina un costo mensual ya registrado.</p><div class="table-responsive material-table"><table class="table settings-table"><thead><tr><th>Trabajador / mes</th><th>Total empleador</th><th>MOD disponible</th><th>Minutos MOD</th><th>Tarifa directa</th><th></th></tr></thead><tbody>{% for record in payroll %}{% set cost=labor_cost(payroll_input(record)) %}<tr><th>{{ record.employee.name }}<small class="d-block">{{ period_names[record.period_id] }}</small></th><td>{{ cost.total|money }}</td><td>{{ cost.cost|money }}</td><td>{{ cost.minutes|decimal }}</td><td>{% if cost.direct_basis == 'quantity' %}{{ cost.unit_rate|decimal }} / porción{% else %}{{ cost.rate|decimal }} / minuto{% endif %}</td><td><a href="{{ url_for('planning.payroll',company_id=company.id,employee_id=record.employee_id,periodo=record.period_id) }}">Revisar / editar</a></td></tr>{% else %}<tr><td colspan="6">Sin configuraciones mensuales.</td></tr>{% endfor %}</tbody></table></div></section>
+{% include 'planning/_labor_cost_table.html' %}
+{% endblock %}

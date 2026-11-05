@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block title %}Eliminar trabajador{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">{{ company.display_name }}</p><h1>Eliminar trabajador</h1></div></div>
+<section class="surface">
+  <h2>{{ employee.name }}</h2><p>{{ employee.role }}</p>
+  <p>Se eliminará este perfil del restaurante, junto con {{ payroll_count }} configuraciones mensuales y {{ assignment_count }} asignaciones a recetas. Los planes deberán recalcularse.</p>
+  <p>Los presupuestos publicados conservarán sus datos e importes originales.</p>
+  <form method="post">{{ action_form.hidden_tag() }}<div class="form-actions">
+    <a href="{{ url_for('planning.employees',company_id=company.id) }}">Cancelar</a>
+    <button class="btn btn-danger" type="submit">Eliminar trabajador</button>
+  </div></form>
+</section>
+{% endblock %}

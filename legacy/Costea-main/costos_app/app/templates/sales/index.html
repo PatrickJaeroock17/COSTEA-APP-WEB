@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, scope with context %}
+{% block title %}Registro de ventas{% endblock %}
+{% block breadcrumb %}Registro de ventas{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">PASO 7 · {{ company.display_name }}</p><h1>Registro de ventas</h1><p>Selecciona el producto, la fecha y la cantidad. Usaremos su precio guardado, incluido IGV del 18 %.</p></div><a class="text-link" href="{{ url_for('sales.prices',company_id=company.id) }}">Asignar o modificar precios</a></div>
+{{ scope(company) }}
+<p class="settings-note">Cada venta descuenta los insumos de su receta. Puedes <a href="{{ url_for('inventory.index',company_id=company.id) }}">seleccionar las materias primas guardadas como entradas</a>. Si faltan entradas, el kardex muestra el faltante y deja pendiente su valor. Eliminar una venta revierte su salida.</p>
+{% if actual %}<p class="settings-note">Periodo: {{ actual.period.label }}. Cada venta conserva el precio y costo de ingredientes vigentes al registrarla. Para corregirla, elimina el registro y vuelve a ingresarlo.</p>{% else %}<div class="alert alert-warning">Selecciona esta empresa y crea o selecciona su periodo antes de registrar ventas.</div>{% endif %}
+<form method="post" class="surface setup-form">{{ form.hidden_tag() }}<div class="form-grid">{{ input(form.product_id) }}{{ input(form.sold_on,type='date') }}{{ input(form.quantity) }}</div><div class="form-actions"><button class="btn btn-primary">Guardar venta</button></div></form>
+{% if actual %}<section class="surface planning-section"><h2>Ventas registradas · {{ actual.period.label }}</h2><div class="table-responsive"><table class="table"><thead><tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Precio con IGV</th><th>Total con IGV</th><th>Acciones</th></tr></thead><tbody>{% for sale in actual.sales %}<tr><td>{{ sale.sold_on }}</td><td>{{ sale.product.name }}</td><td>{{ sale.quantity|decimal }}</td><td>{{ sale.unit_price|money }}</td><td>{{ (sale.quantity*sale.unit_price)|money }}</td><td><form method="post" action="{{ url_for('sales.delete',company_id=company.id,sale_id=sale.id) }}">{{ action_form.hidden_tag() }}<button class="btn btn-outline-primary" data-confirm="¿Eliminar esta venta y actualizar los resultados?">Eliminar</button></form></td></tr>{% else %}<tr><td colspan="6">Aún no hay ventas en este periodo.</td></tr>{% endfor %}</tbody></table></div></section>{% include 'sales/_results.html' %}{% endif %}
+{% endblock %}

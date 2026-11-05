@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+{% from 'products/_ingredient_fields.html' import fields %}
+{% from 'companies/_fields.html' import scope with context %}
+{% block title %}{{ 'Editar' if line else 'Agregar' }} insumo · {{ product.name }}{% endblock %}
+{% block breadcrumb %}{{ terms.recipe }}{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">{{ company.display_name }} · {{ product.name }}</p><h1>{{ 'Editar' if line else 'Agregar' }} insumo.</h1><p>{{ material.display_name if material else 'Nombre, cantidad utilizada y precio de compra.' }}</p></div></div>{{ scope(company) }}
+<form method="post" class="surface setup-form" novalidate>{{ form.hidden_tag() }}{{ fields(form, quick, material) }}<div class="form-actions"><a class="text-link" href="{{ url_for('products.detail', company_id=company.id, product_id=product.id) }}">Volver a {{ terms.recipe|lower }}</a><button class="btn btn-primary">Guardar insumo y calcular</button></div></form>
+{% endblock %}

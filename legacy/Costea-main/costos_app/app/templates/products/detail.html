@@ -1,0 +1,109 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, scope with context %}
+{% from 'products/_ingredient_fields.html' import fields %}
+{% block title %}{{ recipe.product_name }} · {{ terms.recipe }}{% endblock %}
+{% block breadcrumb %}{{ terms.plural }}{% endblock %}
+{% block content %}
+<div class="page-heading recipe-detail-heading">
+  <div class="recipe-heading-main">
+    <p class="eyebrow">{{ company.display_name }} · {{ terms.recipe }} {{ recipe.number }}</p>
+    <h1>{{ recipe.product_name }}</h1>
+    <p class="recipe-yield">Rinde {{ recipe.output_quantity|decimal }} {{ terms.output_label if recipe.output_unit_code == 'unit' else recipe.output_unit.symbol }}</p>
+    {% if product.description %}<p class="recipe-description">{{ product.description }}</p>{% endif %}
+  </div>
+  <div class="recipe-heading-actions" role="toolbar" aria-label="Acciones de la receta">
+    {% if current and product.active %}
+    <button class="btn btn-primary" type="button" data-dialog-open="recipe-ingredient-dialog"><i class="bi bi-plus-lg" aria-hidden="true"></i> Agregar ingrediente</button>
+    <button class="btn btn-outline-primary" type="button" data-dialog-open="recipe-adjust-dialog"><i class="bi bi-sliders" aria-hidden="true"></i> Ajustar receta</button>
+    {% endif %}
+    <a class="btn btn-outline-secondary" href="{{ url_for('products.index', company_id=company.id) }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Volver</a>
+  </div>
+</div>
+{{ scope(company) }}
+{% set stock_details_open = true %}{% include 'products/_stock_status.html' %}
+{% if not current %}<div class="alert alert-info">Estás viendo una versión anterior con sus cantidades y precios de referencia conservados. El promedio del kardex se consulta al calcular. <a href="{{ url_for('products.detail', company_id=company.id, product_id=product.id) }}">Volver a la versión actual</a>.</div>{% endif %}
+{% if not product.active %}<div class="alert alert-info">Este {{ terms.singular }} está archivado. Restaúralo para editarlo.</div>{% endif %}
+{% if product.source_key %}<p class="settings-note">Personalización propia · origen {{ product.source_key }} · versión {{ product.source_version }}. Tus cambios no modifican la fuente.</p>{% endif %}
+
+{% if price_pending %}<div class="alert alert-warning">Hay insumos con valoración pendiente en el kardex. Los importes de materia prima mostrados usan temporalmente el precio de la receta; registra las entradas faltantes antes de fijar el precio final del plato.</div>{% endif %}
+{% include 'products/_material_cost_table.html' %}
+
+<div class="recipe-summary">
+  <section class="surface"><p class="eyebrow">INSUMOS DE TODA LA RECETA / LOTE</p><strong>{{ recipe.currency }} {{ total|money }}</strong><p>{{ 'Agrega el primer insumo para calcular.' if total is none else 'Suma de cantidades consumidas al costo promedio del kardex o, sin entradas, al precio de la receta.' }}</p></section>
+  <section class="surface"><p class="eyebrow">COSTO DE INSUMOS POR {{ (terms.output_label if recipe.output_unit_code == 'unit' else recipe.output_unit.name)|upper }}</p><strong>{{ recipe.currency }} {{ per_unit|money }}</strong><p>Costo de insumos dividido entre {{ recipe.output_quantity|decimal }} {{ terms.output_label if recipe.output_unit_code == 'unit' else recipe.output_unit.symbol }}.</p></section>
+</div>
+
+<nav class="surface recipe-next-steps" aria-label="Flujo de costos de la receta">
+  <div><p class="eyebrow">FLUJO DE COSTOS</p><h2>Completa los costos operativos</h2><p>El costo total se presenta al final, con las entradas del plan seleccionado.</p></div>
+  <div class="recipe-step-links">
+    <span class="recipe-current-step" aria-current="step">1 · Materia prima</span>
+    <a class="btn btn-outline-primary" href="{{ url_for('planning.work', company_id=company.id, recipe_id=recipe.id) }}">2 · Mano de obra directa</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('planning.concepts', company_id=company.id) }}">3 · CIF y gastos</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('planning.plans', company_id=company.id) }}">Plan de producción</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('inventory.index', company_id=company.id, plato=product.id) }}">Inventario · Kardex y entradas</a>
+  </div>
+</nav>
+
+<section class="surface recipe-complete-cost" id="costo-completo" aria-labelledby="recipe-complete-title">
+  <div class="section-heading">
+    <div><p class="eyebrow">DESPUÉS DE MATERIA PRIMA, MOD Y CIF / GASTOS</p><h2 id="recipe-complete-title">Costo total y precio de venta</h2><p class="form-section-description">Importes por una unidad de salida de esta versión de receta.</p></div>
+    {% if current and product.active %}<a class="text-link" href="{{ url_for('worksheet.index', company_id=company.id, receta=recipe.id) }}">Abrir ficha de costeo</a>{% endif %}
+  </div>
+  {% if plans|length > 1 %}
+  <form method="get" action="{{ url_for('products.detail', company_id=company.id, product_id=product.id) }}#costo-completo" class="recipe-plan-selector">
+    {% if not current %}<input type="hidden" name="version" value="{{ recipe.number }}">{% endif %}
+    <label class="form-label" for="recipe-plan">Plan y mes para calcular</label>
+    <select class="form-select" id="recipe-plan" name="plan">{% for plan in plans %}<option value="{{ plan.id }}" {{ 'selected' if selected_plan.id == plan.id }}>{{ plan.name }} · {{ plan.period.label }}</option>{% endfor %}</select>
+    <button class="btn btn-outline-primary">Ver cálculo</button>
+  </form>
+  {% endif %}
+  {% if selected_plan %}
+  <p class="recipe-cost-source">{{ selected_plan.name }} · {{ selected_plan.period.label }} · receta versión {{ recipe.number }}. {% if selected_plan.active %}Plan activo para reportes.{% endif %}</p>
+  {% if cost_summary.complete %}
+  <div class="table-responsive"><table class="table recipe-complete-table">
+    <caption>Componentes exactos por {{ terms.output_label if recipe.output_unit_code == 'unit' else recipe.output_unit.symbol }} · {{ company.currency }}</caption>
+    <tbody>{% for label, amount in cost_summary.components %}<tr><th scope="row">{{ label }}</th><td>{{ company.currency }} {{ amount|money }}</td></tr>{% endfor %}</tbody>
+    <tfoot><tr><th scope="row">Costo total por unidad</th><td>{{ company.currency }} {{ cost_summary.total|money }}</td></tr></tfoot>
+  </table></div>
+  <div class="recipe-cost-outcome">
+    <div><span>Costo total</span><strong>{{ company.currency }} {{ cost_summary.total|money }}</strong></div>
+    <div><span>{{ 'Precio definido en el plan' if pricing_mode == 'manual' else 'Precio de venta sugerido' }}</span><strong>{{ company.currency }} {{ cost_summary.suggested|money }}</strong></div>
+  </div>
+  {% if pricing_mode == 'manual' %}<p class="small-note">Este plan usa un precio manual. Para obtener una sugerencia basada en el costo, elige recargo, margen o Food Cost en el plan.</p>{% endif %}
+  <p class="small-note">Materia prima y MOD se calculan por rendimiento del lote; CIF y gastos se distribuyen entre las unidades previstas del mes. Se conserva la precisión decimal antes de mostrar importes a dos decimales.</p>
+  <a class="text-link" href="{{ url_for('worksheet.index', company_id=company.id, plan=selected_plan.id, plato=selected_line.id) }}">Ver desglose y supuestos del plan</a>
+  {% else %}
+  <div class="alert alert-warning">El cálculo completo está pendiente. Completa las entradas del plan antes de usar un costo total o precio sugerido.{% if cost_summary.issues %}<ul class="mb-0">{% for issue in cost_summary.issues %}<li>{{ issue }}</li>{% endfor %}</ul>{% endif %}</div>
+  <a class="btn btn-outline-primary" href="{{ url_for('planning.plan_detail', company_id=company.id, plan_id=selected_plan.id) }}">Completar plan y costos</a>
+  {% endif %}
+  {% else %}
+  <div class="alert alert-info">Aún no hay un plan de producción para esta versión de receta. Configura la mano de obra, CIF y gastos y agrega el plato a un plan para calcular el costo total y el precio sugerido.</div>
+  <a class="btn btn-outline-primary" href="{{ url_for('planning.plans', company_id=company.id) }}">Ir a planes de producción</a>
+  {% endif %}
+  <div class="recipe-final-price" id="precio-final">
+    <div><h3>Precio final de venta</h3><p>Precio guardado: <strong>{{ company.currency }} {{ sale_price.amount|money if sale_price else 'sin asignar' }}</strong>. Puedes fijarlo o editarlo; las ventas anteriores conservan su precio original.</p></div>
+    {% if current and product.active %}
+    <form method="post" action="{{ url_for('sales.prices', company_id=company.id) }}" class="recipe-final-price-form" novalidate>{{ price_form.hidden_tag() }}<input type="hidden" name="product_id" value="{{ product.id }}"><input type="hidden" name="return_to" value="recipe">{{ input(price_form.amount, maxlength=19) }}<button class="btn btn-primary">Guardar precio final</button></form>
+    {% endif %}
+  </div>
+</section>
+
+<section class="surface recipe-history"><h2>Versiones y estado</h2><form method="get" class="recipe-catalog"><div><label class="form-label" for="recipe-version">Historial de {{ terms.recipe|lower }}</label><select class="form-select" id="recipe-version" name="version">{% for version in product.recipes|reverse %}<option value="{{ version.number }}" {{ 'selected' if version.id == recipe.id }}>Versión {{ version.number }} · {{ version.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</option>{% endfor %}</select></div><button class="btn btn-outline-primary">Consultar versión</button></form><p class="form-section-description">Cada cambio conserva el precio de referencia de la receta. El cálculo usa el promedio del kardex cuando existe; sin entradas usa ese precio de referencia.</p><form method="post" action="{{ url_for('products.toggle', company_id=company.id, product_id=product.id) }}">{{ action.hidden_tag() }}<input type="hidden" name="state" value="{{ 'archived' if product.active else 'active' }}"><button class="btn btn-outline-secondary">{{ 'Archivar' if product.active else 'Restaurar' }} {{ terms.singular }}</button></form></section>
+
+{% if current and product.active %}
+<dialog class="material-dialog recipe-dialog" id="recipe-ingredient-dialog">
+  <div class="material-dialog-heading"><div><p class="eyebrow">INGREDIENTES DE LA RECETA</p><h2>Agregar ingrediente</h2><p>Elige un insumo del catálogo o registra uno privado para este restaurante.</p></div><button class="icon-button" type="button" data-dialog-close aria-label="Cerrar"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+  <a class="btn btn-primary" href="{{ url_for('materials.index', company_id=company.id, plato=product.id, tab='catalogo') }}">Buscar en Catálogo General</a>
+  {% if materials %}
+  <form method="get" action="{{ url_for('products.choose_material', company_id=company.id, product_id=product.id) }}" class="recipe-catalog recipe-dialog-choice"><div><label class="form-label" for="catalog-material">Insumo en uso de este restaurante</label><select class="form-select" id="catalog-material" name="material_id">{% for material in materials %}<option value="{{ material.id }}">{{ material.display_name }} · {{ material.code }}</option>{% endfor %}</select></div><button class="btn btn-outline-primary">Elegir cantidad y precio</button></form>
+  {% endif %}
+  <details class="recipe-private-add"><summary>Crear un insumo privado y agregarlo a esta receta</summary><form method="post" action="{{ url_for('products.quick_add', company_id=company.id, product_id=product.id) }}" class="setup-form" novalidate>{{ form.hidden_tag() }}{{ fields(form, true) }}<div class="form-actions"><button class="btn btn-primary">Agregar insumo y calcular</button></div></form></details>
+</dialog>
+
+<dialog class="material-dialog recipe-dialog" id="recipe-adjust-dialog">
+  <div class="material-dialog-heading"><div><p class="eyebrow">RENDIMIENTO Y PORCIONES</p><h2>Ajustar receta</h2><p>Elige si cambiarás los datos del plato o todas las cantidades de forma proporcional.</p></div><button class="icon-button" type="button" data-dialog-close aria-label="Cerrar"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+  <a class="btn btn-outline-primary" href="{{ url_for('products.edit', company_id=company.id, product_id=product.id) }}">Editar nombre, descripción o rendimiento</a>
+  <form method="post" action="{{ url_for('products.scale', company_id=company.id, product_id=product.id) }}" class="recipe-scale-form" novalidate>{{ scale_form.hidden_tag() }}<p>Escalar todas las cantidades crea una versión nueva y conserva la anterior.</p>{{ input(scale_form.output_quantity, 'Nuevo número de porciones para toda la receta.', maxlength=19) }}<button class="btn btn-primary">Escalar cantidades</button></form>
+</dialog>
+{% endif %}
+{% endblock %}

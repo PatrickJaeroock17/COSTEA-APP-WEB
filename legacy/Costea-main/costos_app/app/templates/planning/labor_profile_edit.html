@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import scope with context %}
+{% block title %}Editar trabajador{% endblock %}
+{% macro control(field) %}
+<div class="field-group">
+  {% if field.type == 'BooleanField' %}<label class="planning-check">{{ field() }} {{ field.label.text }}</label>
+  {% else %}{{ field.label(class_='form-label') }}{{ field(class_='form-select' if field.type == 'SelectField' else 'form-control', type='date' if field.type == 'DateField' else 'text', maxlength=1000) }}{% endif %}
+  {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+</div>
+{% endmacro %}
+{% macro repeated(entry, title) %}
+<fieldset class="surface planning-section"><legend>{{ title }}</legend><div class="form-grid">
+{% for field in entry %}{{ control(field) }}{% endfor %}
+</div></fieldset>
+{% endmacro %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">{{ company.display_name }}</p><h1>Editar {{ worker.nombres }} {{ worker.apellidos }}</h1><p>{{ worker.codigo_trabajador }} · Contrato {{ worker.codigo_contrato }}</p></div></div>
+{{ scope(company) }}
+<p class="settings-note">Los cambios se guardan solo en este restaurante. Los costos se recalculan con sus parámetros laborales, expresados en soles.</p>
+<form method="post" class="planning-form" novalidate>{{ form.hidden_tag() }}
+  {% for error in form.revision.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+  {% for title,names in [
+    ('Datos del trabajador',['nombres','apellidos','cargo','codigo_area','trabajador_activo','es_simulado']),
+    ('Contratación y pago',['vinculo','estado_planilla','modalidad','fecha_inicio','tipo_pago','tarifa','pension','salud','tiene_suspension_cuarta','activo','observaciones']),
+    ('Jornada y tiempo disponible',['horas_dia','horas_servicio_mes','factor_productivo','trabaja_feriados']),
+    ('Beneficios y seguros',benefit_fields)
+  ] %}
+  <section class="surface planning-section"><h2>{{ title }}</h2><div class="form-grid">{% for name in names %}{{ control(form[name]) }}{% endfor %}</div>
+    {% if title == 'Jornada y tiempo disponible' %}
+    <fieldset><legend>Días de trabajo</legend><p>Selecciona hasta seis días. Los restantes se muestran como descanso semanal.</p>
+    {% for value,label in form.schedule.choices %}<label class="planning-check"><input type="checkbox" name="schedule" value="{{ value }}" {% if value in form.schedule.data %}checked{% endif %}> {{ label }}</label>{% endfor %}
+    {% for error in form.schedule.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</fieldset>
+    {% endif %}
+    {% if title == 'Beneficios y seguros' %}{{ control(form.beneficios_observaciones) }}{% endif %}
+  </section>
+  {% endfor %}
+  <section class="surface planning-section"><h2>Hijos y escolaridad</h2><p>Marca «Eliminar este hijo» para quitarlo al guardar. La asignación familiar y la escolaridad se recalculan con los hijos registrados.</p>
+    {% for error in form.children.errors if error is string %}<p class="field-error">{{ error }}</p>{% endfor %}
+    <div data-labor-rows="children" data-max-rows="30">{% for entry in form.children %}{{ repeated(entry.form,'Hijo') }}{% endfor %}</div>
+    <template data-labor-template="children">{{ repeated(child_template,'Nuevo hijo') }}</template>
+    <button class="btn btn-outline-primary" type="button" data-add-labor-row="children">Añadir hijo</button>
+  </section>
+  <section class="surface planning-section"><h2>Vacaciones</h2><p>Registra un periodo por año. Marca «Eliminar estas vacaciones» para quitarlo al guardar.</p>
+    {% for error in form.vacations.errors if error is string %}<p class="field-error">{{ error }}</p>{% endfor %}
+    <div data-labor-rows="vacations" data-max-rows="20">{% for entry in form.vacations %}{{ repeated(entry.form,'Vacaciones') }}{% endfor %}</div>
+    <template data-labor-template="vacations">{{ repeated(vacation_template,'Nuevas vacaciones') }}</template>
+    <button class="btn btn-outline-primary" type="button" data-add-labor-row="vacations">Añadir vacaciones</button>
+  </section>
+  <div class="form-actions"><a href="{{ url_for('planning.labor_reference',company_id=company.id,scenario_id=worker.id_escenario,worker_code=worker.codigo_trabajador,contrato=worker.codigo_contrato) }}">Cancelar</a><button class="btn btn-primary" type="submit">Guardar cambios</button></div>
+</form>
+<script src="{{ url_for('static',filename='js/labor_profile.js') }}" defer></script>
+{% endblock %}

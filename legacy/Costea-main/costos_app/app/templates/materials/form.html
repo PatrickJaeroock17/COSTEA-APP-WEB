@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, scope with context %}
+{% block title %}{{ 'Editar' if material else 'Nuevo' }} material{% endblock %}
+{% block breadcrumb %}Insumos y Materia Prima{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">{{ company.display_name }}</p><h1>{{ 'Editar' if material else 'Nuevo' }} material.</h1><p>Define una unidad base para expresar todos sus costos.</p></div></div>{{ scope(company) }}
+{% if not has_units %}<div class="alert alert-info">Primero <a href="{{ url_for('companies.units', company_id=company.id) }}">selecciona las unidades de tu empresa</a>.</div>{% endif %}
+<form method="post" class="surface setup-form" novalidate>{{ form.hidden_tag() }}<div class="form-grid">{{ input(form.code, 'ID heredado del Catálogo General; solo lectura.' if material and material.catalog_sourced else 'Formato obligatorio AAA-000 y único por restaurante, incluso entre materiales archivados.', maxlength=7) }}{{ input(form.name, maxlength=220) }}{{ input(form.category, 'Por ejemplo: verduras, telas, madera o papel.', maxlength=100) }}{{ input(form.supplier) }}{{ input(form.base_unit_code, 'Se conserva para proteger el significado de los costos históricos. Para otra base, crea otro material.') }}</div><div class="form-actions"><a href="{{ url_for('materials.index', company_id=company.id, tab='mios') }}" class="text-link">Volver a Insumos y Materia Prima</a><button class="btn btn-primary" type="submit" {% if not has_units %}disabled{% endif %}>Guardar material</button></div></form>
+{% endblock %}

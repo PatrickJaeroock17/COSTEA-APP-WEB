@@ -1,0 +1,32 @@
+<section class="surface recipe-lines recipe-primary-table" id="receta-insumos">
+  <div class="section-heading">
+    <h2>Costo de materia prima</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="table material-cost-table">
+      <caption>Insumos guardados de {{ recipe.product_name }} · versión {{ recipe.number }} · cantidades para toda la receta / lote.</caption>
+      <thead>
+        <tr class="material-cost-band"><th colspan="{{ 7 if current and product.active else 6 }}">Costos de producción</th></tr>
+        <tr class="material-cost-title"><th colspan="{{ 7 if current and product.active else 6 }}">COSTO DE MATERIA PRIMA</th></tr>
+        <tr><th scope="col">Rubro / insumo</th><th scope="col">Cantidad usada</th><th scope="col"><abbr title="Unidad de medida de consumo">U.M.</abbr><small>Consumo</small></th><th scope="col"><abbr title="Costo unitario por unidad de referencia">C.U.</abbr></th><th scope="col"><abbr title="Unidad de medida del costo unitario">U.M.</abbr><small>Del costo unitario</small></th><th scope="col">Costo</th>{% if current and product.active %}<th scope="col">Acciones</th>{% endif %}</tr>
+      </thead>
+      <tbody>
+        {% for line in recipe.lines %}{% set result = results[loop.index0] %}{% set quote = prices[loop.index0] %}
+        <tr>
+          <th scope="row">{{ line.material_name }}{% if not line.material.active %}<small>Archivado en catálogo</small>{% endif %}</th>
+          <td class="material-cost-quantity">{{ line.quantity|decimal }}{% if line.mode != 'gross' %}<small>{{ 'Merma' if line.mode == 'loss' else 'Adicional' }}: {{ (line.rate * 100)|decimal }} %</small>{% endif %}</td>
+          <td>{{ line.unit_label }}</td>
+          <td class="material-cost-unit">{{ recipe.currency }} {{ quote.unit_cost|money }}<small>{% if quote.source == 'kardex' %}Promedio del kardex{% elif quote.source == 'pending' %}Kardex pendiente · precio de receta provisional{% else %}Precio de receta · {{ line.cost_version.effective_on }} · #{{ line.cost_version_id }}{% endif %}</small></td>
+          <td>{{ line.material.base_unit.symbol }}</td>
+          <td class="material-cost-amount">{{ recipe.currency }} {{ result.amount|money }}
+            <details class="line-explanation"><summary>Ver cálculo</summary><p>{{ line.quantity|decimal }} × factor {{ line.factor|decimal }} = {{ result.base_quantity|decimal }} {{ line.material.base_unit.symbol }}.<br>Entrada bruta: {{ result.gross_quantity|decimal }} {{ line.material.base_unit.symbol }}.<br>Costo unitario exacto: {{ quote.unit_cost|decimal }} / {{ line.material.base_unit.symbol }}.<br>Costo sin redondear: {{ result.amount|decimal }}.<br>{{ line.conversion_evidence }}</p></details>
+          </td>
+          {% if current and product.active %}<td><a href="{{ url_for('products.catalog_add', company_id=company.id, product_id=product.id, line_id=line.id) }}">Editar</a> · <a href="{{ url_for('materials.detail', company_id=company.id, material_id=line.material_id) }}#kardex">Kardex</a><form method="post" action="{{ url_for('products.remove_line', company_id=company.id, product_id=product.id, line_id=line.id) }}">{{ action.hidden_tag() }}<button class="recipe-remove" type="submit">Quitar</button></form></td>{% endif %}
+        </tr>
+        {% else %}<tr><td colspan="{{ 7 if current and product.active else 6 }}">Todavía no hay insumos guardados en este plato. Agrega materia prima para calcular su costo.</td></tr>{% endfor %}
+      </tbody>
+      <tfoot><tr><th scope="row" colspan="5">COSTO TOTAL DE INSUMOS</th><td>{{ recipe.currency }} {{ total|money }}</td>{% if current and product.active %}<td></td>{% endif %}</tr></tfoot>
+    </table>
+  </div>
+  <p class="small-note">El costo considera la conversión entre unidades y la merma registrada. Los totales se calculan sin redondear las filas previamente; «Ver cálculo» muestra los valores exactos. Se usa el promedio vigente del kardex cuando hay entradas valoradas; sin entradas, se usa el precio guardado en la receta.</p>
+</section>

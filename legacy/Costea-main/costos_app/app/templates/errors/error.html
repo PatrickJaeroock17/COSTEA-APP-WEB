@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}{{ code }}{% endblock %}
+{% block body_class %}error-page{% endblock %}
+{% block body %}
+<header class="error-brand">{% include 'components/brand.html' %}</header>
+<main class="error-container" id="main-content"><span class="section-index">COSTEA · {{ code }}</span><h1>{{ 'Un momento, por favor.' if code == 429 else 'Vamos a intentarlo de nuevo.' }}</h1><p>{{ message }}</p><a class="btn btn-primary" href="{{ url_for('dashboard.home') }}">Volver al inicio <i class="bi bi-arrow-right" aria-hidden="true"></i></a></main>
+{% endblock %}
+

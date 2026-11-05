@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import tabs, scope with context %}
+{% block title %}Unidades · {{ company.display_name }}{% endblock %}
+{% block breadcrumb %}Datos del restaurante · Unidades{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">CONFIGURACIÓN DEL RESTAURANTE</p><h1>Unidades de medida</h1><p>{{ company.display_name }} · Selecciona las unidades de compra que utilizarás.</p></div></div>
+{{ scope(company) }}{{ tabs(company, 'units') }}
+<section class="surface"><h2>Unidades disponibles para tu restaurante</h2><p>Estas unidades se consultan directamente en la base de datos del catálogo.</p>
+{% if error %}<div class="alert alert-warning" role="alert">{{ error }}</div>{% endif %}
+<form method="post" novalidate>{{ form.hidden_tag() }}
+{% for error in form.unit_codes.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+<div class="units-groups">{% for unit in units %}<label class="unit-option" for="unit-{{ unit.id_unidad }}"><input id="unit-{{ unit.id_unidad }}" name="unit_codes" type="checkbox" value="{{ unit.id_unidad }}" {% if unit.id_unidad|string in (form.unit_codes.data or []) %}checked{% endif %}><span>{{ unit.descripcion or unit.codigo }}</span><span class="unit-symbol">{{ unit.codigo }}</span></label>{% endfor %}</div>
+{% if not units and not error %}<p>No hay unidades registradas en la base de datos.</p>{% endif %}
+<p class="settings-note">Las equivalencias de consumo de las recetas se conservan: puedes expresar una cantidad en gramos o mililitros aunque compres por kilogramo o litro. No se modifica la tabla de unidades del catálogo.</p>
+<div class="form-actions"><a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-secondary">Volver al inicio</a>{% if units %}<button type="submit" class="btn btn-primary">Guardar unidades</button>{% endif %}</div>
+</form></section>
+{% endblock %}

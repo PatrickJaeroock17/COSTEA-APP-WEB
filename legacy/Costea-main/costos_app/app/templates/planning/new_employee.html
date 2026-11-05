@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}{% from 'companies/_fields.html' import input, scope with context %}
+{% block title %}Nuevo trabajador{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Nuevo trabajador</h1><p>Datos personales, costo mensual y tiempo dedicado al plato.</p></div><a href="{{ url_for('planning.employees',company_id=company.id) }}">Volver a personal</a></div>{{ scope(company) }}
+<form method="post" class="surface setup-form" novalidate>{{ form.hidden_tag() }}{{ payroll_form.hidden_tag() }}
+<h2>Datos del trabajador</h2><div class="form-grid">{{ input(form.name) }}{{ input(form.role) }}{{ input(form.document) }}<label>{{ form.active() }} {{ form.active.label.text }}</label></div>
+<p><label>{{ form.configure_payroll() }} {{ form.configure_payroll.label.text }}</label></p>
+<p class="settings-note">Puedes registrar todos los datos ahora. Si todavía no tienes un mes de trabajo o los importes, desmarca esta opción y completa después «Costo mensual». La tarifa por minuto y el costo se calculan automáticamente; no necesitas introducirlos manualmente.</p>
+<div data-initial-payroll>
+<h2>Configuración mensual</h2><div class="form-grid">{% for key in ['period_id','calculation_mode','salary','other','source'] %}{{ input(payroll_form[key],maxlength=500) }}{% endfor %}</div>
+<section data-payroll-mode="detailed"><h3>Beneficios y seguros</h3><p>Las gratificaciones previstas de julio y diciembre y la CTS anual se dividen entre 12 para calcular su provisión mensual. Ajusta tasas, primas y bases al trabajador.</p><div class="form-grid">{% for key in detail_fields %}{{ input(payroll_form[key]) }}{% endfor %}</div></section>
+<section data-payroll-mode="legacy"><h3>Importes mensuales consolidados</h3><div class="form-grid">{% for key in ['allowances','provisions','charges'] %}{{ input(payroll_form[key]) }}{% endfor %}</div></section>
+<h3>Tiempo disponible y distribución del costo</h3><p>Minutos efectivos = (días × horas × 60 − minutos excluidos) × productividad. Revisa los valores propuestos antes de guardar.</p><div class="form-grid">{% for key in ['days','hours','excluded','productive','direct_basis','planned_units','mod','cif','admin','sales','basis','justification'] %}{{ input(payroll_form[key],maxlength=500) }}{% endfor %}</div>
+<h3>Tiempo dedicado a una receta</h3><p>Selecciona el plato e indica los minutos del lote completo. Con 0 minutos no se agrega una operación. Después puedes asignar otras recetas desde la tabla de mano de obra.</p><div class="form-grid">{{ input(form.recipe_id) }}{{ input(form.recipe_minutes) }}</div>
+</div>
+<div class="form-actions"><button class="btn btn-primary">Guardar trabajador</button></div></form>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% block title %}Mis restaurantes{% endblock %}
+{% block breadcrumb %}Mis restaurantes{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">CADA PROYECTO, SU ESPACIO</p><h1>Mis restaurantes<span class="greeting-dot">.</span></h1><p>Administra tus restaurantes y elige dónde trabajar.</p></div><a class="btn btn-primary" href="{{ url_for('companies.create') }}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Nuevo restaurante</a></div>
+{% if companies %}
+<div class="company-cards">
+{% for company in companies %}
+<article class="surface company-record {{ 'archived' if not company.active }}">
+  <div class="company-record-heading"><span class="industry-icon"><i class="bi bi-building" aria-hidden="true"></i></span><span class="record-status">{{ 'Archivada' if not company.active else ('En uso' if active_company and active_company.id == company.id else 'Disponible') }}</span></div>
+  <h2>{{ company.display_name }}</h2>{% if company.trade_name %}<p class="legal-name">{{ company.legal_name }}</p>{% endif %}
+  <div class="company-record-meta"><span>{{ company.currency }}</span></div>
+  <dl class="record-details"><div><dt>{{ 'RUC' if company.tax_id_kind == 'peru_ruc' else 'Identificador' }}</dt><dd>{{ company.tax_id or 'Sin registrar' }}</dd></div><div><dt>IGV sugerido</dt><dd>{{ (company.default_tax_rate|percent ~ ' %') if company.default_tax_rate is not none else 'Sin configurar' }}</dd></div></dl>
+  <div class="company-actions">
+    {% if company.active %}
+    <form method="post" action="{{ url_for('companies.select_company') }}">{{ action_form.hidden_tag() }}<input type="hidden" name="company_id" value="{{ company.id }}"><button class="btn btn-primary btn-sm" type="submit">Trabajar aquí <i class="bi bi-arrow-right" aria-hidden="true"></i></button></form>
+    <a href="{{ url_for('companies.edit', company_id=company.id) }}" class="btn btn-outline-secondary btn-sm">Configurar</a>
+    <a href="{{ url_for('companies.archive', company_id=company.id) }}" class="archive-link">Archivar</a>
+    {% else %}
+    <form method="post" action="{{ url_for('companies.restore', company_id=company.id) }}">{{ action_form.hidden_tag() }}<button class="btn btn-outline-secondary btn-sm" type="submit"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Restaurar empresa</button></form>
+    {% endif %}
+  </div>
+</article>
+{% endfor %}
+</div>
+{% else %}
+<section class="surface large-empty"><div class="empty-icon"><i class="bi bi-building-add" aria-hidden="true"></i></div><h2>Tu primer restaurante empieza aquí</h2><p>Registra tu restaurante y configura el primer mes.<br>Los datos de cada empresa se mantienen separados.</p><a href="{{ url_for('companies.create') }}" class="btn btn-primary">Crear mi primer restaurante <i class="bi bi-arrow-right" aria-hidden="true"></i></a></section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, scope with context %}
+{% block title %}Nuevo precio de compra · {{ material.display_name }}{% endblock %}
+{% block breadcrumb %}Historial de precios de compra{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">{{ company.display_name }} · {{ company.currency }}</p><h1>{{ 'Compra detallada' if mode == 'purchase' else 'Nuevo precio de compra' }}.</h1><p>{{ material.display_name }} · Base: {{ material.base_unit.name }} ({{ material.base_unit.symbol }})</p></div></div>{{ scope(company) }}
+<form method="post" class="surface setup-form" novalidate>{{ form.hidden_tag() }}
+<div class="form-grid">{{ input(form.effective_on, type='date') }}{{ input(form.source, 'Cotización, comprobante, fecha, proveedor o justificación del costo.', maxlength=500) }}
+{% if mode == 'direct' %}{{ input(form.unit_cost, 'Importe por 1 ' ~ material.base_unit.symbol ~ '. Se admite cero explícito. Hasta 6 decimales.', maxlength=19) }}
+{% else %}{{ input(form.quantity, 'Número de unidades compradas; no incluyas la unidad en este campo.', maxlength=19) }}{{ input(form.purchase_unit, 'El factor se guarda con esta versión. Para otra presentación, registra su equivalencia primero.') }}{{ input(form.net_amount, 'Importe de toda la compra, sin impuestos ni los otros costos que ingresarás debajo.', maxlength=19) }}{{ input(form.nonrecoverable_tax, 'Ingresa 0 si no corresponde. Tú determinas y sustentas la recuperabilidad.', maxlength=19) }}{{ input(form.recoverable_tax, 'Se conserva como información y no se suma al costo. Ingresa 0 si no corresponde.', maxlength=19) }}{{ input(form.attributable_cost, 'Transporte u otros costos de esta compra aún no incluidos. Ingresa 0 si no corresponde.', maxlength=19) }}{% endif %}</div>
+<p class="settings-note">{% if mode == 'purchase' %}Costo unitario = (importe neto + impuesto no recuperable + otros costos atribuibles) ÷ (cantidad × factor). No vuelvas a registrar estos costos atribuibles como CIF o gastos del mismo plan.{% else %}Esta modalidad registra directamente el precio por unidad base, sin agregarle otra compra.{% endif %} Cada guardado crea un registro histórico; para corregir uno anterior, registra otro. En la misma fecha se utiliza el último registro.</p>
+<div class="form-actions"><a class="text-link" href="{{ url_for('materials.detail', company_id=company.id, material_id=material.id) }}">Cancelar</a><button class="btn btn-primary" type="submit">Guardar precio de compra</button></div></form>
+{% endblock %}

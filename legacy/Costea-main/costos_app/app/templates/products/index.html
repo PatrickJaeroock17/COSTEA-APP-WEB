@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import scope with context %}
+{% block title %}Platos y recetas{% endblock %}
+{% block breadcrumb %}Platos y recetas{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="eyebrow">{{ company.display_name }}</p><h1>Platos y recetas.</h1><p>Selecciona una receta base o gestiona aquí tus platos, cantidades y costos.</p></div>
+  <a class="btn btn-primary" href="{{ url_for('products.edit', company_id=company.id) }}">Crear receta propia <i class="bi bi-plus-lg" aria-hidden="true"></i></a>
+</div>
+{{ scope(company) }}
+
+{% if company.industry.slug == 'restaurantes' %}
+<section class="surface" id="equipo">
+  <div class="section-heading"><div><p class="eyebrow">RECETAS BASE DEL EQUIPO</p><h2>Elige uno de los 20 platos</h2><p class="form-section-description">Para usar un plato debes tener todos sus insumos en inventario y en cantidad suficiente para su rendimiento base. Registra las compras antes de elegirlo.</p></div></div>
+  {% if source_error %}<div class="alert alert-warning" role="alert">{{ source_error }}</div>{% endif %}
+  {% if dishes %}
+  <div class="table-responsive">
+    <table class="table settings-table">
+      <thead><tr><th>Plato</th><th>Rendimiento base</th><th>Insumos</th><th>Acción</th></tr></thead>
+      <tbody>
+      {% for dish in dishes %}{% set personalized = source_products.get(dish.key) %}
+        <tr>
+          <th scope="row">{{ dish.name }}</th>
+          <td>{{ dish.portions|decimal }} porciones</td>
+          <td>{{ dish.ingredients|length }}</td>
+          <td>
+          {% if personalized %}
+            <a class="btn btn-outline-primary" href="{{ url_for('products.detail', company_id=company.id, product_id=personalized.id) }}">Abrir y editar</a>
+          {% else %}
+            <form method="post" action="{{ url_for('recipe_source.select', company_id=company.id) }}">{{ action_form.hidden_tag() }}<input type="hidden" name="source_id" value="{{ dish.key }}"><button class="btn btn-primary">Usar y editar receta</button></form>
+          {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% elif not source_error %}<p class="empty-copy">No hay recetas base disponibles.</p>{% endif %}
+</section>
+{% endif %}
+
+<section id="mis-platos">
+  <div class="section-heading"><div><p class="eyebrow">TU ESPACIO DE TRABAJO</p><h2>Mis platos y recetas</h2><p class="form-section-description">Edita ingredientes, cantidades, precios, rendimiento o escala una receta completa.</p></div></div>
+  <form method="get" class="surface recipe-filters"><div><label class="form-label" for="q">Buscar por nombre</label><input class="form-control" name="q" id="q" value="{{ query }}"></div><div><label class="form-label" for="estado">Estado</label><select class="form-select" id="estado" name="estado"><option value="activos">Activos</option><option value="archivados" {{ 'selected' if archived }}>Archivados</option></select></div><button class="btn btn-outline-primary">Buscar</button></form>
+  <div class="company-cards recipe-cards">{% for product in products %}{% set recipe = product.recipes[-1] %}{% set results, total, per_unit = calculation(recipe) %}{% set shortages = stock_shortages(recipe) %}<article class="surface"><p class="eyebrow">{{ terms.recipe }} · versión {{ recipe.number }}</p><h2>{{ product.name }}</h2><p class="form-section-description">{{ recipe.output_quantity|decimal }} {{ terms.output_label if recipe.output_unit_code == 'unit' else recipe.output_unit.symbol }} · {{ recipe.lines|length }} insumos</p><p class="recipe-card-cost">{{ company.currency }} {{ per_unit|money }} <span>/ {{ terms.output_label if recipe.output_unit_code == 'unit' else recipe.output_unit.symbol }}</span></p><p class="small-note">{{ 'Costo de insumos' if total is not none else 'Falta agregar insumos' }}</p>{% include 'products/_stock_status.html' %}<a class="text-link" href="{{ url_for('products.detail', company_id=company.id, product_id=product.id) }}">Abrir y editar {{ terms.recipe|lower }} <i class="bi bi-arrow-right" aria-hidden="true"></i></a>{% include 'products/_delete_button.html' %}</article>{% else %}<section class="surface large-empty"><h2>{{ 'No hay registros archivados' if archived else 'Aún no tienes platos propios' }}</h2><p>Elige arriba una receta base del equipo o crea una receta desde cero.</p></section>{% endfor %}</div>
+</section>
+{% endblock %}

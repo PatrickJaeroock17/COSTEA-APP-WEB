@@ -1,0 +1,29 @@
+{% macro field(input, placeholder='', autocomplete='', help='') %}
+<div class="field-group">
+  {{ input.label(class_='form-label') }}
+  <div class="{{ 'password-wrap' if input.type == 'PasswordField' else '' }}">
+    {% if input.type == 'PasswordField' %}
+      {{ input(class_='form-control' + (' is-invalid' if input.errors else ''),
+        placeholder=placeholder, autocomplete=autocomplete, maxlength=128,
+        aria_invalid='true' if input.errors else 'false',
+        aria_describedby=input.id ~ '-feedback') }}
+      <button type="button" class="password-toggle" data-password-toggle="{{ input.id }}"
+              aria-label="Mostrar {{ input.label.text|lower }}" aria-pressed="false">
+        <i class="bi bi-eye" aria-hidden="true"></i>
+      </button>
+    {% else %}
+      {{ input(class_='form-control' + (' is-invalid' if input.errors else ''),
+        placeholder=placeholder, autocomplete=autocomplete,
+        type='email' if input.name == 'email' else 'text',
+        maxlength=254 if input.name == 'email' else 100,
+        aria_invalid='true' if input.errors else 'false',
+        aria_describedby=input.id ~ '-feedback') }}
+    {% endif %}
+  </div>
+  <div id="{{ input.id }}-feedback">
+    {% if help %}<div class="form-text">{{ help }}</div>{% endif %}
+    {% for error in input.errors %}<div class="field-error" role="alert">{{ error }}</div>{% endfor %}
+  </div>
+</div>
+{% endmacro %}
+

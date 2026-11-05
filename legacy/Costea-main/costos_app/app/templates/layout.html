@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block body_class %}workspace-page{% endblock %}
+{% block body %}
+<div class="workspace-shell">
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+    <div class="sidebar-brand">{% include 'components/brand.html' %}<button class="icon-button mobile-close" type="button" data-menu-close aria-label="Cerrar menú"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+    <div class="workspace-label"><span class="workspace-dot"></span><span>{{ active_company.display_name if active_company else 'Espacio personal' }}</span></div>
+    <nav class="side-nav" aria-label="Navegación principal">
+      <section class="nav-section" aria-labelledby="nav-general">
+        <h2 class="nav-label" id="nav-general">General / Inicio</h2>
+        <a href="{{ url_for('dashboard.index') }}" class="nav-item {{ 'active' if request.endpoint == 'dashboard.index' }}" {% if request.endpoint == 'dashboard.index' %}aria-current="page"{% endif %}><i class="bi bi-grid-1x2" aria-hidden="true"></i><span>Inicio - Guía de costos</span></a>
+        <a href="{{ url_for('companies.index') }}" class="nav-item {{ 'active' if request.endpoint in ['companies.index', 'companies.create', 'companies.archive'] }}" {% if request.endpoint in ['companies.index', 'companies.create', 'companies.archive'] %}aria-current="page"{% endif %}><i class="bi bi-buildings" aria-hidden="true"></i><span>Mis restaurantes</span></a>
+      </section>
+
+      {% if active_company %}
+      <section class="nav-section" aria-labelledby="nav-restaurant-settings">
+        <h2 class="nav-label" id="nav-restaurant-settings">Configuración del restaurante</h2>
+        {% for endpoint,icon,label in [('companies.edit','gear','Datos del restaurante'),('companies.periods','calendar3','Mes de trabajo')] %}
+        <a href="{{ url_for(endpoint,company_id=active_company.id) }}" class="nav-item {{ 'active' if request.endpoint==endpoint or (endpoint=='companies.edit' and request.endpoint=='companies.units') }}" {% if request.endpoint==endpoint or (endpoint=='companies.edit' and request.endpoint=='companies.units') %}aria-current="page"{% endif %}><i class="bi bi-{{ icon }}" aria-hidden="true"></i><span>{{ label }}</span></a>
+        {% endfor %}
+      </section>
+
+      <section class="nav-section" aria-labelledby="nav-costs-production">
+        <h2 class="nav-label" id="nav-costs-production">Costos y producción</h2>
+        {% for endpoint,icon,label in [('materials.index','layers','1. Insumos y Materia Prima'),('products.index','journal-richtext','2. Platos y Recetas'),('planning.employees','people','3. Mano de Obra Directa'),('planning.concepts','calculator','4. CIF y Gastos'),('worksheet.index','calculator','5. Costo Total y Precio'),('planning.plans','calendar3','6. Plan de Producción')] %}
+        <a href="{{ url_for(endpoint,company_id=active_company.id) }}" class="nav-item {{ 'active' if request.endpoint==endpoint or (endpoint=='products.index' and request.endpoint.startswith('products.')) or (endpoint=='materials.index' and (request.endpoint.startswith('materials.') or request.endpoint.startswith('catalog.'))) }}" {% if request.endpoint==endpoint or (endpoint=='products.index' and request.endpoint.startswith('products.')) or (endpoint=='materials.index' and (request.endpoint.startswith('materials.') or request.endpoint.startswith('catalog.'))) %}aria-current="page"{% endif %}><i class="bi bi-{{ icon }}" aria-hidden="true"></i><span>{{ label }}</span></a>
+        {% endfor %}
+      </section>
+
+      <section class="nav-section" aria-labelledby="nav-operations-analysis">
+        <h2 class="nav-label" id="nav-operations-analysis">Operación y análisis</h2>
+        {% for endpoint,icon,label in [('sales.prices','tag','Precios Guardados'),('sales.index','cart-check','Registro de Ventas'),('inventory.index','box-seam','Inventarios'),('planning.budgets','journal-text','Presupuestos'),('planning.reports','table','Reportes')] %}
+        <a href="{{ url_for(endpoint,company_id=active_company.id) }}" class="nav-item {{ 'active' if request.endpoint==endpoint }}" {% if request.endpoint==endpoint %}aria-current="page"{% endif %}><i class="bi bi-{{ icon }}" aria-hidden="true"></i><span>{{ label }}</span></a>
+        {% endfor %}
+      </section>
+      {% endif %}
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user"><span class="avatar">{{ current_user.name[:1]|upper }}</span><div><strong>{{ current_user.name }}</strong><span>Mi cuenta</span></div></div>
+      <form method="post" action="{{ url_for('auth.logout') }}">{{ logout_form.hidden_tag() }}<button class="logout-button" type="submit"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</button></form>
+    </div>
+  </aside>
+  <button class="menu-overlay" type="button" data-menu-close tabindex="-1" aria-label="Cerrar menú" hidden></button>
+  <div class="workspace-main" id="workspace-main">
+    <header class="topbar">
+      <div class="topbar-left"><button class="icon-button" type="button" id="menu-toggle" aria-controls="sidebar" aria-expanded="true" aria-label="Alternar menú"><i class="bi bi-layout-sidebar" aria-hidden="true"></i></button><span class="breadcrumb-current"><strong>{% block breadcrumb %}Vista general{% endblock %}</strong></span></div>
+      <div class="topbar-right">
+        {% if workspace_companies %}
+        <form method="post" action="{{ url_for('companies.select_company') }}" class="workspace-selector">
+          {{ action_form.hidden_tag() }}<label class="visually-hidden" for="active-company-select">Empresa activa</label>
+          <select id="active-company-select" name="company_id" class="form-select" aria-label="Empresa activa">{% for option in workspace_companies %}<option value="{{ option.id }}" {% if active_company and active_company.id == option.id %}selected{% endif %}>{{ option.display_name }}</option>{% endfor %}</select>
+          <button class="icon-button" type="submit" aria-label="Cambiar empresa" title="Cambiar empresa"><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+        </form>
+        {% else %}<span class="company-status"><i class="bi bi-building" aria-hidden="true"></i> Sin empresa activa</span>{% endif %}
+        {% if workspace_periods %}
+        <form method="post" action="{{ url_for('companies.select_period') }}" class="workspace-selector period-selector">
+          {{ action_form.hidden_tag() }}<label class="visually-hidden" for="active-period-select">Periodo activo</label>
+          <select id="active-period-select" name="period_id" class="form-select" aria-label="Periodo activo">{% for option in workspace_periods %}<option value="{{ option.id }}" {% if active_period and active_period.id == option.id %}selected{% endif %}>{{ option.label }}</option>{% endfor %}</select>
+          <button class="icon-button" type="submit" aria-label="Cambiar periodo" title="Cambiar periodo"><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+        </form>{% endif %}
+        <span class="avatar avatar-small" title="{{ current_user.name }}">{{ current_user.name[:1]|upper }}</span>
+      </div>
+    </header>
+    <main class="dashboard-main" id="main-content">
+      {% include 'components/messages.html' %}
+      {% if sql_dishes_pending %}<div class="alert alert-warning" role="status">Hay {{ sql_dishes_pending }} plato(s) con cambios pendientes de guardar en SQL Server.<form method="post" action="{{ url_for('products.synchronize',company_id=active_company.id) }}">{{ action_form.hidden_tag() }}<button class="btn btn-outline-primary">Reintentar guardado</button></form></div>{% endif %}
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="workspace-footer"><span>Costea · Costos y presupuestos</span><span>Versión 1.0 · Costos y presupuestos</span></footer>
+  </div>
+</div>
+{% endblock %}

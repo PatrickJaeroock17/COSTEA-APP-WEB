@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+{% from 'companies/_fields.html' import input, tabs, scope with context %}
+{% block title %}Impuesto · {{ period.label }}{% endblock %}
+{% block breadcrumb %}Impuesto del periodo{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">CONFIGURACIÓN DEL PERIODO</p><h1>{{ period.label }}</h1><p>{{ company.display_name }} · {{ company.currency }}</p></div></div>
+{{ scope(company) }}{{ tabs(company, 'periods') }}
+<section class="surface narrow-surface"><h2 class="form-section-title">Impuesto de este mes</h2><p class="form-section-description">Este cambio se aplica únicamente a {{ period.label }}. Los otros periodos conservan su tasa.</p>
+<form method="post" novalidate>{{ form.hidden_tag() }}{{ input(form.tax_percent, 'De 0 a 100 %. Deja vacío si aún no has definido la tasa.', maxlength=8) }}<div class="form-actions"><a href="{{ url_for('companies.periods', company_id=company.id) }}" class="btn btn-outline-secondary">Cancelar</a><button type="submit" class="btn btn-primary">Guardar impuesto</button></div></form></section>
+{% endblock %}

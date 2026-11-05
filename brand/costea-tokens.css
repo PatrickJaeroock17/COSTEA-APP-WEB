@@ -1,0 +1,38 @@
+/* Costea — tokens de marca (Tailwind v4: pegar en app/globals.css) */
+@theme {
+  /* Verde principal (del logo: #006B4B) */
+  --color-brand-50:  #ecf8f2;
+  --color-brand-100: #d2efe1;
+  --color-brand-200: #a6dfc3;
+  --color-brand-300: #6fc89f;
+  --color-brand-400: #33a879;
+  --color-brand-500: #0f8a62;
+  --color-brand-600: #006b4b;   /* logo / botones primarios */
+  --color-brand-700: #00563d;
+  --color-brand-800: #0b3f2e;
+  --color-brand-900: #032a1f;   /* fondo oscuro del logo */
+
+  /* Lima (acento del logo: #A9D63A) */
+  --color-lime-300: #cde98a;
+  --color-lime-400: #bfe05f;
+  --color-lime-500: #a9d63a;
+  --color-lime-600: #86ae25;
+
+  /* Neutros con un toque verdoso */
+  --color-ink:     #12251f;
+  --color-muted:   #5b6b65;
+  --color-line:    #e2e9e5;
+  --color-surface: #f6f9f7;
+
+  /* Estados */
+  --color-success: #0f8a62;
+  --color-warning: #e0a100;
+  --color-danger:  #d64545;
+  --color-info:    #2b7bd6;
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-brand: var(--font-nunito), ui-rounded, system-ui, sans-serif;
+
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+}

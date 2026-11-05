@@ -1,0 +1,21 @@
+<section class="surface planning-section">
+  <h2>Costos de mano de obra directa</h2>
+  <p>Consulta el costo de trabajo de una receta con la configuración mensual del personal.</p>
+  <form method="get" class="form-grid">
+    <div class="field-group"><label class="form-label" for="labor-period">Mes del costo laboral</label><select class="form-select" id="labor-period" name="periodo">{% for period in labor_periods %}<option value="{{ period.id }}" {{ 'selected' if selected_labor_period and period.id == selected_labor_period.id }}>{{ period.label }}</option>{% endfor %}</select></div>
+    <div class="field-group"><label class="form-label" for="labor-recipe">Plato y versión de receta</label><select class="form-select" id="labor-recipe" name="receta">{% for recipe in labor_recipes %}<option value="{{ recipe.id }}" {{ 'selected' if selected_labor_recipe and recipe.id == selected_labor_recipe.id }}>{{ recipe.product_name }} · versión {{ recipe.number }}</option>{% endfor %}</select></div>
+    <div><button class="btn btn-outline-primary" {% if not labor_periods or not labor_recipes %}disabled{% endif %}>Ver costos de mano de obra</button></div>
+  </form>
+  {% if labor_table %}
+  <p class="settings-note">{{ selected_labor_recipe.product_name }} · {{ selected_labor_period.label }} · lote de {{ selected_labor_recipe.output_quantity|decimal }} {{ selected_labor_recipe.output_unit.symbol }}. Sueldo corresponde al costo laboral mensual total, incluidos los beneficios y cargas guardados. Los minutos corresponden al lote completo.</p>
+  {% if labor_table.issues %}<div class="alert alert-warning"><ul>{% for issue in labor_table.issues %}<li>{{ issue }}</li>{% endfor %}</ul>Completa estos datos para obtener el total.</div>{% endif %}
+  <div class="table-responsive"><table class="table labor-cost-table">
+    <caption>{{ selected_labor_recipe.product_name }} · Costo de mano de obra del lote</caption>
+    <thead><tr class="labor-cost-title"><th colspan="5">2. COSTOS DE MANO DE OBRA DIRECTA</th></tr><tr><th scope="col">Personal</th><th scope="col">Sueldo mensual</th><th scope="col">Minutos</th><th scope="col">Costo min.</th><th scope="col">Costo</th></tr></thead>
+    <tbody>{% for row in labor_table.rows %}<tr><th scope="row">{{ row.employee.role }}<small>{{ row.employee.name }}</small>{% if not row.employee.active %}<small>Inactivo</small>{% endif %}</th><td class="labor-salary">{{ company.currency }} {{ row.salary|money }}<small><a href="{{ url_for('planning.payroll',company_id=company.id,employee_id=row.employee.id,periodo=selected_labor_period.id) }}">{{ 'Ver configuración' if row.configured else 'Configurar costo mensual' }}</a></small></td><td>{{ row.minutes|decimal }}{% if row.note %}<small>{{ row.note }}</small>{% endif %}</td><td class="labor-rate">{{ company.currency }} {{ row.rate|money }}{% if row.rate is not none %}<small>Exacto: {{ row.rate|decimal }}</small>{% endif %}</td><td>{{ company.currency }} {{ row.amount|money }}</td></tr>{% else %}<tr><td colspan="5">Registra trabajadores para completar la mano de obra.</td></tr>{% endfor %}</tbody>
+    <tfoot><tr><th scope="row" colspan="4">TOTAL DE MANO DE OBRA DIRECTA</th><td>{{ company.currency }} {{ labor_table.total|money }}</td></tr></tfoot>
+  </table></div>
+  <p class="small-note">Costo del lote = suma de minutos × costo por minuto, sin redondear las tarifas antes de multiplicar. MOD por unidad de salida: <strong>{{ company.currency }} {{ labor_table.per_portion|money }}</strong>. Los repartos por porciones conservan su modalidad y se identifican en la fila.</p>
+  <a class="btn btn-outline-primary" href="{{ url_for('planning.work',company_id=company.id,recipe_id=selected_labor_recipe.id) }}">Asignar o modificar minutos de esta receta</a>
+  {% else %}<p class="empty-copy">Para calcular la mano de obra, registra un mes de trabajo y un plato. Los trabajadores y sus configuraciones mensuales se conservan arriba.</p>{% endif %}
+</section>

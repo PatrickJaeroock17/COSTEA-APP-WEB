@@ -1,0 +1,14 @@
+{% if shortages %}
+<div class="alert alert-danger recipe-stock-status" role="alert">
+  <strong>Elaboración bloqueada: faltan insumos</strong>
+  <p class="mb-0">No puedes elaborar {{ product.name }} mientras falte cualquiera de sus insumos. Registra las entradas necesarias para {{ recipe.output_quantity|decimal }} {{ recipe.output_unit.symbol }}.</p>
+  <details {% if stock_details_open|default(false) %}open{% endif %}>
+    <summary>Ver {{ shortages|length }} insumo{{ 's' if shortages|length != 1 else '' }} faltante{{ 's' if shortages|length != 1 else '' }}</summary>
+    <ul class="mb-0">{% for shortage in shortages %}<li><a href="{{ url_for('materials.detail', company_id=company.id, material_id=shortage.material.id, _anchor='kardex') }}">{{ shortage.material.inventory_label }}</a>: necesita {{ shortage.needed|decimal }} {{ shortage.material.base_unit.symbol }}; disponible {{ shortage.available|decimal }} {{ shortage.material.base_unit.symbol }}.</li>{% endfor %}</ul>
+  </details>
+</div>
+{% elif recipe.lines %}
+<p class="small-note recipe-stock-status">Insumos disponibles para elaborar {{ recipe.output_quantity|decimal }} {{ recipe.output_unit.symbol }}.</p>
+{% else %}
+<p class="small-note recipe-stock-status">Elaboración bloqueada: completa los insumos de la receta.</p>
+{% endif %}
