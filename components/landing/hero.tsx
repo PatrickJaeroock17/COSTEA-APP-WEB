@@ -26,7 +26,12 @@ export function Hero() {
     >
       <div className="sticky top-0 h-svh overflow-hidden md:static md:h-auto md:min-h-[max(100vh,780px)] md:overflow-visible">
         {/* Chef: detrás de todo */}
-        <ChefScrub className="absolute inset-x-0 top-0 h-[var(--chef-h)] md:inset-y-0 md:left-auto md:h-auto md:w-[78%]" style={{ ["--chef-h" as string]: `${CHEF_HEIGHT_RATIO * 100}%` }} />{/* Degradado inferior (solo móvil) para que el texto se lea sobre el chef */}
+        <ChefScrub
+          className="absolute inset-x-0 top-0 h-[var(--chef-h)] md:inset-y-0 md:left-auto md:h-auto md:w-[78%]"
+          style={{ ["--chef-h" as string]: `${CHEF_HEIGHT_RATIO * 100}%` }}
+        />
+
+        {/* Degradado inferior (solo móvil) para que el texto se lea sobre el chef */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[340px] bg-[linear-gradient(to_top,#f4e6c9_0%,rgba(244,230,201,0.94)_40%,rgba(244,230,201,0)_100%)] md:hidden"
@@ -103,6 +108,7 @@ export function Hero() {
     </section>
   );
 }
+
 
 
 
