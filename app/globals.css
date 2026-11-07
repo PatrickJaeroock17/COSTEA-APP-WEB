@@ -211,3 +211,20 @@
 
 
 
+
+/* Barra de progreso del paso activo en "Cómo funciona" */
+@keyframes step-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.step-progress {
+  animation: step-progress linear forwards;
+}
+
+@keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.grow-x { animation: grow-x 1s ease-out both; }
+.grow-y { animation: grow-y 0.7s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .grow-x, .grow-y { animation: none; }
+}
