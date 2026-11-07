@@ -141,19 +141,41 @@ export function ChefScrub({ className }: { className?: string }) {
       }
       kick();
     };
-    const onMove = (e: PointerEvent) => aim(e.clientX);
+    // Móvil: el giro sigue el scroll mientras la escena queda anclada (de frente → mirando a la derecha).
+    const aimScroll = () => {
+      const r = hero.getBoundingClientRect();
+      const range = Math.max(r.height - window.innerHeight, 1);
+      const p = Math.max(0, Math.min(1, -r.top / range));
+      target = TF + (D - 0.05 - TF) * p;
+      kick();
+    };
+    const onMove = (e: PointerEvent) => {
+      if (desktop.matches) aim(e.clientX);
+    };
     const onTouch = (e: TouchEvent) => {
-      if (e.touches[0]) aim(e.touches[0].clientX);
+      if (desktop.matches && e.touches[0]) aim(e.touches[0].clientX);
     };
     const onLeave = () => {
+      if (!desktop.matches) return;
       target = TF;
       kick();
+    };
+    const onScroll = () => {
+      if (!desktop.matches) aimScroll();
+    };
+    const onResize = () => {
+      if (desktop.matches) {
+        target = TF;
+        kick();
+      } else aimScroll();
     };
 
     hero.addEventListener("pointermove", onMove as EventListener, { passive: true });
     hero.addEventListener("touchmove", onTouch as EventListener, { passive: true });
     hero.addEventListener("pointerleave", onLeave);
-
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    if (!desktop.matches) aimScroll();
     return () => {
       alive = false;
       ac.abort();
@@ -162,6 +184,8 @@ export function ChefScrub({ className }: { className?: string }) {
       hero.removeEventListener("pointermove", onMove as EventListener);
       hero.removeEventListener("touchmove", onTouch as EventListener);
       hero.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
       bitmaps.forEach((b) => b?.close());
     };
   }, []);
@@ -185,4 +209,5 @@ export function ChefScrub({ className }: { className?: string }) {
     </div>
   );
 }
+
 
