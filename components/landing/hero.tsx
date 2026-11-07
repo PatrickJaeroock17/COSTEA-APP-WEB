@@ -23,7 +23,7 @@ export function Hero() {
     >
       <div className="sticky top-0 h-svh overflow-hidden md:static md:h-auto md:min-h-[max(100vh,780px)] md:overflow-visible">
         {/* Chef: detrás de todo */}
-        <ChefScrub className="absolute inset-0 md:left-auto md:w-[78%]" />
+        <ChefScrub className="absolute inset-x-0 top-12 h-[75svh] md:inset-y-0 md:top-0 md:left-auto md:h-auto md:w-[78%]" />
 
         {/* Degradado inferior (solo móvil) para que el texto se lea sobre el chef */}
         <div
@@ -102,4 +102,6 @@ export function Hero() {
     </section>
   );
 }
+
+
 
