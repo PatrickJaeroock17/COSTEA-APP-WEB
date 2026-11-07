@@ -22,7 +22,25 @@ type Mode = "desktop" | "mobile";
  * - Escritorio: el cursor se mide sobre TODA la sección (HERO-REFERENCIA.md).
  * - Móvil: el scroll de la escena anclada decide el cuadro (HERO-MOVIL.md); `--p` (0..1) queda en la sección.
  */
-export function ChefScrub({ className, style }: { className?: string; style?: React.CSSProperties }) {
+export function ChefScrub({
+  className,
+  style,
+  center = 0.64,
+  posX: desktopPosX = 0.35,
+  fade = true,
+  desktopOnly = false,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+  /** Posición del chef en el área de seguimiento (0..1): ahí el chef mira de frente. */
+  center?: number;
+  /** object-position horizontal en escritorio. */
+  posX?: number;
+  /** Fundido del borde izquierdo en escritorio (clase .chef-fade). */
+  fade?: boolean;
+  /** No cargar ni animar en móvil (queda el cuadro fijo). */
+  desktopOnly?: boolean;
+}) {
   const layerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [mode, setMode] = useState<Mode | null>(null);
@@ -38,7 +56,8 @@ export function ChefScrub({ className, style }: { className?: string; style?: Re
   useEffect(() => {
     const layer = layerRef.current;
     const canvas = canvasRef.current;
-    const hero = layer?.closest("section");
+    // Área donde se mide el cursor: el contenedor marcado con data-chef-area, o la sección.
+    const hero = (layer?.closest("[data-chef-area]") ?? layer?.closest("section")) as HTMLElement | null;
     const ctx = canvas?.getContext("2d");
     if (!mode || !layer || !canvas || !hero || !ctx) return;
 
@@ -46,8 +65,9 @@ export function ChefScrub({ className, style }: { className?: string; style?: Re
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const mobile = mode === "mobile";
+    if (mobile && desktopOnly) return;
     const dir = mobile ? "/chef-m" : "/chef";
-    const posX = mobile ? 0.49 : 0.35;
+    const posX = mobile ? 0.49 : desktopPosX;
     const t0 = mobile ? 0.02 : TF; // instante inicial
     const order = mobile
       ? Array.from({ length: FRAMES }, (_, i) => i) // el scroll avanza desde el cuadro 0
@@ -159,7 +179,7 @@ export function ChefScrub({ className, style }: { className?: string; style?: Re
       const aim = (clientX: number) => {
         const r = hero.getBoundingClientRect();
         const x = clientX - r.left;
-        const cx = r.width * 0.64;
+        const cx = r.width * center;
         if (x < cx) {
           const k = Math.max(0, Math.min(1, x / cx));
           target = 0.02 + (TF - 0.02) * k;
@@ -195,19 +215,20 @@ export function ChefScrub({ className, style }: { className?: string; style?: Re
       cleanups.forEach((fn) => fn());
       bitmaps.forEach((b) => b?.close());
     };
-  }, [mode]);
+  }, [mode, center, desktopPosX, desktopOnly]);
 
   const img = "absolute inset-0 h-full w-full object-cover";
 
   return (
-    <div ref={layerRef} aria-hidden style={style} className={cn("chef-fade pointer-events-none overflow-hidden", className)}>
+    <div ref={layerRef} aria-hidden style={style} className={cn(fade && "chef-fade", "pointer-events-none overflow-hidden", className)}>
       {/* Cuadros de frente: visibles al instante, mientras cargan los demás y con movimiento reducido */}
       {/* eslint-disable @next/next/no-img-element */}
       <img
         src={frameUrl("/chef", REST)}
         alt=""
         fetchPriority="high"
-        className={cn(img, "hidden object-[35%_50%] md:block")}
+        style={{ objectPosition: `${desktopPosX * 100}% 50%` }}
+        className={cn(img, "hidden md:block")}
       />
       <img src={frameUrl("/chef-m", REST)} alt="" fetchPriority="high" className={cn(img, "object-[49%_50%] md:hidden")} />
       {/* eslint-enable @next/next/no-img-element */}
@@ -215,5 +236,6 @@ export function ChefScrub({ className, style }: { className?: string; style?: Re
     </div>
   );
 }
+
 
 
