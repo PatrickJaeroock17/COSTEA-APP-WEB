@@ -13,7 +13,7 @@ const links = [
 export function SiteHeader() {
   return (
     <header className="absolute inset-x-0 top-0 z-20">
-      <div className="flex h-14 items-center justify-between gap-2 pl-5 pr-3 pt-3 md:h-[88px] md:gap-3 md:px-16 md:pt-0">
+      <div className="flex h-14 items-center justify-between gap-2 pl-5 pr-3 pt-3 md:h-[116px] md:gap-3 md:px-16 md:pt-6">
         <Logo />
         <nav className="hidden items-center gap-9 text-[15px] font-semibold text-[#12251f] md:flex">
           {links.map((l) => (
@@ -59,3 +59,4 @@ export function SiteHeader() {
     </header>
   );
 }
+

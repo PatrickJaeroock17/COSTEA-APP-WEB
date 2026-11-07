@@ -9,7 +9,7 @@ const D = 4.04; // duración del video original, en segundos
 const TF = D * 0.52; // instante de frente
 const LERP = 0.14; // por cuadro a 60 Hz
 const CONCURRENCY = 6;
-const SCROLL_TRAVEL = 760; // px de recorrido del scroll en móvil (ver HERO-MOVIL.md)
+const SCROLL_TRAVEL = 1300; // px de recorrido del scroll en móvil (HERO-MOVIL.md pedía 760; más largo = giro más lento)
 
 const REST = Math.round((TF / D) * (FRAMES - 1));
 const frameUrl = (dir: string, i: number) => `${dir}/f${String(i + 1).padStart(3, "0")}.webp`;
@@ -215,3 +215,4 @@ export function ChefScrub({ className }: { className?: string }) {
     </div>
   );
 }
+

@@ -15,11 +15,11 @@ function ArrowCircle() {
 
 export function Hero() {
   return (
-    // Móvil: altura = pantalla + 760 px de recorrido; el escenario queda anclado y el scroll gira al chef (HERO-MOVIL.md).
+    // Móvil: altura = pantalla + 1300 px de recorrido; el escenario queda anclado y el scroll gira al chef (HERO-MOVIL.md).
     // Escritorio: composición de HERO-REFERENCIA.md.
     <section
       style={{ ["--p" as string]: 0 }}
-      className="relative h-[calc(100svh+760px)] w-full overflow-clip bg-[#f4e6c9] md:h-auto md:overflow-hidden"
+      className="relative h-[calc(100svh+1300px)] w-full overflow-clip bg-[#f4e6c9] md:h-auto md:overflow-hidden"
     >
       <div className="sticky top-0 h-svh overflow-hidden md:static md:h-auto md:min-h-[max(100vh,780px)] md:overflow-visible">
         {/* Chef: detrás de todo */}
@@ -102,3 +102,4 @@ export function Hero() {
     </section>
   );
 }
+
