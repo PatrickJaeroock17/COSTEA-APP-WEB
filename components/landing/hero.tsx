@@ -8,7 +8,7 @@ export function Hero() {
     <section className="relative h-[190svh] w-full overflow-clip bg-[#f4e6c9] md:h-auto md:overflow-hidden">
       <div className="sticky top-0 h-svh md:static md:h-auto md:min-h-[max(100vh,780px)]">
         {/* Chef: detrás de todo */}
-        <ChefScrub className="absolute inset-0 md:left-auto md:w-[78%]" />
+        <ChefScrub className="absolute inset-x-0 bottom-0 h-[72svh] md:inset-x-auto md:right-0 md:top-0 md:h-full md:w-[78%]" />
 
         {/* Tarjetas flotantes (valores de ejemplo) */}
         <div className="hero-bob pointer-events-none absolute right-[6%] top-[30%] z-[2] hidden rounded-2xl bg-white px-4 py-3 shadow-[0_12px_30px_rgba(3,42,31,0.18)] [--bob-dur:5s] md:block">
@@ -21,7 +21,7 @@ export function Hero() {
         </div>
 
         {/* Contenido: abajo sobre el chef en móvil; a la izquierda en escritorio */}
-        <div className="absolute inset-x-0 bottom-0 z-[1] flex flex-col justify-end bg-linear-to-t from-[#f4e6c9] from-65% to-transparent px-5 pb-8 pt-28 sm:px-8 md:relative md:inset-auto md:min-h-[inherit] md:justify-center md:bg-none md:px-16 md:pb-16 md:pt-28">
+        <div className="absolute inset-x-0 bottom-0 z-[1] flex flex-col justify-end bg-linear-to-t from-[#f4e6c9] from-50% to-transparent px-5 pb-8 pt-28 sm:px-8 md:relative md:inset-auto md:min-h-[inherit] md:justify-center md:bg-none md:px-16 md:pb-16 md:pt-28">
           <div className="flex max-w-[540px] flex-col items-start gap-4 md:gap-6">
             <span className="rounded-full bg-white/70 px-3.5 py-[7px] text-[13px] font-bold text-[#00563d]">
               Costos y presupuestos para restaurantes
@@ -63,3 +63,4 @@ export function Hero() {
     </section>
   );
 }
+
