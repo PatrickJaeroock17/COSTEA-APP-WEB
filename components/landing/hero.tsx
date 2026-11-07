@@ -3,8 +3,8 @@ import { ChevronDown, MousePointer2 } from "lucide-react";
 import { ChefScrub } from "@/components/landing/chef-scrub";
 import { SiteHeader } from "@/components/landing/site-header";
 
-// Altura de la caja del chef en móvil, como proporción del escenario. Bájala a 0.80 si la corbata sigue tapada.
-const CHEF_HEIGHT_RATIO = 0.86;
+// Altura de la caja del chef en móvil, como proporción del escenario. Bájala si la corbata queda tapada por el texto; súbela para ampliar al chef.
+const CHEF_HEIGHT_RATIO = 0.74;
 
 function ArrowCircle() {
   return (
@@ -27,7 +27,7 @@ export function Hero() {
       <div className="sticky top-0 h-svh overflow-hidden md:static md:h-auto md:min-h-[max(100vh,780px)] md:overflow-visible">
         {/* Chef: detrás de todo */}
         <ChefScrub
-          className="absolute inset-x-0 top-0 h-[var(--chef-h)] md:inset-y-0 md:left-auto md:h-auto md:w-[78%]"
+          className="absolute inset-x-0 top-0 h-[max(var(--chef-h),150vw)] md:inset-y-0 md:left-auto md:h-auto md:w-[78%]"
           style={{ ["--chef-h" as string]: `${CHEF_HEIGHT_RATIO * 100}%` }}
         />
 
@@ -108,6 +108,8 @@ export function Hero() {
     </section>
   );
 }
+
+
 
 
 

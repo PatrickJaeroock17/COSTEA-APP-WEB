@@ -184,7 +184,11 @@
   .hero-bob { animation: none; }
 }
 
-/* Fundido del chef: ninguno en móvil; a la izquierda en escritorio */
+/* Fundido del chef: solo en el borde inferior en móvil (nada arriba); a la izquierda en escritorio */
+.chef-fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
+}
 @media (min-width: 768px) {
   .chef-fade {
     -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 34%);
@@ -203,6 +207,7 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-chevron { animation: none; }
 }
+
 
 
 
