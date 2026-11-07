@@ -16,14 +16,14 @@ Reconstruir TODO el frontend y el backend en **Next.js (App Router) + React + Ty
 **conservando la lógica de negocio, los módulos y las reglas de cálculo**. Cambian: diseño, orden de la navegación, nombre visual de marca.
 
 ## Fuente de verdad de la lógica (no inventar fórmulas)
-- Código viejo: `legacy/costos_app/app/services/` (costing, planning, payroll, inventory, recipes, materials, labor_*, overhead_tables, sales…).
-- Reglas escritas: `legacy/GUIA_RAPIDA.md`, `legacy/costos_app/RESTAURANTES.md`, `legacy/costos_app/MEJORAS_EXCEL.md`, `legacy/costos_app/INVENTARIOS.md`.
-- Las pruebas en `legacy/costos_app/tests/` son la especificación: portar los casos a Vitest y deben dar los mismos resultados.
-  Caso de comprobación de `legacy/GUIA_RAPIDA.md`: ventas 12000, materiales 4800, MOD 2000 + no absorbida 400, utilidad 3600, margen 30 %.
+- Código viejo: `legacy/Costea-main/costos_app/app/services/` (costing, planning, payroll, inventory, recipes, materials, labor_*, overhead_tables, sales…).
+- Reglas escritas: `legacy/Costea-main/GUIA_RAPIDA.md`, `legacy/Costea-main/costos_app/RESTAURANTES.md`, `legacy/Costea-main/costos_app/MEJORAS_EXCEL.md`, `legacy/Costea-main/costos_app/INVENTARIOS.md`.
+- Las pruebas en `legacy/Costea-main/costos_app/tests/` son la especificación: portar los casos a Vitest y deben dar los mismos resultados.
+  Caso de comprobación de `legacy/Costea-main/GUIA_RAPIDA.md`: ventas 12000, materiales 4800, MOD 2000 + no absorbida 400, utilidad 3600, margen 30 %.
 - Cálculos monetarios con `decimal.js` (el original usa Decimal exacto). Nunca `number` para dinero.
 
 ## Datos
-- Supabase Postgres. Portar las tablas de `legacy/costos_app/app/models/` y el catálogo de `legacy/cevicheria_costos_completo.sql`
+- Supabase Postgres. Portar las tablas de `legacy/Costea-main/costos_app/app/models/` y el catálogo de `legacy/Costea-main/cevicheria_costos_completo.sql`
   (categorias, unidades_medida, insumos, platos, receta_detalles, datos laborales simulados) a migraciones de Supabase.
 - Auth con Supabase Auth (reemplaza users + Flask-Login). Aislamiento por restaurante con **RLS**
   (reemplaza las verificaciones de propietario que hoy hay en cada ruta). Cada restaurante ve solo lo suyo.
@@ -49,13 +49,13 @@ Reconstruir TODO el frontend y el backend en **Next.js (App Router) + React + Ty
 2. Supabase: esquema, RLS, auth, datos del catálogo.
 3. Portar el motor de costos a `lib/costing/` con pruebas.
 4. Módulos en este orden: Restaurantes/periodos → Insumos → Platos y recetas → Personal → Gastos → Costo y precio → Plan → Presupuestos → Ventas → Inventario → Reportes.
-5. Verificar contra el caso de comprobación y contra el Excel `legacy/2026 2 UNI CCP COSTOS DE RESTAURANTES.xlsx`.
+5. Verificar contra el caso de comprobación y contra el Excel `legacy/Costea-main/2026 2 UNI CCP COSTOS DE RESTAURANTES.xlsx`.
 
 ## Página principal (landing) y chef 3D
 - Rutas: `/` = landing pública que vende el servicio; `/ingresar` y `/registro` = acceso; `/app/...` = sistema (menú lateral de arriba).
 - Secciones de la landing: portada con chef, Qué incluye (9 funciones reales), Cómo funciona (4 pasos), Qué ganas, Planes (precio y contenido por definir), Preguntas, cierre con botón, pie de página. No inventar testimonios ni cifras de clientes.
 - Portada: pantalla completa, fondo crema cálido, texto a la izquierda en verde oscuro, chef a la derecha.
-- El chef es un video de Kling: `brand/costea-chef-scrub.mp4` (1440×812, 97 cuadros a 24 fps = 4,04 s, todos clave, sin audio; es un solo giro continuo generado en Kling con cuadro inicial, medio y final, sin empalmes).
+- El chef es un video de Kling: `brand/costea-chef-scrub.mp4` (1916×1080 reales, 97 cuadros a 24 fps = 4,04 s, con pista de audio AAC que se ignora; es un solo giro continuo generado en Kling con cuadro inicial, medio y final, sin empalmes).
   Recorrido: cuadro 0 = mira a la izquierda (hacia el texto) · ≈2,1 s (cuadro ~50) = de frente, reposo · último cuadro = mira a la derecha.
 - Comportamiento: el video NO se reproduce; se pausa y se mueve `currentTime` según la posición horizontal del cursor
   (izquierda del chef → primera mitad del video; derecha → segunda mitad; reposo en D×0.52), con suavizado (lerp ≈ 0.14) en `requestAnimationFrame`.
@@ -63,3 +63,5 @@ Reconstruir TODO el frontend y el backend en **Next.js (App Router) + React + Ty
 - Máscara: el borde izquierdo del video se desvanece hacia el crema de la página (`mask-image`).
 - El video trae marca de agua "KlingAI" abajo a la derecha: usar la exportación sin marca (plan de pago) antes de publicar.
 - Maqueta de referencia de todas las pantallas: lienzo "Costea — maqueta de Inicio y menú" (Inicio, Inicio de sesión, Página principal, Portada con chef 3D).
+- Implementación del hero: la especificación exacta está en `brand/HERO-REFERENCIA.md`. El chef no usa el `<video>`: se dibuja en un `<canvas>` con cuadros WebP precargados (`public/chef/` para escritorio, `public/chef-m/` para móvil, recortados y escalados alrededor del chef). En móvil el giro sigue el scroll de una escena anclada.
+- Si se cambia el video, regenerar ambos juegos de cuadros con ffmpeg (97 cuadros cada uno) y revisar las poses extremas.
