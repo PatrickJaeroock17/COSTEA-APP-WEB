@@ -1,6 +1,8 @@
-﻿import { AccessStub } from "@/components/brand/access-stub";
+﻿import { AuthForm } from "@/components/auth/auth-form";
+
+export const metadata = { title: "Crear cuenta — costea" };
 
 export default function Page() {
-  return <AccessStub title="Crear cuenta" />;
+  return <AuthForm mode="register" />;
 }
 

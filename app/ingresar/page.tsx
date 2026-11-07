@@ -1,6 +1,8 @@
-﻿import { AccessStub } from "@/components/brand/access-stub";
+﻿import { AuthForm } from "@/components/auth/auth-form";
+
+export const metadata = { title: "Iniciar sesión — costea" };
 
 export default function Page() {
-  return <AccessStub title="Iniciar sesión" />;
+  return <AuthForm mode="login" />;
 }
 
