@@ -22,7 +22,7 @@ type Mode = "desktop" | "mobile";
  * - Escritorio: el cursor se mide sobre TODA la sección (HERO-REFERENCIA.md).
  * - Móvil: el scroll de la escena anclada decide el cuadro (HERO-MOVIL.md); `--p` (0..1) queda en la sección.
  */
-export function ChefScrub({ className }: { className?: string }) {
+export function ChefScrub({ className, style }: { className?: string; style?: React.CSSProperties }) {
   const layerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [mode, setMode] = useState<Mode | null>(null);
@@ -47,7 +47,7 @@ export function ChefScrub({ className }: { className?: string }) {
 
     const mobile = mode === "mobile";
     const dir = mobile ? "/chef-m" : "/chef";
-    const posX = mobile ? 0.5 : 0.35;
+    const posX = mobile ? 0.49 : 0.35;
     const t0 = mobile ? 0.02 : TF; // instante inicial
     const order = mobile
       ? Array.from({ length: FRAMES }, (_, i) => i) // el scroll avanza desde el cuadro 0
@@ -200,7 +200,7 @@ export function ChefScrub({ className }: { className?: string }) {
   const img = "absolute inset-0 h-full w-full object-cover";
 
   return (
-    <div ref={layerRef} aria-hidden className={cn("chef-fade pointer-events-none overflow-hidden", className)}>
+    <div ref={layerRef} aria-hidden style={style} className={cn("chef-fade pointer-events-none overflow-hidden", className)}>
       {/* Cuadros de frente: visibles al instante, mientras cargan los demás y con movimiento reducido */}
       {/* eslint-disable @next/next/no-img-element */}
       <img
@@ -209,10 +209,11 @@ export function ChefScrub({ className }: { className?: string }) {
         fetchPriority="high"
         className={cn(img, "hidden object-[35%_50%] md:block")}
       />
-      <img src={frameUrl("/chef-m", REST)} alt="" fetchPriority="high" className={cn(img, "object-[50%_50%] md:hidden")} />
+      <img src={frameUrl("/chef-m", REST)} alt="" fetchPriority="high" className={cn(img, "object-[49%_50%] md:hidden")} />
       {/* eslint-enable @next/next/no-img-element */}
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
     </div>
   );
 }
+
 
