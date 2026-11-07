@@ -4,9 +4,9 @@ import { ChefScrub } from "@/components/landing/chef-scrub";
 
 export function Hero() {
   return (
-    <section className="relative min-h-[max(100vh,780px)] w-full overflow-hidden bg-[#f4e6c9]">
+    <section className="relative flex w-full flex-col overflow-hidden bg-[#f4e6c9] md:block md:min-h-[max(100vh,780px)]">
       {/* Chef: detrás de todo */}
-      <ChefScrub className="absolute bottom-0 right-0 h-[52%] w-full md:top-0 md:h-full md:w-[78%]" />
+      <ChefScrub className="relative order-2 h-[460px] w-full md:absolute md:right-0 md:top-0 md:order-none md:h-full md:w-[78%]" />
 
       {/* Tarjetas flotantes (valores de ejemplo) */}
       <div className="hero-bob pointer-events-none absolute right-[6%] top-[30%] z-[2] hidden rounded-2xl bg-white px-4 py-3 shadow-[0_12px_30px_rgba(3,42,31,0.18)] [--bob-dur:5s] md:block">
@@ -19,7 +19,7 @@ export function Hero() {
       </div>
 
       {/* Contenido */}
-      <div className="relative z-[1] flex min-h-[inherit] flex-col justify-center px-5 pb-[58%] pt-28 sm:px-8 md:px-16 md:pb-16 md:pt-28">
+      <div className="relative z-[1] order-1 flex flex-col justify-center px-5 pb-6 pt-28 sm:px-8 md:min-h-[inherit] md:px-16 md:pb-16 md:pt-28">
         <div className="flex max-w-[540px] flex-col items-start gap-6">
           <span className="rounded-full bg-white/70 px-3.5 py-[7px] text-[13px] font-bold text-[#00563d]">
             Costos y presupuestos para restaurantes
@@ -46,6 +46,7 @@ export function Hero() {
             </a>
           </div>
           <p className="text-sm text-[#3f524b]">Hecho para restaurantes en Perú · Precios con IGV del 18 %</p>
+          <p className="flex items-center gap-1.5 text-[13px] text-[#3f524b] md:hidden"><MousePointer2 className="size-4" aria-hidden /> Desliza el dedo: el chef te sigue.</p>
         </div>
       </div>
 
@@ -55,3 +56,4 @@ export function Hero() {
     </section>
   );
 }
+

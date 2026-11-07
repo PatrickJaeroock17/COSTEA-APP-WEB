@@ -8,14 +8,14 @@ const FRAMES = 97;
 const D = 4.04; // duración del video original, en segundos
 const TF = D * 0.52; // instante de frente
 const LERP = 0.14; // por cuadro a 60 Hz
-const POS_X = 0.35; // object-position: 35% 50%
+const POS_X_DESKTOP = 0.35; // object-position: 35% 50% (escritorio)
+const POS_X_MOBILE = 0.5; // en móvil el chef queda centrado
 const POS_Y = 0.5;
 const CONCURRENCY = 6;
 
 const REST = Math.round((TF / D) * (FRAMES - 1));
 const src = (i: number) => `/chef/f${String(i + 1).padStart(3, "0")}.webp`;
 
-const FADE = "linear-gradient(to right, transparent 0%, #000 34%)";
 
 /**
  * Capa del chef (detrás del hero). Los cuadros del video se precargan como ImageBitmap y se dibujan
@@ -33,6 +33,7 @@ export function ChefScrub({ className }: { className?: string }) {
     const img = imgRef.current;
     const hero = layer?.closest("section");
     const ctx = canvas?.getContext("2d");
+    const desktop = window.matchMedia("(min-width: 768px)");
     if (!layer || !canvas || !hero || !ctx) return;
 
     // Solo el cuadro de frente (el <img>), sin seguimiento.
@@ -72,7 +73,7 @@ export function ChefScrub({ className }: { className?: string }) {
       const scale = Math.max(cw / bmp.width, ch / bmp.height);
       const sw = cw / scale;
       const sh = ch / scale;
-      const sx = (bmp.width - sw) * POS_X;
+      const sx = (bmp.width - sw) * (desktop.matches ? POS_X_DESKTOP : POS_X_MOBILE);
       const sy = (bmp.height - sh) * POS_Y;
       ctx.drawImage(bmp, sx, sy, sw, sh, 0, 0, cw, ch);
       drawnIndex = j;
@@ -169,8 +170,7 @@ export function ChefScrub({ className }: { className?: string }) {
     <div
       ref={layerRef}
       aria-hidden
-      className={cn("pointer-events-none overflow-hidden", className)}
-      style={{ maskImage: FADE, WebkitMaskImage: FADE }}
+      className={cn("chef-fade pointer-events-none overflow-hidden", className)}
     >
       {/* Cuadro de frente: visible al instante, mientras llegan los demás y con movimiento reducido */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -179,10 +179,10 @@ export function ChefScrub({ className }: { className?: string }) {
         src={src(REST)}
         alt=""
         fetchPriority="high"
-        className="absolute inset-0 h-full w-full object-cover"
-        style={{ objectPosition: "35% 50%" }}
+        className="absolute inset-0 h-full w-full object-cover object-[50%_50%] md:object-[35%_50%]"
       />
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
     </div>
   );
 }
+
