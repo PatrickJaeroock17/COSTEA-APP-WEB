@@ -1,4 +1,7 @@
-﻿import Link from "next/link";
+import Link from "next/link";
+import { Suspense } from "react";
+import { CreateRestaurant } from "@/components/app/create-restaurant";
+import { getAppContext } from "@/lib/auth";
 import { AlertTriangle, Check, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,11 +34,22 @@ const card = "rounded-[24px] border border-[#e2e9e5] bg-white";
 
 export default function InicioPage() {
   return (
+    <Suspense>
+      <Inicio />
+    </Suspense>
+  );
+}
+
+async function Inicio() {
+  const { user, restaurantId } = await getAppContext();
+  if (!restaurantId) return <CreateRestaurant name={user.name.split(" ")[0]} />;
+
+  return (
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
-          <h1 className="font-brand text-4xl font-extrabold tracking-[-0.025em] text-[#032a1f] sm:text-5xl">Hola, Patrick</h1>
-          <p className="mt-2 text-lg text-[#5b6b65]">Así va el costeo de tu restaurante este mes.</p>
+          <h1 className="font-brand text-4xl font-extrabold tracking-[-0.025em] text-[#032a1f] sm:text-5xl">Hola, {user.name.split(" ")[0]}</h1>
+          <p className="mt-2 text-lg text-[#5b6b65]">Así va el costeo de tu restaurante este mes. <span className="text-sm">(Cifras de ejemplo hasta cargar tus datos.)</span></p>
         </div>
         <Link
           href="/app/gastos"
