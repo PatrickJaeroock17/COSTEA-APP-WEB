@@ -10,11 +10,12 @@ export function Logo({ variant = "light", className }: { variant?: "light" | "da
         alt=""
         width={40}
         height={40}
+        className="size-8 md:size-10"
         priority
       />
       <span
         className={cn(
-          "font-brand text-[28px] font-extrabold leading-none tracking-tight",
+          "font-brand text-2xl font-extrabold leading-none tracking-[-0.01em] md:text-[28px]",
           variant === "light" ? "text-[#006b4b]" : "text-white",
         )}
       >
@@ -23,4 +24,5 @@ export function Logo({ variant = "light", className }: { variant?: "light" | "da
     </Link>
   );
 }
+
 

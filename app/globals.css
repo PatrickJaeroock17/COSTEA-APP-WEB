@@ -184,11 +184,7 @@
   .hero-bob { animation: none; }
 }
 
-/* Fundido del chef: hacia abajo (detrás del texto) en móvil, a la izquierda en escritorio */
-.chef-fade {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 64%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 64%, transparent 100%);
-}
+/* Fundido del chef: ninguno en móvil (el degradado inferior lo resuelve); a la izquierda en escritorio */
 @media (min-width: 768px) {
   .chef-fade {
     -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 34%);
@@ -196,4 +192,14 @@
   }
 }
 
-
+/* Aviso "Baja y mira al chef": chevron que sube y baja */
+@keyframes hero-chevron {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+.hero-chevron {
+  animation: hero-chevron 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-chevron { animation: none; }
+}

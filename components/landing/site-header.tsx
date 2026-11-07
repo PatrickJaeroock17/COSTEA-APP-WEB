@@ -9,10 +9,11 @@ const links = [
   { href: "#preguntas", label: "Preguntas" },
 ];
 
+/** Cabecera de la portada: va dentro del escenario del hero para quedar anclada con el chef en móvil. */
 export function SiteHeader() {
   return (
     <header className="absolute inset-x-0 top-0 z-20">
-      <div className="flex h-[88px] items-center justify-between gap-3 px-5 sm:px-8 md:px-16">
+      <div className="flex h-14 items-center justify-between gap-2 pl-5 pr-3 pt-3 md:h-[88px] md:gap-3 md:px-16 md:pt-0">
         <Logo />
         <nav className="hidden items-center gap-9 text-[15px] font-semibold text-[#12251f] md:flex">
           {links.map((l) => (
@@ -21,13 +22,16 @@ export function SiteHeader() {
             </a>
           ))}
         </nav>
-        <div className="flex items-center gap-3 sm:gap-5">
-          <Link href="/ingresar" className="hidden text-[15px] font-semibold text-[#006b4b] hover:underline md:inline">
+        <div className="flex items-center gap-1 md:gap-3">
+          <Link
+            href="/ingresar"
+            className="inline-flex min-h-11 items-center rounded-full border-[1.5px] border-[#006b4b] bg-white/55 px-4 text-sm font-bold text-[#006b4b] transition-colors hover:bg-white/80"
+          >
             Iniciar sesión
           </Link>
           <Link
             href="/registro"
-            className="rounded-xl bg-[#006b4b] px-4 py-2.5 text-[15px] font-bold text-white transition-colors hover:bg-[#00563d] sm:px-5"
+            className="hidden rounded-xl bg-[#006b4b] px-5 py-2.5 text-[15px] font-bold text-white transition-colors hover:bg-[#00563d] md:inline-block"
           >
             Crear cuenta
           </Link>
@@ -35,18 +39,18 @@ export function SiteHeader() {
           <details className="group relative md:hidden">
             <summary
               aria-label="Abrir menú"
-              className="grid size-11 cursor-pointer list-none place-items-center rounded-xl border-[1.5px] border-[#006b4b]/30 bg-white/60 text-[#006b4b] marker:hidden [&::-webkit-details-marker]:hidden"
+              className="grid size-11 cursor-pointer list-none place-items-center text-[#032a1f] marker:hidden [&::-webkit-details-marker]:hidden"
             >
-              <Menu className="size-5" aria-hidden />
+              <Menu className="size-6" strokeWidth={2} aria-hidden />
             </summary>
-            <div className="absolute right-0 top-14 w-56 rounded-2xl bg-white p-2 shadow-[0_12px_30px_rgba(3,42,31,0.18)]">
+            <div className="absolute right-0 top-12 w-56 rounded-2xl bg-white p-2 shadow-[0_12px_30px_rgba(3,42,31,0.18)]">
               {links.map((l) => (
                 <a key={l.href} href={l.href} className="block rounded-xl px-4 py-3 text-[15px] font-semibold text-[#12251f] hover:bg-[#f4e6c9]/60">
                   {l.label}
                 </a>
               ))}
-              <Link href="/ingresar" className="block rounded-xl px-4 py-3 text-[15px] font-semibold text-[#006b4b] hover:bg-[#f4e6c9]/60">
-                Iniciar sesión
+              <Link href="/registro" className="block rounded-xl px-4 py-3 text-[15px] font-bold text-[#006b4b] hover:bg-[#f4e6c9]/60">
+                Crear cuenta
               </Link>
             </div>
           </details>
