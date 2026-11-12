@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Decimal from "decimal.js";
-import { IGV, money } from "@/lib/costing/price";
+import { IGV, soles } from "@/lib/costing/price";
 import { cn } from "@/lib/utils";
 
 // Platos de ejemplo: costo completo y precio de carta (con IGV).
@@ -36,7 +36,7 @@ export function BenefitsDemo() {
       {/* Tarjetas de la portada, ahora con los datos del plato elegido */}
       <div className="hero-bob pointer-events-none absolute -top-7 right-4 z-10 rounded-2xl bg-white px-4 py-2.5 shadow-[0_12px_30px_rgba(3,42,31,0.18)] [--bob-dur:5s] sm:right-8">
         <p className="text-xs font-semibold text-[#5b6b65]">Costo completo (ejemplo)</p>
-        <p className="font-brand text-xl font-extrabold tabular-nums text-[#032a1f]">{money(sel.cost)}</p>
+        <p className="font-brand text-xl font-extrabold tabular-nums text-[#032a1f]">{soles(sel.cost)}</p>
       </div>
       <div className="hero-bob pointer-events-none absolute -bottom-6 right-4 z-10 rounded-2xl bg-[#006b4b] px-4 py-2.5 shadow-[0_12px_30px_rgba(3,42,31,0.25)] [--bob-delay:0.6s] [--bob-dur:5.8s] sm:right-8">
         <p className="text-xs font-semibold text-[#d8ee9c]">Margen (ejemplo)</p>
@@ -88,7 +88,7 @@ export function BenefitsDemo() {
                   <span className="flex items-center justify-between gap-3 text-sm">
                     <span className="font-bold text-[#032a1f]">{r.name}</span>
                     <span className="font-brand font-extrabold tabular-nums text-[#006b4b]">
-                      {sort === "margin" ? `${(r.margin.toNumber() * 100).toFixed(0)} %` : money(r.result)}
+                      {sort === "margin" ? `${(r.margin.toNumber() * 100).toFixed(0)} %` : soles(r.result)}
                     </span>
                   </span>
                   <span className="mt-2 block h-2 overflow-hidden rounded-full bg-[#ead9b3]">

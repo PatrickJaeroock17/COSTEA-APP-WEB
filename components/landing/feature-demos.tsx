@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Decimal from "decimal.js";
 import { Plus, RotateCcw, TrendingUp } from "lucide-react";
 import { AnimatedNumber } from "@/components/landing/reveal";
-import { movingAverage, money, priceFromMargin } from "@/lib/costing/price";
+import { movingAverage, priceFromMargin, soles } from "@/lib/costing/price";
 import { cn } from "@/lib/utils";
 
 const fmt = (n: number) => `S/ ${n.toFixed(2)}`;
@@ -42,10 +42,10 @@ export function RecipeDemo() {
             <span className="min-w-0">
               <span className="block truncate font-semibold text-[#032a1f]">{r.name}</span>
               <span className={cn("text-xs text-[#5b6b65] transition-colors", idx === 0 && up && "font-bold text-[#c2410c]")}>
-                {r.qty} {r.unit} × {money(r.price)}
+                {r.qty} {r.unit} × {soles(r.price)}
               </span>
             </span>
-            <span className="shrink-0 font-bold tabular-nums text-[#032a1f]">{money(r.line)}</span>
+            <span className="shrink-0 font-bold tabular-nums text-[#032a1f]">{soles(r.line)}</span>
           </li>
         ))}
       </ul>
@@ -75,7 +75,7 @@ export function PriceDemo() {
     <div>
       <div className="flex items-center justify-between text-xs font-semibold text-[#5b6b65]">
         <span>Costo completo (ejemplo)</span>
-        <span className="font-brand text-base font-extrabold text-[#032a1f]">{money(cost)}</span>
+        <span className="font-brand text-base font-extrabold text-[#032a1f]">{soles(cost)}</span>
       </div>
 
       <label className="mt-4 block">
@@ -108,15 +108,15 @@ export function PriceDemo() {
       <dl className="mt-2 grid grid-cols-3 gap-2 text-xs">
         <div>
           <dt className="text-[#5b6b65]">Sin IGV</dt>
-          <dd className="font-bold tabular-nums text-[#032a1f]">{money(p.net)}</dd>
+          <dd className="font-bold tabular-nums text-[#032a1f]">{soles(p.net)}</dd>
         </div>
         <div>
           <dt className="text-[#5b6b65]">IGV</dt>
-          <dd className="font-bold tabular-nums text-[#032a1f]">{money(p.tax)}</dd>
+          <dd className="font-bold tabular-nums text-[#032a1f]">{soles(p.tax)}</dd>
         </div>
         <div>
           <dt className="text-[#5b6b65]">Utilidad</dt>
-          <dd className="font-bold tabular-nums text-[#006b4b]">{money(p.result)}</dd>
+          <dd className="font-bold tabular-nums text-[#006b4b]">{soles(p.result)}</dd>
         </div>
       </dl>
     </div>
@@ -144,7 +144,7 @@ export function KardexDemo() {
       // Las entradas recalculan el promedio; las salidas salen al promedio vigente.
       out.push(
         m.kind === "in"
-          ? { ...m, stock: stock.plus(m.qty), avg: movingAverage(stock, avg, m.qty, m.cost!) }
+          ? { ...m, stock: stock.plus(m.qty), avg: movingAverage(stock, avg, String(m.qty), String(m.cost!)) }
           : { ...m, stock: stock.minus(m.qty), avg },
       );
     }
@@ -171,14 +171,14 @@ export function KardexDemo() {
             )}
           >
             <span className="whitespace-nowrap font-semibold text-[#032a1f]">
-              {r.kind === "in" ? `Compra ${money(r.cost!)}` : "Salida"}
+              {r.kind === "in" ? `Compra ${soles(String(r.cost!))}` : "Salida"}
             </span>
             <span className={cn("text-right font-semibold", r.kind === "in" ? "text-[#006b4b]" : "text-[#c2410c]")}>
               {r.kind === "in" ? "+" : "−"}
               {r.qty}
             </span>
             <span className="text-right text-[#032a1f]">{r.stock.toFixed(0)}</span>
-            <span className="text-right font-bold text-[#032a1f]">{money(r.avg)}</span>
+            <span className="text-right font-bold text-[#032a1f]">{soles(r.avg)}</span>
           </div>
         ))}
       </div>

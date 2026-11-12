@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { Reveal, useInView, usePrefersReducedMotion } from "@/components/landing/reveal";
-import { money, priceFromMargin } from "@/lib/costing/price";
+import { priceFromMargin, soles } from "@/lib/costing/price";
 import { cn } from "@/lib/utils";
 
 const STEP_MS = 5500;
@@ -106,10 +106,10 @@ function PreviewPrices() {
             >
               <span>
                 <span className="block text-sm font-bold text-[#032a1f]">{d.name}</span>
-                <span className="text-xs text-[#5b6b65]">Costo {money(d.cost)}</span>
+                <span className="text-xs text-[#5b6b65]">Costo {soles(d.cost)}</span>
               </span>
               <span className="text-right">
-                <span className="block font-brand text-lg font-extrabold tabular-nums text-[#006b4b]">{money(p.final)}</span>
+                <span className="block font-brand text-lg font-extrabold tabular-nums text-[#006b4b]">{soles(p.final)}</span>
                 <span className="rounded-full bg-[#a9d63a]/50 px-2 py-0.5 text-[11px] font-bold text-[#032a1f]">
                   {p.margin ? (p.margin.toNumber() * 100).toFixed(0) : 0} % margen
                 </span>
