@@ -2,7 +2,7 @@
 
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { RESTAURANT_COOKIE, getUser } from "@/lib/auth";
+import { PERIOD_COOKIE, RESTAURANT_COOKIE, getUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 export type FormState = { error?: string; message?: string; values?: Record<string, string> };
@@ -104,28 +104,8 @@ export async function updatePassword(_prev: FormState, fd: FormData): Promise<Fo
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  (await cookies()).delete(RESTAURANT_COOKIE);
+  const jar = await cookies();
+  jar.delete(RESTAURANT_COOKIE);
+  jar.delete(PERIOD_COOKIE);
   redirect("/ingresar");
-}
-
-/** Cambia el restaurante de trabajo. RLS garantiza que solo se aceptan restaurantes del usuario. */
-export async function selectRestaurant(id: string) {
-  if (!(await getUser())) redirect("/ingresar");
-  const supabase = await createClient();
-  const { data } = await supabase.from("restaurants").select("id").eq("id", id).maybeSingle();
-  if (!data) return;
-  (await cookies()).set(RESTAURANT_COOKIE, data.id, { path: "/", httpOnly: true, sameSite: "lax", maxAge: 60 * 60 * 24 * 365 });
-}
-
-/** Crea un restaurante (usuarios que entraron con Google o que quieren otro). */
-export async function createRestaurant(_prev: FormState, fd: FormData): Promise<FormState> {
-  const name = text(fd, "restaurant");
-  if (!name || name.length > 180) return { error: "Escribe el nombre de tu restaurante.", values: { restaurant: name } };
-  const user = await getUser();
-  if (!user) redirect("/ingresar");
-  const supabase = await createClient();
-  const { data, error } = await supabase.from("restaurants").insert({ legal_name: name, owner_id: user.id }).select("id").single();
-  if (error || !data) return { error: "No pudimos crear el restaurante. Inténtalo otra vez.", values: { restaurant: name } };
-  (await cookies()).set(RESTAURANT_COOKIE, data.id, { path: "/", httpOnly: true, sameSite: "lax", maxAge: 60 * 60 * 24 * 365 });
-  redirect("/app");
 }

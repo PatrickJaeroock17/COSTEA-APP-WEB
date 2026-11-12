@@ -14,9 +14,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 }
 
 async function SessionShell({ children }: { children: React.ReactNode }) {
-  const { user, restaurants, restaurantId } = await getAppContext();
+  const { user, restaurants, restaurantId, periods, periodId } = await getAppContext();
   return (
-    <AppShell user={{ name: user.name, email: user.email }} restaurants={restaurants} restaurantId={restaurantId}>
+    <AppShell
+      user={{ name: user.name, email: user.email }}
+      restaurants={restaurants}
+      restaurantId={restaurantId}
+      periods={periods.map((p) => ({ id: p.id, label: p.label }))}
+      periodId={periodId}
+    >
       {children}
     </AppShell>
   );

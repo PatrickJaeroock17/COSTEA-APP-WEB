@@ -3,11 +3,11 @@
 import { useActionState } from "react";
 import { Store } from "lucide-react";
 import { FormAlert, SubmitButton, TextField } from "@/components/auth/fields";
-import { createRestaurant, type FormState } from "@/lib/actions/auth";
+import { createRestaurant, type WorkspaceState } from "@/lib/actions/workspace";
 
 /** Primer paso para quien entró sin restaurante (por ejemplo, con Google). */
 export function CreateRestaurant({ name }: { name: string }) {
-  const [state, action] = useActionState<FormState, FormData>(createRestaurant, {});
+  const [state, action] = useActionState<WorkspaceState, FormData>(createRestaurant, {});
   return (
     <div className="mx-auto max-w-xl rounded-[28px] border border-[#e2e9e5] bg-white p-7 sm:p-10">
       <span className="grid size-12 place-items-center rounded-2xl bg-[#006b4b] text-[#a9d63a]">

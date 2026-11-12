@@ -13,6 +13,7 @@ export function SelectMenu({
   onChange,
   label,
   short,
+  footer,
   className,
 }: {
   icon: LucideIcon;
@@ -22,6 +23,8 @@ export function SelectMenu({
   label: string;
   /** Texto corto para pantallas pequeñas. */
   short?: (v: string) => string;
+  /** Acción al pie de la lista (por ejemplo, «Agregar mes»). Recibe la función para cerrar. */
+  footer?: (close: () => void) => React.ReactNode;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -82,6 +85,7 @@ export function SelectMenu({
               </button>
             </li>
           ))}
+          {footer && <li className="mt-1 border-t border-[#e2e9e5] pt-1">{footer(() => setOpen(false))}</li>}
         </ul>
       )}
     </div>

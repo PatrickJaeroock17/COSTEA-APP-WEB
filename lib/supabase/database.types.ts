@@ -919,6 +919,15 @@ isOneToOne: false
                            },
 "is_owner":
 { Args: { "rid": string }; Returns: boolean
+                           },
+"lima_today":
+{ Args: never; Returns: string
+                           },
+"create_restaurant":
+{ Args: { "p_legal_name": string; "p_trade_name"?: string | null; "p_tax_id_kind"?: string; "p_tax_id"?: string | null; "p_currency"?: string; "p_year"?: number | null; "p_month"?: number | null }; Returns: string
+                           },
+"restaurant_money_data":
+{ Args: { "rid": string }; Returns: boolean
                            }
           }
           Enums: {

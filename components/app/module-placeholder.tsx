@@ -20,7 +20,7 @@ export function ModulePlaceholder({ href }: { href: string }) {
         </span>
         <div>
           <p className="font-bold text-[#032a1f]">Este módulo se construye en la {item.phase}.</p>
-          <p className="mt-1 text-sm text-[#5b6b65]">Mientras tanto, el menú, los selectores de restaurante y mes, y el panel de Inicio ya funcionan con datos de ejemplo.</p>
+          <p className="mt-1 text-sm text-[#5b6b65]">Mientras tanto, ya puedes configurar tu restaurante, sus meses de trabajo y sus unidades en Configuración.</p>
         </div>
       </div>
     </div>

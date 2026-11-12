@@ -3,23 +3,30 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { Building2, CalendarDays, LogOut, Menu, Settings, X } from "lucide-react";
+import { Building2, CalendarDays, LogOut, Menu, Plus, Settings, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { NavList } from "@/components/app/nav-list";
 import { SelectMenu } from "@/components/app/select-menu";
-import { selectRestaurant, signOut } from "@/lib/actions/auth";
+import { signOut } from "@/lib/actions/auth";
+import { selectPeriod, selectRestaurant } from "@/lib/actions/workspace";
 import { SETTINGS_ITEM } from "@/lib/nav";
-
-const MONTHS = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre",
-].map((m, i) => ({ value: `2026-${String(i + 1).padStart(2, "0")}`, label: `${m} 2026` }));
 
 export type ShellProps = {
   user: { name: string; email: string };
   restaurants: { id: string; name: string }[];
   restaurantId: string | null;
+  periods: { id: number; label: string }[];
+  periodId: number | null;
 };
+
+function MenuLink({ href, label, close }: { href: string; label: string; close: () => void }) {
+  return (
+    <Link href={href} onClick={close} className="flex min-h-10 items-center gap-2 whitespace-nowrap rounded-xl px-3 text-sm font-bold text-[#006b4b] hover:bg-[#ecf8f2]">
+      <Plus className="size-4" aria-hidden />
+      {label}
+    </Link>
+  );
+}
 
 function UserCard({ user, onNavigate }: { user: ShellProps["user"]; onNavigate?: () => void }) {
   const icon = "grid size-9 shrink-0 place-items-center rounded-xl text-[#9dc0b0] transition-colors hover:bg-white/10 hover:text-white";
@@ -43,12 +50,12 @@ function UserCard({ user, onNavigate }: { user: ShellProps["user"]; onNavigate?:
     </div>
   );
 }
-export function AppShell({ children, user, restaurants, restaurantId }: ShellProps & { children: React.ReactNode }) {
+export function AppShell({ children, user, restaurants, restaurantId, periods, periodId }: ShellProps & { children: React.ReactNode }) {
   const router = useRouter();
   const [drawer, setDrawer] = useState(false);
-  const [month, setMonth] = useState("2026-11");
   const [, startTransition] = useTransition();
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [pendingPeriod, setPendingPeriod] = useState<number | null>(null);
 
   useEffect(() => {
     if (!drawer) return;
@@ -69,6 +76,19 @@ export function AppShell({ children, user, restaurants, restaurantId }: ShellPro
       setPendingId(null);
     });
   };
+
+  const choosePeriod = (id: number) => {
+    setPendingPeriod(id);
+    startTransition(async () => {
+      await selectPeriod(id);
+      router.refresh();
+      setPendingPeriod(null);
+    });
+  };
+
+  const periodOptions = periods.length
+    ? periods.map((p) => ({ value: String(p.id), label: p.label }))
+    : [{ value: "", label: "Sin mes" }];
 
   const restaurantOptions = restaurants.length
     ? restaurants.map((r) => ({ value: r.id, label: r.name }))
@@ -111,9 +131,19 @@ export function AppShell({ children, user, restaurants, restaurantId }: ShellPro
             options={restaurantOptions}
             value={pendingId ?? restaurantId ?? ""}
             onChange={(id) => id && chooseRestaurant(id)}
+            footer={(close) => <MenuLink href="/app/configuracion?seccion=restaurantes" label="Nuevo restaurante" close={close} />}
             className="min-w-0 flex-1 sm:flex-none"
           />
-          <SelectMenu icon={CalendarDays} label="Mes de trabajo" options={MONTHS} value={month} onChange={setMonth} short={(v) => `${v.slice(0, 3)} ${v.slice(-4)}`} className="min-w-0 flex-1 sm:flex-none" />
+          <SelectMenu
+            icon={CalendarDays}
+            label="Mes de trabajo"
+            options={periodOptions}
+            value={String(pendingPeriod ?? periodId ?? "")}
+            onChange={(id) => id && choosePeriod(Number(id))}
+            short={(label) => (label.includes(" ") ? `${label.slice(0, 3)} ${label.slice(-4)}` : label)}
+            footer={restaurants.length ? (close) => <MenuLink href="/app/configuracion?seccion=periodos" label="Agregar mes" close={close} /> : undefined}
+            className="min-w-0 flex-1 sm:flex-none"
+          />
           <span className="ml-auto hidden rounded-full bg-[#d2efe1] px-4 py-2 text-sm font-bold text-[#00563d] md:inline-block">
             Cifras de ejemplo
           </span>
