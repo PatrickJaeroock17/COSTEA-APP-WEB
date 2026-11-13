@@ -988,6 +988,12 @@ isOneToOne: false
                            },
 "publish_budget":
 { Args: { "p_plan": number; "p_fingerprint": string; "p_snapshot": Json }; Returns: number
+                           },
+"register_sale":
+{ Args: { "p_period": number; "p_product": number; "p_sold_on": string; "p_quantity": string; "p_unit_cost": string }; Returns: number
+                           },
+"delete_sale":
+{ Args: { "p_sale": number }; Returns: undefined
                            }
           }
           Enums: {
