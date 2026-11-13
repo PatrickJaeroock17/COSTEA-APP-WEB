@@ -973,6 +973,18 @@ isOneToOne: false
                            },
 "delete_employee":
 { Args: { "p_employee": number }; Returns: undefined
+                           },
+"create_plan":
+{ Args: { "p_restaurant": string; "p_period": number; "p_name": string; "p_price_date": string; "p_no_cif": boolean; "p_no_expenses": boolean; "p_lines": Json }; Returns: number
+                           },
+"save_plan_line":
+{ Args: { "p_plan": number; "p_product": number; "p_quantity": string; "p_reference_price": string; "p_equivalent_factor": string; "p_pricing_mode": string; "p_pricing_value": string; "p_adopted_price": string | null; "p_use_latest"?: boolean }; Returns: number
+                           },
+"remove_plan_line":
+{ Args: { "p_line": number }; Returns: undefined
+                           },
+"activate_plan":
+{ Args: { "p_plan": number }; Returns: undefined
                            }
           }
           Enums: {
