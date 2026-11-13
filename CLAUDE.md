@@ -68,3 +68,15 @@ Reconstruir TODO el frontend y el backend en **Next.js (App Router) + React + Ty
 - Maqueta de referencia de todas las pantallas: lienzo "Costea — maqueta de Inicio y menú" (Inicio, Inicio de sesión, Página principal, Portada con chef 3D).
 - Implementación del hero: la especificación exacta está en `brand/HERO-REFERENCIA.md`. El chef no usa el `<video>`: se dibuja en un `<canvas>` con cuadros WebP precargados (`public/chef/` para escritorio, `public/chef-m/` para móvil, recortados y escalados alrededor del chef). En móvil el giro sigue el scroll de una escena anclada.
 - Si se cambia el video, regenerar ambos juegos de cuadros con ffmpeg (97 cuadros cada uno) y revisar las poses extremas.
+
+## Fase final
+
+### Animación (fase final)
+- Usar el paquete `motion` (import desde "motion/react"); no instalar ni importar "framer-motion". Si ya existe framer-motion en el proyecto, migrar los imports a "motion/react" y dejar un solo paquete.
+- Portada: entradas al hacer scroll y componentes de @magicui/@smoothui, coherentes con DESIGN.md (mismos colores, tipografías y radios; sin hex sueltos).
+- App (/app): movimiento sobrio y funcional: aparición suave de tarjetas, contadores en los KPIs del Inicio, transiciones de paneles. Nada que retrase la lectura de números.
+- Animar solo transform y opacity. Duración 150–400 ms, easing suave.
+- Respetar `prefers-reduced-motion` en toda animación (reducir o desactivar).
+- No tocar el hero del chef: ya tiene su propia lógica (video/canvas por scroll).
+- Verificar en móvil 390×844 y 360 que no haya tirones ni scroll horizontal.
+- Instalar `motion` solo cuando se agregue el primer componente que lo necesite (el CLI de shadcn lo trae como dependencia).
