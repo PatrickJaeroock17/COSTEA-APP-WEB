@@ -940,6 +940,27 @@ isOneToOne: false
                            },
 "register_purchase":
 { Args: { "p_material": number; "p_quantity": string; "p_unit": string; "p_unit_price": string; "p_date": string; "p_token": string }; Returns: number
+                           },
+"material_available":
+{ Args: { "p_material": number; "p_on": string }; Returns: number
+                           },
+"create_product":
+{ Args: { "p_restaurant": string; "p_name": string; "p_description"?: string | null; "p_menu_category"?: string | null; "p_output_quantity"?: string }; Returns: number
+                           },
+"save_recipe":
+{ Args: { "p_product": number; "p_revision": number; "p_lines": Json }; Returns: number
+                           },
+"update_product":
+{ Args: { "p_product": number; "p_revision": number; "p_name": string; "p_description": string | null; "p_menu_category": string | null; "p_output_quantity": string }; Returns: number
+                           },
+"scale_recipe":
+{ Args: { "p_product": number; "p_revision": number; "p_output_quantity": string }; Returns: number
+                           },
+"personalize_dish":
+{ Args: { "p_restaurant": string; "p_dish": number }; Returns: number
+                           },
+"delete_product":
+{ Args: { "p_product": number; "p_revision": number }; Returns: undefined
                            }
           }
           Enums: {
