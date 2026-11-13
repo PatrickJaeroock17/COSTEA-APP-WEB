@@ -14,7 +14,7 @@ beforeAll(async () => {
   await t.signUp(A, { name: "Ana", restaurant: "El Puerto" });
   await t.signUp(B, { name: "Beto" });
   [{ id: ra }] = await t.as<{ id: string }>(A, "select id from restaurants");
-  [{ id: rb }] = await t.as<{ id: string }>(B, "select public.create_restaurant('Pollería Don Beto SAC', 'Don Beto', 'peru_ruc', '20123456789', 'PEN', 2026, 9) id");
+  [{ id: rb }] = await t.as<{ id: string }>(B, "select public.create_restaurant('Pollería Don Beto SAC', 'Don Beto', 'peru_ruc', '20123456789', 'USD', 2026, 9) id");
 }, 60_000);
 
 describe("alta de restaurantes", () => {
@@ -66,11 +66,11 @@ describe("periodos, moneda, archivo y unidades", () => {
   it("la moneda se bloquea al registrar importes y el dueño es inmutable", async () => {
     const [changed] = await t.as<{ currency: string; owner_id: string }>(
       B,
-      "update restaurants set currency = 'USD', owner_id = $2 where id = $1 returning currency, owner_id",
+      "update restaurants set currency = 'PEN', owner_id = $2 where id = $1 returning currency, owner_id",
       [rb, A],
     );
-    expect(changed).toEqual({ currency: "USD", owner_id: B });
-    await t.as(B, "update restaurants set currency = 'PEN' where id = $1", [rb]);
+    expect(changed).toEqual({ currency: "PEN", owner_id: B });
+    await t.as(B, "update restaurants set currency = 'USD' where id = $1", [rb]);
     const [{ id: period }] = await t.as<{ id: number }>(B, "select id from periods where restaurant_id = $1", [rb]);
     await t.as(
       B,
@@ -78,7 +78,7 @@ describe("periodos, moneda, archivo y unidades", () => {
       [rb, period],
     );
     expect(await t.as(B, "select public.restaurant_money_data($1) v", [rb])).toEqual([{ v: true }]);
-    expect((await t.fails(B, "update restaurants set currency = 'USD' where id = $1", [rb]))?.code).toBe("P0001");
+    expect((await t.fails(B, "update restaurants set currency = 'PEN' where id = $1", [rb]))?.code).toBe("P0001");
   });
 
   it("archivar y restaurar conserva el restaurante", async () => {

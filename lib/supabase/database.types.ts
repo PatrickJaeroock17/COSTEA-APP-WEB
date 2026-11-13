@@ -167,14 +167,14 @@ isOneToOne: false
                   ]
                 },"catalogo_insumos": {
                   Row: {
-                    "activo": boolean,"criterio_precio": string | null,"fecha_actualizacion": string,"id_categoria": number | null,"id_insumo": number,"id_unidad": number,"nombre": string,"precio_mayorista": number,"referencia_precio": string | null,"stock_inicial": number | null,"variedad": string | null
+                    "activo": boolean,"codigo_comercial": string,"criterio_precio": string | null,"fecha_actualizacion": string,"id_categoria": number | null,"id_insumo": number,"id_unidad": number,"nombre": string,"precio_mayorista": number,"referencia_precio": string | null,"stock_inicial": number | null,"variedad": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "activo"?: boolean,"criterio_precio"?: string | null,"fecha_actualizacion"?: string,"id_categoria"?: number | null,"id_insumo": number,"id_unidad": number,"nombre": string,"precio_mayorista": number,"referencia_precio"?: string | null,"stock_inicial"?: number | null,"variedad"?: string | null
+                    "activo"?: boolean,"codigo_comercial"?: string,"criterio_precio"?: string | null,"fecha_actualizacion"?: string,"id_categoria"?: number | null,"id_insumo": number,"id_unidad": number,"nombre": string,"precio_mayorista": number,"referencia_precio"?: string | null,"stock_inicial"?: number | null,"variedad"?: string | null
                   }
                   Update: {
-                    "activo"?: boolean,"criterio_precio"?: string | null,"fecha_actualizacion"?: string,"id_categoria"?: number | null,"id_insumo"?: number,"id_unidad"?: number,"nombre"?: string,"precio_mayorista"?: number,"referencia_precio"?: string | null,"stock_inicial"?: number | null,"variedad"?: string | null
+                    "activo"?: boolean,"codigo_comercial"?: string,"criterio_precio"?: string | null,"fecha_actualizacion"?: string,"id_categoria"?: number | null,"id_insumo"?: number,"id_unidad"?: number,"nombre"?: string,"precio_mayorista"?: number,"referencia_precio"?: string | null,"stock_inicial"?: number | null,"variedad"?: string | null
                   }
                   Relationships: [
                     {
@@ -928,6 +928,18 @@ isOneToOne: false
                            },
 "restaurant_money_data":
 { Args: { "rid": string }; Returns: boolean
+                           },
+"category_prefix":
+{ Args: { "category": string }; Returns: string
+                           },
+"add_catalog_material":
+{ Args: { "p_restaurant": string; "p_catalog_id": number }; Returns: number
+                           },
+"create_material":
+{ Args: { "p_restaurant": string; "p_name": string; "p_variety": string | null; "p_category": string; "p_unit": string; "p_unit_cost": string; "p_effective_on": string; "p_supplier"?: string | null }; Returns: number
+                           },
+"register_purchase":
+{ Args: { "p_material": number; "p_quantity": string; "p_unit": string; "p_unit_price": string; "p_date": string; "p_token": string }; Returns: number
                            }
           }
           Enums: {
