@@ -5,6 +5,7 @@ import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { ActivatePlan, RemoveLine } from "@/components/app/costos/forms";
 import { PlanStatusBox } from "@/components/app/costos/status";
 import { AddLineForm, PlanSettingsForm, ReviewPlan } from "@/components/app/plan/forms";
+import { PublishBudget } from "@/components/app/presupuestos/forms";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableEmpty, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -42,12 +43,14 @@ async function Detail({ params, searchParams }: Props) {
   const plan = await getPlan(r.id, planId);
   if (!plan) notFound();
   const supabase = await createClient();
-  const [{ result, fingerprint, lines }, concepts, { data: products }, { data: prices }] = await Promise.all([
+  const [{ result, fingerprint, lines }, concepts, { data: products }, { data: prices }, { data: budgetData }] = await Promise.all([
     evaluatePlan(r.id, plan, { name: r.name, currency: r.currency }),
     getConcepts(r.id, plan.period_id),
     supabase.from("products").select("id, name").eq("restaurant_id", r.id).eq("active", true).order("name"),
     supabase.from("product_prices").select("product_id, amount::text").eq("restaurant_id", r.id),
+    supabase.from("budgets").select("id, number, fingerprint").eq("plan_id", planId).order("number", { ascending: false }),
   ]);
+  const budgets = (budgetData ?? []) as { id: number; number: number; fingerprint: string }[];
   const editable = canEdit(r.role);
   const period = ctx.periods.find((p) => p.id === plan.period_id);
   const fresh = plan.calculation_hash === fingerprint;
@@ -96,6 +99,42 @@ async function Detail({ params, searchParams }: Props) {
           </p>
         )}
       </div>
+
+      {editable && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Presupuesto</CardTitle>
+            <CardDescription>
+              {budgets.length
+                ? `Este plan tiene ${budgets.length === 1 ? "1 presupuesto publicado" : `${budgets.length} presupuestos publicados`}. Si cambiaste algo, publica una versión nueva.`
+                : "Publica el plan para guardar su presupuesto fijo del mes."}
+              {budgets.length > 0 && (
+                <>
+                  {" "}
+                  <Link href={`/app/presupuestos/${budgets[0].id}`} className="font-bold text-primary hover:underline">
+                    Ver la versión {budgets[0].number}
+                  </Link>
+                </>
+              )}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PublishBudget
+              planId={plan.id}
+              fingerprint={fingerprint}
+              blocked={
+                result.status !== "calculable"
+                  ? "Resuelve los pendientes del cálculo antes de publicar."
+                  : !fresh
+                    ? "Pulsa «Revisar cálculo» antes de publicar, para confirmar las entradas actuales."
+                    : budgets[0]?.fingerprint === fingerprint
+                      ? "Ya está publicado con estas mismas entradas."
+                      : null
+              }
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Producción y ventas (legacy: production_table) */}
       <Card className="mt-6">

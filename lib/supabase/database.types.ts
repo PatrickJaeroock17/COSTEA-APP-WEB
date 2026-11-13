@@ -985,6 +985,9 @@ isOneToOne: false
                            },
 "activate_plan":
 { Args: { "p_plan": number }; Returns: undefined
+                           },
+"publish_budget":
+{ Args: { "p_plan": number; "p_fingerprint": string; "p_snapshot": Json }; Returns: number
                            }
           }
           Enums: {
