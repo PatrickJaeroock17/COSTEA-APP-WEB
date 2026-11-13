@@ -98,7 +98,7 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
 
   return (
     <div className="min-h-screen bg-[#f6f9f7] text-[#12251f]">
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-[280px] flex-col bg-[#032a1f] px-4 pb-4 pt-6 lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-[280px] flex-col bg-[#032a1f] px-4 pb-4 pt-6 lg:flex print:hidden">
         <Logo variant="dark" className="px-3" />
         <div className="mt-8 flex-1 overflow-y-auto pr-1">
           <NavList />
@@ -122,8 +122,8 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
         </aside>
       </div>
 
-      <div className="lg:pl-[280px]">
-        <header className="sticky top-0 z-10 flex min-h-16 items-center gap-2 border-b border-[#e2e9e5] bg-white/90 px-3 py-2 backdrop-blur sm:gap-3 sm:px-6 lg:px-8">
+      <div className="lg:pl-[280px] print:pl-0">
+        <header className="sticky top-0 z-10 print:hidden flex min-h-16 items-center gap-2 border-b border-[#e2e9e5] bg-white/90 px-3 py-2 backdrop-blur sm:gap-3 sm:px-6 lg:px-8">
           <button type="button" onClick={() => setDrawer(true)} aria-label="Abrir menú" aria-expanded={drawer} className="grid size-11 shrink-0 place-items-center rounded-xl text-[#032a1f] hover:bg-[#f6f9f7] lg:hidden">
             <Menu className="size-6" aria-hidden />
           </button>
