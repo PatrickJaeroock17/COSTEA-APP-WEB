@@ -6,8 +6,10 @@ import { canEdit, getAppContext } from "@/lib/auth";
 import { plain } from "@/lib/costing/decimal";
 import { evaluatePlan, getPlan } from "@/lib/data/plan";
 import { createClient } from "@/lib/supabase/server";
+import { type ShortageRow, parseShortages } from "@/lib/stock";
+import { formatDate } from "@/lib/format";
 
-export type BudgetState = { error?: string };
+export type BudgetState = { error?: string; shortage?: { title: string; rows: ShortageRow[] } };
 
 /**
  * Publica el plan como presupuesto (legacy: publish). Recalcula en el servidor y exige que el cálculo
@@ -31,6 +33,8 @@ export async function publishBudget(_prev: BudgetState, fd: FormData): Promise<B
     p_fingerprint: fingerprint,
     p_snapshot: plain({ input, result }) as never,
   });
+  const rows = parseShortages(error);
+  if (rows) return { shortage: { title: `No hay stock suficiente para elaborar las porciones del plan al ${formatDate(plan.price_date)}`, rows } };
   if (error || !data) return { error: error?.code === "P0001" && error.message ? error.message : "No pudimos publicar el presupuesto." };
   redirect(`/app/presupuestos/${data}?publicado=1`);
 }

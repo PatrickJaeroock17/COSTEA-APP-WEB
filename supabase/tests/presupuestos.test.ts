@@ -44,6 +44,7 @@ describe("publicar", () => {
   it("sin stock no publica nada (todo o nada)", async () => {
     const e = await t.fails(A, "select public.publish_budget($1, $2, '{}'::jsonb)", [plan, H1]);
     expect(e?.message).toMatch(/insumos insuficientes.*Limón propio: se necesitan 5 kg, disponibles 0 kg/);
+    expect(JSON.parse(e!.detail!)).toEqual([{ name: "Limón propio", unit: "kg", needed: "5", available: "0" }]);
     expect(await one(A, "select count(*)::int n from budgets where plan_id = $1", [plan])).toEqual({ n: 0 });
   });
 

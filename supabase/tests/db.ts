@@ -38,7 +38,7 @@ export async function createDb() {
       await as(uid, sql, params);
       return null;
     } catch (e) {
-      return e as { code?: string; message: string };
+      return e as { code?: string; message: string; detail?: string; hint?: string };
     }
   }
 

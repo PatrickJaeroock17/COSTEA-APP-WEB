@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Archive, ArchiveRestore, FileCheck2, Loader2 } from "lucide-react";
 import { FormAlert } from "@/components/app/form";
+import { StockShortage } from "@/components/app/stock-shortage";
 import { buttonVariants } from "@/components/ui/button";
 import { type BudgetState, publishBudget, setBudgetArchived } from "@/lib/actions/budgets";
 
@@ -57,7 +58,7 @@ export function PublishBudget({ planId, fingerprint, blocked }: { planId: number
           Cancelar
         </button>
       </div>
-      <FormAlert error={state.error} />
+      {state.shortage ? <StockShortage title={state.shortage.title} rows={state.shortage.rows} /> : <FormAlert error={state.error} />}
     </form>
   );
 }

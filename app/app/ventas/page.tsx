@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { AlertTriangle, ShoppingCart } from "lucide-react";
 import { CreateRestaurant } from "@/components/app/create-restaurant";
 import { EmptyState, PageHeader } from "@/components/app/page-header";
-import { DeleteSale, SaleForm } from "@/components/app/ventas/forms";
+import { DeleteSale, SaleForm, SalesFeedbackProvider } from "@/components/app/ventas/forms";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableEmpty, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { canEdit, getAppContext } from "@/lib/auth";
@@ -52,7 +52,7 @@ async function Content() {
   const defaultDate = today >= results.range.start && today <= results.range.end ? today : periodDates(period).reference;
 
   return (
-    <>
+    <SalesFeedbackProvider>
       {header}
 
       {editable && (
@@ -207,6 +207,6 @@ async function Content() {
           <CardContent className="text-sm text-muted-foreground">Sin ventas en {period.label}.</CardContent>
         )}
       </Card>
-    </>
+    </SalesFeedbackProvider>
   );
 }

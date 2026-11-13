@@ -5,12 +5,16 @@ import { canEdit, getAppContext } from "@/lib/auth";
 import { getProductDetail } from "@/lib/data/products";
 import { parseAmount, parseDate } from "@/lib/materials";
 import { createClient } from "@/lib/supabase/server";
+import { type ShortageRow, parseShortages } from "@/lib/stock";
+import { formatQty } from "@/lib/format";
 
 export type SaleState = {
   error?: string;
   message?: string;
   fieldErrors?: Record<string, string>;
   values?: Record<string, string>;
+  /** Faltantes de stock para mostrarlos como tabla. */
+  shortage?: { title: string; rows: ShortageRow[] };
 };
 
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
@@ -63,6 +67,14 @@ export async function registerSale(_prev: SaleState, fd: FormData): Promise<Sale
     p_quantity: (quantity as { value: string }).value,
     p_unit_cost: detail.cost.perUnit.toFixed(),
   });
+  const rows = parseShortages(error);
+  if (rows) {
+    const q = (quantity as { value: string }).value;
+    return {
+      shortage: { title: `No hay stock suficiente para elaborar ${formatQty(q)} ${q === "1" ? "porción" : "porciones"} de ${detail.product.name}`, rows },
+      values,
+    };
+  }
   if (error) {
     const message = error.code === "P0001" && error.message ? error.message : error.code === "42501" ? "No tienes permiso para registrar ventas." : "No pudimos registrar la venta.";
     return { error: message, fieldErrors: { quantity: message }, values };
@@ -72,11 +84,13 @@ export async function registerSale(_prev: SaleState, fd: FormData): Promise<Sale
 }
 
 /** Elimina la venta y anula sus salidas del kardex (legacy: delete + void_sale_outputs). */
-export async function deleteSale(fd: FormData) {
+export async function deleteSale(fd: FormData): Promise<SaleState> {
   const ctx = await getAppContext();
   const id = Number(fd.get("saleId"));
-  if (!ctx.restaurant || !canEdit(ctx.restaurant.role) || !Number.isInteger(id)) return;
+  if (!ctx.restaurant || !canEdit(ctx.restaurant.role) || !Number.isInteger(id)) return { error: "No tienes permiso para eliminar ventas." };
   const supabase = await createClient();
-  await supabase.rpc("delete_sale", { p_sale: id });
+  const { error } = await supabase.rpc("delete_sale", { p_sale: id });
+  if (error) return { error: error.code === "P0001" && error.message ? error.message : "No pudimos eliminar la venta." };
   refresh();
+  return { message: "Venta eliminada y stock restituido." };
 }

@@ -41,7 +41,11 @@ describe("registrar ventas", () => {
   });
 
   it("sin stock no registra la venta", async () => {
-    expect((await sell(A, "18"))?.message).toMatch(/Insumos insuficientes.*Limón propio: se necesitan 4.5 kg, disponibles 0 kg/);
+    const e = (await sell(A, "18")) as { message: string; detail?: string; hint?: string } | null;
+    expect(e?.message).toMatch(/Insumos insuficientes.*Limón propio: se necesitan 4.5 kg, disponibles 0 kg/);
+    // Los faltantes también llegan como datos para mostrarlos en tabla.
+    expect(e?.hint).toBe("stock");
+    expect(JSON.parse(e!.detail!)).toEqual([{ name: "Limón propio", unit: "kg", needed: "4.5", available: "0" }]);
     expect(await one(A, "select count(*)::int n from sales where restaurant_id = $1", [ra])).toEqual({ n: 0 });
   });
 
