@@ -36,6 +36,9 @@ Reconstruir TODO el frontend y el backend en **Next.js (App Router) + React + Ty
 - Fuentes: Plus Jakarta Sans (interfaz), Nunito (marca y títulos grandes) con `next/font`.
 - UI: Tailwind + shadcn/ui + iconos Lucide. No usar Bootstrap.
 
+## Reglas de diseño
+- Todo UI nuevo usa los tokens y componentes de `DESIGN.md` (sin colores hex escritos a mano) y sigue el tema de shadcn.
+
 ## Navegación propuesta (menú lateral, por restaurante)
 - **Inicio**: panel con progreso de configuración y resultados clave (reemplaza la guía de texto).
 - **Preparar**: Insumos · Platos y recetas (con pestaña Precios) · Personal · Gastos (CIF, administración, ventas)
