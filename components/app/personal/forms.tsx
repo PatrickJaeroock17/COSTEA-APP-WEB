@@ -207,7 +207,16 @@ export function PayrollForm({ employeeId, periodId, periodLabel, initial, curren
             ],
             "Cómo repartir el trabajo directo",
           )}
-          {values.direct_basis === "quantity" && <Num name="planned_units" label="Porciones mensuales previstas" values={values} set={set} errors={errors} />}
+          {values.direct_basis === "quantity" && (
+            <Num
+              name="planned_units"
+              label="Porciones mensuales previstas"
+              values={values}
+              set={set}
+              errors={errors}
+              hint="Cuántas porciones prepara en el mes; su costo directo se divide entre ellas."
+            />
+          )}
         </Group>
       </div>
 

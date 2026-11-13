@@ -17,6 +17,8 @@ export type ShellProps = {
   restaurantId: string | null;
   periods: { id: number; label: string }[];
   periodId: number | null;
+  /** Mostrar la insignia «Cifras de ejemplo» (el mes no tiene plan con cálculo completo). */
+  sampleData: boolean;
 };
 
 function MenuLink({ href, label, close }: { href: string; label: string; close: () => void }) {
@@ -50,7 +52,7 @@ function UserCard({ user, onNavigate }: { user: ShellProps["user"]; onNavigate?:
     </div>
   );
 }
-export function AppShell({ children, user, restaurants, restaurantId, periods, periodId }: ShellProps & { children: React.ReactNode }) {
+export function AppShell({ children, user, restaurants, restaurantId, periods, periodId, sampleData }: ShellProps & { children: React.ReactNode }) {
   const router = useRouter();
   const [drawer, setDrawer] = useState(false);
   const [, startTransition] = useTransition();
@@ -144,9 +146,11 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
             footer={restaurants.length ? (close) => <MenuLink href="/app/configuracion?seccion=periodos" label="Agregar mes" close={close} /> : undefined}
             className="min-w-0 flex-1 sm:flex-none"
           />
-          <span className="ml-auto hidden rounded-full bg-[#d2efe1] px-4 py-2 text-sm font-bold text-[#00563d] md:inline-block">
-            Cifras de ejemplo
-          </span>
+          {sampleData && (
+            <span className="ml-auto hidden rounded-full bg-[#d2efe1] px-4 py-2 text-sm font-bold text-[#00563d] md:inline-block">
+              Cifras de ejemplo
+            </span>
+          )}
         </header>
         <main className="px-4 py-8 sm:px-6 lg:px-8 lg:py-10">{children}</main>
       </div>

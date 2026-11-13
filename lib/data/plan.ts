@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { ENGINE, type PlanInput, type PlanLineInput, type PlanResult, type PricingMode, calculatePlan } from "@/lib/costing/costing";
@@ -299,3 +300,14 @@ export async function getAllocationLines(restaurantId: string, periodId: number)
     label: `${l.products?.name ?? "Plato"} · ${l.production_plans.name} · ${n(l.quantity)} porciones · venta ref. ${n(l.reference_price)} · factor ${n(l.equivalent_factor)}`,
   }));
 }
+
+/**
+ * Plan del mes que se muestra en Costo y precio: el activo o, si no hay, el más reciente
+ * (misma regla que app/app/costos/page.tsx). Una sola evaluación por petición: la comparten
+ * la cabecera (insignia de cifras de ejemplo) y el Inicio.
+ */
+export const getMonthPlanEvaluation = cache(async (restaurantId: string, periodId: number, name: string, currency: string): Promise<PlanEvaluation | null> => {
+  const plans = await getPlans(restaurantId, periodId);
+  const plan = plans.find((p) => p.active) ?? plans[0];
+  return plan ? evaluatePlan(restaurantId, plan, { name, currency }) : null;
+});

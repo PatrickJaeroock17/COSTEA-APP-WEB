@@ -4,7 +4,7 @@ import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { canEdit, getAppContext } from "@/lib/auth";
 import { parseAmount } from "@/lib/materials";
-import { parsePayroll } from "@/lib/personal";
+import { parsePayroll, payrollErrorMessage } from "@/lib/personal";
 import { createClient } from "@/lib/supabase/server";
 
 export type PersonalState = {
@@ -120,7 +120,7 @@ export async function savePayroll(_prev: PersonalState, fd: FormData): Promise<P
   if (!ctx || !employeeId) return { error: "No tienes permiso para editar personal.", values };
   if (!periodId || !ctx.periods.some((p) => p.id === periodId)) return { error: "Elige un mes de trabajo del restaurante.", values };
   const parsed = parsePayroll(values);
-  if ("errors" in parsed) return { error: parsed.errors.mode ?? "Revisa los datos marcados.", fieldErrors: parsed.errors, values };
+  if ("errors" in parsed) return { error: payrollErrorMessage(parsed.errors, values.mode), fieldErrors: parsed.errors, values };
 
   const supabase = await createClient();
   const { data: employee } = await supabase.from("employees").select("id").eq("restaurant_id", ctx.restaurant!.id).eq("id", employeeId).maybeSingle();

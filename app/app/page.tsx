@@ -2,33 +2,21 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CreateRestaurant } from "@/components/app/create-restaurant";
 import { getAppContext } from "@/lib/auth";
+import { D } from "@/lib/costing/decimal";
+import { type HomeSummary, getHomeSummary } from "@/lib/data/home";
+import { formatMoney } from "@/lib/format";
 import { AlertTriangle, Check, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Caso de comprobación de GUIA_RAPIDA.md: ventas 12 000, costo por unidad 10, margen 30 %, utilidad 3 600.
-// Fase 5 reemplaza estos valores de ejemplo por los datos reales del restaurante.
-const kpis = [
-  { label: "Ventas netas del mes", value: "S/ 12,000", note: "Sin IGV · plan activo" },
+// Caso de comprobación de GUIA_RAPIDA.md: se muestra como ejemplo mientras el mes no tiene un plan con cálculo completo.
+const EXAMPLE = [
+  { label: "Ventas netas del mes", value: "S/ 12,000", note: "Sin IGV · ejemplo" },
   { label: "Costo completo por unidad", value: "S/ 10.00", note: "Producción + gastos asignados" },
   { label: "Margen operativo", value: "30 %", note: "Sobre la venta neta" },
 ];
 
 type Step = { title: string; text: string; state: "done" | "current" | "locked"; href: string; n?: number };
-const steps: Step[] = [
-  { title: "Insumos y materia prima", text: "Precios y unidades del catálogo", state: "done", href: "/app/insumos" },
-  { title: "Platos y recetas", text: "Recetas con versión vigente", state: "done", href: "/app/platos" },
-  { title: "Personal", text: "Costo mensual y reparto por área", state: "done", href: "/app/personal" },
-  { title: "Gastos", text: "Faltan los gastos de ventas del mes", state: "current", href: "/app/gastos", n: 4 },
-  { title: "Costo y precio por plato", text: "Se activa al completar los gastos", state: "locked", href: "/app/costos" },
-  { title: "Plan de producción", text: "Se activa al tener costo y precio", state: "locked", href: "/app/plan" },
-];
-const done = steps.filter((s) => s.state === "done").length;
-
-const alerts = [
-  { tone: "warn", title: "Gastos de ventas sin registrar", text: "El costo completo por plato queda incompleto hasta registrarlos." },
-  { tone: "warn", title: "Insumos con precio desactualizado", text: "Revisa los precios de compra antes de publicar un presupuesto." },
-  { tone: "ok", title: "Personal al día", text: "Todos los trabajadores tienen su costo mensual." },
-] as const;
+type Alert = { tone: "warn" | "ok"; title: string; text: string };
 
 const card = "rounded-[24px] border border-[#e2e9e5] bg-white";
 
@@ -40,22 +28,137 @@ export default function InicioPage() {
   );
 }
 
+const pct = (d: InstanceType<typeof D> | null) => (d ? `${d.times(100).toDecimalPlaces(1).toFixed()} %` : "—");
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+/** Pasos de configuración a partir del resumen real del mes. */
+function buildSteps(h: HomeSummary, currency: string): Step[] {
+  const raw: Omit<Step, "state" | "n">[] = [];
+  const doneFlags: boolean[] = [];
+  const add = (title: string, href: string, done: boolean, text: string) => {
+    raw.push({ title, href, text });
+    doneFlags.push(done);
+  };
+  add(
+    "Insumos y materia prima",
+    "/app/insumos",
+    h.materials.priced > 0,
+    h.materials.active ? `${plural(h.materials.priced, "insumo", "insumos")} con precio vigente` : "Agrega insumos con su precio",
+  );
+  add(
+    "Platos y recetas",
+    "/app/platos",
+    h.dishes.withRecipe > 0,
+    h.dishes.withRecipe ? `${plural(h.dishes.withRecipe, "plato", "platos")} con receta` : "Crea o trae platos con sus insumos",
+  );
+  add(
+    "Personal",
+    "/app/personal",
+    h.staff.active > 0 && h.staff.missing.length === 0,
+    !h.staff.active
+      ? "Registra a tu personal y su costo mensual"
+      : h.staff.missing.length
+        ? `Falta el costo del mes de ${plural(h.staff.missing.length, "trabajador", "trabajadores")}`
+        : "Costo mensual de todo el personal",
+  );
+  add(
+    "Gastos",
+    "/app/gastos",
+    h.expenses.count > 0 || h.expenses.declaredNone,
+    h.expenses.count
+      ? `${plural(h.expenses.count, "gasto", "gastos")} · ${formatMoney(h.expenses.monthly, currency)} al mes`
+      : h.expenses.declaredNone
+        ? "Declarado sin gastos en el plan"
+        : "Registra los gastos del mes",
+  );
+  add(
+    "Costo y precio por plato",
+    "/app/costos",
+    h.calculable,
+    h.calculable
+      ? "Cálculo completo con el plan del mes"
+      : h.plan
+        ? plural(h.plan.issues.length, "pendiente en el cálculo", "pendientes en el cálculo")
+        : "Se calcula con el plan del mes",
+  );
+  add(
+    "Plan de producción",
+    "/app/plan",
+    Boolean(h.plan && h.plan.lines > 0),
+    h.plan ? `${h.plan.name} · ${plural(h.plan.lines, "plato", "platos")}` : "Define las porciones del mes",
+  );
+  const first = doneFlags.indexOf(false);
+  return raw.map((s, i) => ({ ...s, n: i + 1, state: doneFlags[i] ? "done" : i === first ? "current" : "locked" }));
+}
+
+/** Avisos solo cuando el dato real lo justifica. */
+function buildAlerts(h: HomeSummary): Alert[] {
+  const alerts: Alert[] = [];
+  if (h.period && !h.expenses.salesExpense && !h.expenses.noExpensesDeclared) {
+    alerts.push({ tone: "warn", title: "Gastos de ventas sin registrar", text: "El costo completo por plato queda incompleto hasta registrarlos." });
+  }
+  if (h.materials.withoutPrice + h.materials.planPriceIssues.length > 0) {
+    alerts.push({
+      tone: "warn",
+      title: "Insumos con precio desactualizado",
+      text: [
+        h.materials.withoutPrice ? `${plural(h.materials.withoutPrice, "insumo activo no tiene", "insumos activos no tienen")} precio vigente al fin del mes.` : "",
+        h.materials.planPriceIssues.length ? `${plural(h.materials.planPriceIssues.length, "precio del plan necesita", "precios del plan necesitan")} revisión.` : "",
+      ]
+        .filter(Boolean)
+        .join(" "),
+    });
+  }
+  if (h.plan && h.plan.status !== "calculable") {
+    alerts.push({ tone: "warn", title: "El plan del mes tiene pendientes", text: h.plan.issues.slice(0, 2).join(" ") || "Revisa el plan de producción." });
+  }
+  if (h.staff.active) {
+    alerts.push(
+      h.staff.missing.length
+        ? { tone: "warn", title: "Personal sin costo del mes", text: `Falta: ${h.staff.missing.join(", ")}.` }
+        : { tone: "ok", title: "Personal al día", text: "Todos los trabajadores tienen su costo mensual." },
+    );
+  }
+  return alerts;
+}
+
 async function Inicio() {
-  const { user, restaurantId } = await getAppContext();
-  if (!restaurantId) return <CreateRestaurant name={user.name.split(" ")[0]} />;
+  const ctx = await getAppContext();
+  const { user, restaurant } = ctx;
+  if (!restaurant) return <CreateRestaurant name={user.name.split(" ")[0]} />;
+  const home = await getHomeSummary(ctx);
+  const steps = buildSteps(home, restaurant.currency);
+  const done = steps.filter((s) => s.state === "done").length;
+  const alerts = buildAlerts(home);
+  const next = steps.find((s) => s.state !== "done");
+  const t = home.calculable ? home.totals! : null;
+  const kpis = t
+    ? [
+        { label: "Ventas netas del mes", value: formatMoney(t.sales, restaurant.currency), note: `Sin IGV · ${home.plan!.name}` },
+        {
+          label: "Costo completo por unidad",
+          value: home.portions && !home.portions.isZero() ? formatMoney(t.completeAssigned.div(home.portions), restaurant.currency) : "—",
+          note: "Promedio por porción del plan",
+        },
+        { label: "Margen operativo", value: pct(t.margin), note: "Sobre la venta neta" },
+      ]
+    : EXAMPLE;
 
   return (
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <h1 className="font-brand text-4xl font-extrabold tracking-[-0.025em] text-[#032a1f] sm:text-5xl">Hola, {user.name.split(" ")[0]}</h1>
-          <p className="mt-2 text-lg text-[#5b6b65]">Así va el costeo de tu restaurante este mes. <span className="text-sm">(Cifras de ejemplo hasta cargar tus datos.)</span></p>
+          <p className="mt-2 text-lg text-[#5b6b65]">
+            Así va el costeo de tu restaurante{home.period ? ` en ${home.period.label}` : " este mes"}.
+            {!t && <span className="text-sm"> (Cifras de ejemplo hasta completar el plan del mes.)</span>}
+          </p>
         </div>
         <Link
-          href="/app/gastos"
+          href={next?.href ?? "/app/costos"}
           className="inline-flex min-h-12 items-center rounded-2xl bg-[#006b4b] px-6 text-base font-extrabold text-white transition-colors hover:bg-[#00563d]"
         >
-          Continuar: gastos de ventas
+          {next ? `Continuar: ${next.title.toLowerCase()}` : "Ver costo y precio"}
         </Link>
       </div>
 
@@ -69,7 +172,7 @@ async function Inicio() {
         ))}
         <div className={cn(card, "p-6 md:col-span-3")}>
           <p className="text-[15px] font-medium text-[#5b6b65]">Utilidad estimada</p>
-          <p className="mt-2 font-brand text-4xl font-extrabold tracking-[-0.02em] text-[#032a1f]">S/ 3,600</p>
+          <p className="mt-2 font-brand text-4xl font-extrabold tracking-[-0.02em] text-[#032a1f]">{t ? formatMoney(t.profit, restaurant.currency) : "S/ 3,600"}</p>
           <p className="mt-1.5 text-sm text-[#5b6b65]">Ventas menos costos del mes</p>
         </div>
       </div>

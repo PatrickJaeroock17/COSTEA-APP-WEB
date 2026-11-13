@@ -99,7 +99,10 @@ export function parsePayroll(v: PayrollFormValues): { ok: ParsedPayroll } | { er
   const excluded = num("excluded");
   const productive = num("productive");
   const fractions = { mod: num("mod"), cif: num("cif"), admin: num("admin"), sales: num("sales") };
-  const plannedUnits = num("planned_units");
+  const directBasis = v.direct_basis === "quantity" ? "quantity" : "time";
+  // Porciones previstas: solo las ingresa el usuario cuando reparte por porciones (el campo solo se
+  // muestra entonces). Con reparto por minutos no se lee y se guarda 0 (legacy: default "0").
+  const plannedUnits = directBasis === "quantity" ? num("planned_units") : "0";
   if (productive && new D(productive).gt(100)) errors.productive = "Debe estar entre 0 y 100 %.";
   if (Object.values(fractions).every(Boolean) && !Object.values(fractions).reduce((a, b) => a.plus(b!), new D(0)).eq(100)) {
     errors.sales = "Las cuatro distribuciones deben sumar exactamente 100 %.";
@@ -107,7 +110,6 @@ export function parsePayroll(v: PayrollFormValues): { ok: ParsedPayroll } | { er
   if (days && hours && excluded && new D(excluded).gt(new D(days).times(hours).times(60))) {
     errors.excluded = "No puede superar los minutos programados del mes.";
   }
-  const directBasis = v.direct_basis === "quantity" ? "quantity" : "time";
   if (directBasis === "quantity" && plannedUnits && new D(plannedUnits).isZero()) {
     errors.planned_units = "Indica cuántas porciones produce el trabajador en el mes.";
   }
@@ -150,6 +152,34 @@ export function parsePayroll(v: PayrollFormValues): { ok: ParsedPayroll } | { er
     return { errors: { mode: (e as Error).message } };
   }
   return { ok: { data, breakdown: payroll ? (plain(payroll) as Record<string, unknown>) : null, result, payroll } };
+}
+
+/** Etiqueta visible de cada campo del formulario, para nombrarlo en los mensajes de error. */
+export const PAYROLL_LABELS: Record<string, string> = {
+  mode: "Cálculo de planilla",
+  source: "Sustento y composición de los importes",
+  days: "Días programados",
+  hours: "Horas por día",
+  excluded: "Minutos excluidos",
+  productive: "Factor productivo (%)",
+  mod: "Mano de obra directa (%)",
+  cif: "CIF (%)",
+  admin: "Administración (%)",
+  sales: "Distribución del costo (debe sumar 100 %)",
+  basis: "Base para repartir la parte indirecta",
+  justification: "Justificación de la distribución",
+  direct_basis: "Cómo repartir el trabajo directo",
+  planned_units: "Porciones mensuales previstas",
+};
+
+/** Mensaje general que nombra los campos con error (nunca "datos marcados" sin decir cuáles). */
+export function payrollErrorMessage(errors: Record<string, string>, mode = "detailed"): string {
+  if (errors.mode && Object.keys(errors).length === 1) return errors.mode;
+  // Los importes se llaman distinto según el modo visible (p. ej. salary: "Sueldo básico mensual" o "Remuneración").
+  const amounts: { key: string; label: string }[] = mode === "consolidated" ? [...CONSOLIDATED] : DETAILED;
+  const label = (k: string) => amounts.find((f) => f.key === k)?.label ?? PAYROLL_LABELS[k] ?? k;
+  const names = Object.keys(errors).map(label);
+  return `Revisa ${names.length === 1 ? "este dato" : "estos datos"}: ${names.join(", ")}.`;
 }
 
 /** Valores del formulario a partir de lo guardado (legacy: GET de payroll()). */

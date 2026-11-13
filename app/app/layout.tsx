@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { AppShell, AppShellSkeleton } from "@/components/app/app-shell";
 import { getAppContext } from "@/lib/auth";
+import { getMonthPlanEvaluation } from "@/lib/data/plan";
 
 export const metadata = { title: "costea — Mi restaurante" };
 
@@ -14,7 +15,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 }
 
 async function SessionShell({ children }: { children: React.ReactNode }) {
-  const { user, restaurants, restaurantId, periods, periodId } = await getAppContext();
+  const { user, restaurants, restaurantId, restaurant, periods, periodId } = await getAppContext();
+  // Cifras de ejemplo solo mientras el mes no tiene un plan con cálculo completo (mismo plan que Costo y precio).
+  const evaluation = restaurant && periodId ? await getMonthPlanEvaluation(restaurant.id, periodId, restaurant.name, restaurant.currency) : null;
+  const sampleData = evaluation?.result.status !== "calculable";
   return (
     <AppShell
       user={{ name: user.name, email: user.email }}
@@ -22,6 +26,7 @@ async function SessionShell({ children }: { children: React.ReactNode }) {
       restaurantId={restaurantId}
       periods={periods.map((p) => ({ id: p.id, label: p.label }))}
       periodId={periodId}
+      sampleData={sampleData}
     >
       {children}
     </AppShell>
