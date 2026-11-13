@@ -994,6 +994,15 @@ isOneToOne: false
                            },
 "delete_sale":
 { Args: { "p_sale": number }; Returns: undefined
+                           },
+"register_receipt":
+{ Args: { "p_material": number; "p_date": string; "p_quantity": string; "p_unit_cost": string; "p_reference": string }; Returns: number
+                           },
+"import_saved_purchase":
+{ Args: { "p_cost_version": number }; Returns: number
+                           },
+"seed_catalog_opening":
+{ Args: { "p_restaurant": string }; Returns: number
                            }
           }
           Enums: {
