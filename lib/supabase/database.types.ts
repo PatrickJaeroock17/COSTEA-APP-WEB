@@ -961,6 +961,18 @@ isOneToOne: false
                            },
 "delete_product":
 { Args: { "p_product": number; "p_revision": number }; Returns: undefined
+                           },
+"add_operation":
+{ Args: { "p_recipe": number; "p_employee": number; "p_activity": string; "p_minutes": string }; Returns: undefined
+                           },
+"remove_operation":
+{ Args: { "p_recipe": number; "p_position": number }; Returns: undefined
+                           },
+"set_recipe_work":
+{ Args: { "p_recipe": number; "p_no_materials": boolean; "p_no_labor": boolean }; Returns: undefined
+                           },
+"delete_employee":
+{ Args: { "p_employee": number }; Returns: undefined
                            }
           }
           Enums: {

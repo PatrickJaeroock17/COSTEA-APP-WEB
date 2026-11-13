@@ -135,6 +135,14 @@ async function Detail({ params, searchParams }: Props) {
         </div>
       )}
 
+      {isCurrent && (
+        <p className="mt-4 text-sm">
+          <Link href={`/app/personal?tab=platos&plato=${p.id}`} className="font-bold text-[#006b4b] underline">
+            Ver o asignar la mano de obra de este plato
+          </Link>
+        </p>
+      )}
+
       <div className="mt-6">
         <Section icon={ChefHat} title="Receta" text={`Cantidades para ${portions} ${portions === "1" ? "porción" : "porciones"}. Los importes no se redondean línea por línea.`}>
           {cost.lines.length ? (
