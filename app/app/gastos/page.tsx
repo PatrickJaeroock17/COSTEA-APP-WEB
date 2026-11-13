@@ -13,6 +13,7 @@ import { D } from "@/lib/costing/decimal";
 import { overheadTables } from "@/lib/costing/reports";
 import { getConcepts, getProductChoices } from "@/lib/data/expenses";
 import { getEmployees, getPeriodCosts, staffInputs } from "@/lib/data/personal";
+import { getAllocationLines } from "@/lib/data/plan";
 import { BASES, BEHAVIORS, KINDS } from "@/lib/expenses";
 import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -44,11 +45,12 @@ async function Content({ searchParams }: Props) {
     return <EmptyState title="Agrega un mes de trabajo" text="Los gastos se presupuestan por mes. Créalo en Configuración." />;
   }
   const editable = canEdit(r.role);
-  const [concepts, products, employees, costs] = await Promise.all([
+  const [concepts, products, employees, costs, allocationLines] = await Promise.all([
     getConcepts(r.id, period.id),
     getProductChoices(r.id),
     getEmployees(r.id),
     getPeriodCosts(r.id, period.id),
+    getAllocationLines(r.id, period.id),
   ]);
 
   // La parte indirecta de la planilla se suma a cada grupo una sola vez (legacy: salary-{id}-{kind}).
@@ -80,7 +82,7 @@ async function Content({ searchParams }: Props) {
           </>
         }
       >
-        {editable && <NewConcept periodId={period.id} periodLabel={period.label} currency={r.currency} products={products.filter((p) => p.active)} />}
+        {editable && <NewConcept periodId={period.id} periodLabel={period.label} currency={r.currency} products={products.filter((p) => p.active)} allocationLines={allocationLines} />}
       </PageHeader>
 
       {sp.guardado && (

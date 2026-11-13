@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { canEdit, getAppContext } from "@/lib/auth";
 import { decimalText } from "@/lib/costing/decimal";
 import { getConcept, getProductChoices } from "@/lib/data/expenses";
+import { getAllocationLines } from "@/lib/data/plan";
 
 export const metadata = { title: "costea — Gasto" };
 
@@ -30,6 +31,7 @@ async function Detail({ params }: Props) {
   if (!r || !Number.isInteger(conceptId) || conceptId <= 0) notFound();
   const [concept, products] = await Promise.all([getConcept(r.id, conceptId), getProductChoices(r.id)]);
   if (!concept) notFound();
+  const allocationLines = await getAllocationLines(r.id, concept.period_id);
   const period = ctx.periods.find((p) => p.id === concept.period_id);
 
   return (
@@ -48,6 +50,7 @@ async function Detail({ params }: Props) {
                 periodId={concept.period_id}
                 periodLabel={period?.label ?? ""}
                 currency={r.currency}
+                allocationLines={allocationLines}
                 products={products.filter((p) => p.active || concept.targets.includes(p.id))}
                 initial={{
                   id: concept.id,

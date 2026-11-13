@@ -2,7 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { ENGINE, type PlanInput, type PlanLineInput, type PlanResult, type PricingMode, calculatePlan } from "@/lib/costing/costing";
-import { plain } from "@/lib/costing/decimal";
+import { D, plain } from "@/lib/costing/decimal";
 import { inventoryPrice, type Movement } from "@/lib/costing/inventory";
 import { versionResult } from "@/lib/costing/materials";
 import type { QuantityMode } from "@/lib/costing/recipes";
@@ -280,4 +280,22 @@ export async function getDishOptions(restaurantId: string, periodId: number): Pr
         origin: prev ? "Datos propuestos del mismo mes" : priceOf.has(p.id) ? "Precio guardado" : "Completa cantidad y precio",
       };
     });
+}
+
+/** Platos de los planes de un mes para completar su reparto desde un gasto (legacy: allocation_line_id). */
+export async function getAllocationLines(restaurantId: string, periodId: number): Promise<{ id: number; label: string }[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("plan_lines")
+    .select("id, quantity::text, reference_price::text, equivalent_factor::text, products(name), production_plans!inner(name, period_id)")
+    .eq("restaurant_id", restaurantId)
+    .eq("production_plans.period_id", periodId)
+    .order("plan_id", { ascending: false })
+    .order("id");
+  type Row = { id: number; quantity: string; reference_price: string; equivalent_factor: string; products: { name: string } | null; production_plans: { name: string } };
+  const n = (x: string) => new D(x).toDecimalPlaces(2).toFixed();
+  return ((data ?? []) as unknown as Row[]).map((l) => ({
+    id: l.id,
+    label: `${l.products?.name ?? "Plato"} · ${l.production_plans.name} · ${n(l.quantity)} porciones · venta ref. ${n(l.reference_price)} · factor ${n(l.equivalent_factor)}`,
+  }));
 }

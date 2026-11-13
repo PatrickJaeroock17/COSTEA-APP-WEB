@@ -33,6 +33,7 @@ export function ConceptForm({
   products,
   initial = EMPTY,
   onState,
+  allocationLines = [],
 }: {
   periodId: number;
   periodLabel: string;
@@ -40,6 +41,8 @@ export function ConceptForm({
   products: { id: number; name: string }[];
   initial?: ConceptInitial;
   onState?: (s: ExpenseState) => void;
+  /** Platos de los planes del mes, para completar su reparto (legacy: allocation_line_id). */
+  allocationLines?: { id: number; label: string }[];
 }) {
   const [state, action] = useActionState<ExpenseState, FormData>(async (prev, fd) => {
     const next = await saveConcept(prev, fd);
@@ -103,6 +106,36 @@ export function ConceptForm({
         {e.targets && <p className="mt-1.5 text-xs font-semibold text-danger-text">{e.targets}</p>}
       </fieldset>
 
+      {allocationLines.length > 0 && (
+        <details className="rounded-2xl bg-surface p-4 sm:col-span-2" open={Boolean(v.allocationLineId)}>
+          <summary className="min-h-11 cursor-pointer content-center text-sm font-bold text-ink">Completar el reparto de un plato del plan (opcional)</summary>
+          <p className="mt-1 text-xs text-muted-foreground">Vacío conserva el dato del plan. Útil si la base del gasto necesita porciones, venta de referencia o factor.</p>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            <Field label="Plato y plan" name="allocationLineId" error={e.allocationLineId} className="sm:col-span-2">
+              {(p) => (
+                <select {...p} name="allocationLineId" defaultValue={typeof v.allocationLineId === "string" ? v.allocationLineId : ""}>
+                  <option value="">Conservar los datos de los planes</option>
+                  {allocationLines.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.label}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </Field>
+            <Field label="Porciones del mes" name="allocationQuantity" error={e.allocationQuantity}>
+              {(p) => <input {...p} name="allocationQuantity" inputMode="decimal" defaultValue={typeof v.allocationQuantity === "string" ? v.allocationQuantity : ""} />}
+            </Field>
+            <Field label={`Venta de referencia sin IGV (${currency})`} name="allocationReferencePrice" error={e.allocationReferencePrice}>
+              {(p) => <input {...p} name="allocationReferencePrice" inputMode="decimal" defaultValue={typeof v.allocationReferencePrice === "string" ? v.allocationReferencePrice : ""} />}
+            </Field>
+            <Field label="Factor equivalente" name="allocationEquivalentFactor" error={e.allocationEquivalentFactor}>
+              {(p) => <input {...p} name="allocationEquivalentFactor" inputMode="decimal" defaultValue={typeof v.allocationEquivalentFactor === "string" ? v.allocationEquivalentFactor : ""} />}
+            </Field>
+          </div>
+        </details>
+      )}
+
       <label className="flex min-h-11 items-center gap-3 text-sm font-bold text-ink sm:col-span-2">
         <input type="checkbox" name="active" defaultChecked={typeof v.active === "string" ? v.active === "on" : initial.active} className="size-5 accent-primary" />
         Incluir este gasto en el cálculo
@@ -116,7 +149,7 @@ export function ConceptForm({
   );
 }
 
-export function NewConcept(props: { periodId: number; periodLabel: string; currency: string; products: { id: number; name: string }[]; kind?: string }) {
+export function NewConcept(props: { periodId: number; periodLabel: string; currency: string; products: { id: number; name: string }[]; kind?: string; allocationLines?: { id: number; label: string }[] }) {
   const [error, setError] = useState<string | undefined>();
   return (
     <Dialog label="Nuevo gasto" icon={Plus} title={`Nuevo gasto de ${props.periodLabel}`} text="Importe presupuestado del mes, sin IGV." open={error}>
