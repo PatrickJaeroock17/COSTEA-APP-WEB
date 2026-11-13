@@ -9,14 +9,14 @@ Referencia visual: tablero `Hero3D` del canvas de diseño (1360×780). La portad
   - Máscara de fundido a la izquierda: `mask-image: linear-gradient(to right, transparent 0%, #000 34%)` (más el prefijo `-webkit-`).
   - El video/canvas usa `width:100%; height:100%; object-fit:cover; object-position:35% 50%`. Sin bordes, sin sombra, sin esquinas redondeadas: el chef se funde con el fondo.
 - Contenido (texto) encima: `position:relative; z-index:1/2`, a la izquierda, con `max-width:540px`, padding horizontal 64px.
-- Cabecera: logo (símbolo 40px + "costea" Nunito 800, 28px, #006b4b) · nav (Qué incluye, Cómo funciona, Planes, Preguntas; 15px/600; #12251f) · "Iniciar sesión" (texto #006b4b) + botón "Crear cuenta" (fondo #006b4b, texto blanco, radio 12px).
+- Cabecera: logo (símbolo 40px + "costea" Nunito 800, 28px, #006b4b) · nav (Qué incluye, Cómo funciona, Planes, Preguntas; 15px/600; #12251f) · "Iniciar sesión" (píldora con borde 1.5px #006b4b, texto #006b4b) + botón "Crear cuenta" (píldora, fondo #006b4b, texto blanco, alto 44px).
 
 ## 2. Texto del hero (columna izquierda, separación 24px)
 
 - Etiqueta: "Costos y presupuestos para restaurantes" · 13px/700 · #00563d · fondo `rgba(255,255,255,.7)` · pill (radio 999px, padding 7×14).
 - H1: "Sabe cuánto cuesta cada plato y cuánto te deja." · Nunito 800 · 62px · line-height 1.04 · letter-spacing -.025em · #032a1f.
 - Párrafo: 19px · line-height 1.6 · #2c3f38 · max-width 500px.
-- Botones: primario "Crear mi cuenta" (#006b4b, blanco, 800, 16px, padding 15×26, radio 14px) y secundario "Ver cómo funciona" (fondo `rgba(255,255,255,.6)`, texto y borde 1.5px #006b4b).
+- Botones (ver DESIGN.md §6): primario "Crear mi cuenta" = **CTA en píldora** (radio 999px, fondo #006b4b, texto blanco 800 16px, alto 56px, padding 0 8px 0 24px) con **círculo lima** a la derecha (40px, #a9d63a, flecha ↗ #032a1f); secundario "Ver cómo funciona" = píldora de 56px (fondo `rgba(255,255,255,.6)`, texto y borde 1.5px #006b4b). Componente: `Button variant="cta"` / `buttonVariants` + `CtaArrow`.
 - Nota: "Hecho para restaurantes en Perú · Precios con IGV del 18 %" · 14px · #3f524b.
 - Importante: todos los textos con colores explícitos de la paleta. No usar `text-muted` de shadcn (es casi blanco sobre este fondo).
 

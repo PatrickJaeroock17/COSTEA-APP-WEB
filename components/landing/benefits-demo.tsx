@@ -38,7 +38,7 @@ export function BenefitsDemo() {
         <p className="text-xs font-semibold text-[#5b6b65]">Costo completo (ejemplo)</p>
         <p className="font-brand text-xl font-extrabold tabular-nums text-[#032a1f]">{soles(sel.cost)}</p>
       </div>
-      <div className="hero-bob pointer-events-none absolute -bottom-6 right-4 z-10 rounded-2xl bg-[#006b4b] px-4 py-2.5 shadow-[0_12px_30px_rgba(3,42,31,0.25)] [--bob-delay:0.6s] [--bob-dur:5.8s] sm:right-8">
+      <div className="hero-bob pointer-events-none absolute -bottom-6 right-4 z-10 rounded-2xl bg-[#006b4b] px-4 py-2.5 shadow-[0_12px_30px_rgba(3,42,31,0.18)] [--bob-delay:0.6s] [--bob-dur:5.8s] sm:right-8">
         <p className="text-xs font-semibold text-[#d8ee9c]">Margen (ejemplo)</p>
         <p className="font-brand text-xl font-extrabold tabular-nums text-white">{(sel.margin.toNumber() * 100).toFixed(0)} %</p>
       </div>

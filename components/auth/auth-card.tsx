@@ -21,7 +21,7 @@ export function AuthCard({
       <Image src="/chef/f051.webp" alt="" fill priority sizes="100vw" className="scale-125 object-cover opacity-80 blur-2xl" />
       <div aria-hidden className="absolute inset-0 bg-[#f4e6c9]/35" />
 
-      <div className="relative grid w-full max-w-[1040px] overflow-hidden rounded-[32px] bg-white p-2.5 shadow-[0_30px_80px_rgba(3,42,31,0.28)] sm:p-3 md:grid-cols-[1.05fr_1fr]">
+      <div className="relative grid w-full max-w-[1040px] overflow-hidden rounded-[32px] bg-white p-2.5 shadow-float sm:p-3 md:grid-cols-[1.05fr_1fr]">
         <div className="relative h-64 overflow-hidden rounded-[24px] bg-[#e9d4ad] sm:h-80 md:h-auto md:min-h-[620px]">
           <ChefScrub className="absolute inset-0 [&_img]:object-[50%_15%]" center={0.33} posX={0.46} fade={false} desktopOnly />
           <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#032a1f]/85 via-[#032a1f]/10 to-transparent" />
@@ -32,7 +32,7 @@ export function AuthCard({
             <ArrowLeft className="size-4" aria-hidden /> Inicio
           </Link>
           <div className="absolute inset-x-5 bottom-4 sm:inset-x-8 sm:bottom-8">
-            <p className="font-brand text-[26px] font-extrabold uppercase leading-[0.95] tracking-[-0.02em] text-white md:text-[clamp(34px,4.4vw,54px)]">
+            <p className="font-brand text-[26px] font-extrabold leading-[0.95] tracking-[-0.02em] text-white md:text-[clamp(34px,4.4vw,54px)]">
               {tagline.map((l) => (
                 <span key={l} className="mr-2 inline md:mr-0 md:block">{l}</span>
               ))}
@@ -48,7 +48,7 @@ export function AuthCard({
             <div className="flex flex-col items-center text-center">
               <Image src="/brand/costea-symbol.svg" alt="" width={44} height={44} />
               <span className="mt-1 font-brand text-lg font-extrabold text-[#006b4b]">costea</span>
-              <h1 className="mt-5 font-brand text-[28px] font-extrabold uppercase leading-tight tracking-[-0.01em] text-[#032a1f] sm:text-[32px]">
+              <h1 className="mt-5 font-brand text-[28px] font-extrabold leading-tight tracking-[-0.02em] text-[#032a1f] sm:text-[32px]">
                 {title}
               </h1>
               <p className="mt-2 text-[15px] leading-snug text-[#5b6b65]">{sub}</p>

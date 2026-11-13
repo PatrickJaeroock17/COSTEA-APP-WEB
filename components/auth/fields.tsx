@@ -44,7 +44,7 @@ export function PasswordField({
   );
 }
 
-export function SubmitButton({ children, variant = "dark" }: { children: React.ReactNode; variant?: "dark" | "light" }) {
+export function SubmitButton({ children, variant = "primary" }: { children: React.ReactNode; variant?: "primary" | "light" }) {
   const { pending } = useFormStatus();
   return (
     <button
@@ -52,8 +52,8 @@ export function SubmitButton({ children, variant = "dark" }: { children: React.R
       disabled={pending}
       className={cn(
         "flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[15px] font-extrabold transition-colors active:scale-[0.99] disabled:cursor-wait disabled:opacity-70",
-        variant === "dark"
-          ? "bg-[#032a1f] text-white hover:bg-[#006b4b]"
+        variant === "primary"
+          ? "bg-primary text-primary-foreground hover:bg-brand-700"
           : "border border-[#dfe6e2] bg-white text-[#12251f] hover:bg-[#f6f9f7]",
       )}
     >

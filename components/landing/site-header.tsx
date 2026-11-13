@@ -31,7 +31,7 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/registro"
-            className="hidden rounded-xl bg-[#006b4b] px-5 py-2.5 text-[15px] font-bold text-white transition-colors hover:bg-[#00563d] md:inline-block"
+            className="hidden min-h-11 items-center rounded-full bg-primary px-5 text-[15px] font-bold text-primary-foreground transition-colors hover:bg-brand-700 md:inline-flex"
           >
             Crear cuenta
           </Link>

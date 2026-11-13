@@ -44,7 +44,7 @@ export function Hero() {
           <p className="text-xs font-semibold text-[#5b6b65]">Costo completo (ejemplo)</p>
           <p className="font-brand text-2xl font-extrabold text-[#032a1f]">S/ 10.00</p>
         </div>
-        <div className="hero-bob pointer-events-none absolute bottom-[16%] left-[49%] z-[2] hidden rounded-2xl bg-[#006b4b] px-4 py-3 shadow-[0_12px_30px_rgba(3,42,31,0.25)] [--bob-delay:0.6s] [--bob-dur:5.8s] md:block">
+        <div className="hero-bob pointer-events-none absolute bottom-[16%] left-[49%] z-[2] hidden rounded-2xl bg-[#006b4b] px-4 py-3 shadow-[0_12px_30px_rgba(3,42,31,0.18)] [--bob-delay:0.6s] [--bob-dur:5.8s] md:block">
           <p className="text-xs font-semibold text-[#d8ee9c]">Margen (ejemplo)</p>
           <p className="font-brand text-2xl font-extrabold text-white">33 %</p>
         </div>

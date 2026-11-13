@@ -23,7 +23,6 @@ export function Plans() {
   return (
     <section id="planes" className="relative scroll-mt-4 overflow-hidden bg-[#032a1f] py-20 sm:py-28">
       <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 size-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#a9d63a]/20 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-40 right-0 size-[520px] rounded-full bg-[#006b4b]/60 blur-3xl" />
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="inline-block rounded-full bg-white/10 px-3.5 py-[7px] text-[13px] font-bold text-[#d8ee9c]">

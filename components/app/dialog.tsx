@@ -44,7 +44,7 @@ export function Dialog({
       <dialog
         ref={ref}
         aria-labelledby={id}
-        className="m-auto w-[min(640px,calc(100vw-32px))] rounded-[28px] bg-white p-0 text-[#12251f] shadow-[0_30px_80px_rgba(3,42,31,0.25)] backdrop:bg-[#032a1f]/50"
+        className="m-auto w-[min(640px,calc(100vw-32px))] rounded-[28px] bg-white p-0 text-[#12251f] shadow-float backdrop:bg-[#032a1f]/50"
       >
         <div className="p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4">
