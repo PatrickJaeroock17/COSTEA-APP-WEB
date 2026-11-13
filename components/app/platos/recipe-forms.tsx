@@ -236,12 +236,12 @@ export function ProductDataForm({
   );
 }
 
-export function SalePriceForm({ productId, amount, currency }: { productId: number; amount: string | null; currency: string }) {
+export function SalePriceForm({ productId, amount, currency, igvLabel }: { productId: number; amount: string | null; currency: string; igvLabel: string }) {
   const [state, action] = useActionState<ProductState, FormData>(saveSalePrice, {});
   return (
     <form action={action} className="grid gap-4 sm:grid-cols-2" noValidate>
       <input type="hidden" name="productId" value={productId} />
-      <Field label={`Precio de carta (${currency}, con IGV 18 %)`} name="amount" error={state.fieldErrors?.amount} className="sm:col-span-2">
+      <Field label={`Precio de carta (${currency}, con IGV ${igvLabel})`} name="amount" error={state.fieldErrors?.amount} className="sm:col-span-2">
         {(p) => <input {...p} name="amount" inputMode="decimal" required defaultValue={state.values?.amount ?? amount ?? ""} placeholder="35.00" />}
       </Field>
       <Footer state={state} label="Guardar precio" />

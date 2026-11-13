@@ -16,7 +16,7 @@ export type SnapshotRow = {
   price: SnapshotPrice | null;
 };
 export type BudgetSnapshot = {
-  input: { meta?: Record<string, string>; lines?: { id: number; pricingMode: string }[] };
+  input: { meta?: Record<string, string>; lines?: { id: number; pricingMode: string; tax?: string }[] };
   result: {
     engine: string;
     status: string;

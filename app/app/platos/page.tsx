@@ -6,11 +6,11 @@ import { EmptyState, PageHeader } from "@/components/app/page-header";
 import { CatalogDishes, NewProduct, PriceCell } from "@/components/app/platos/list-forms";
 import { canEdit, getAppContext } from "@/lib/auth";
 import { D } from "@/lib/costing/decimal";
-import { IGV } from "@/lib/costing/sales";
 import { type ProductSummary, getCatalogDishes, getProductSummaries } from "@/lib/data/products";
 import { formatMoney, formatQty } from "@/lib/format";
 import { limaToday } from "@/lib/materials";
 import { cn } from "@/lib/utils";
+import { igvLabel } from "@/lib/restaurants";
 
 export const metadata = { title: "costea — Platos y recetas" };
 
@@ -32,10 +32,10 @@ const TABS = [
   { key: "catalogo", label: "Catálogo de platos" },
 ] as const;
 
-/** Food cost = costo de materiales por porción ÷ precio neto (sin IGV). */
-function foodCost(p: ProductSummary) {
+/** Food cost = costo de materiales por porción ÷ precio neto (sin IGV, con la tasa del restaurante). */
+function foodCost(p: ProductSummary, igvRate: string) {
   if (!p.price || !p.cost.perUnit) return null;
-  const net = new D(p.price).div(IGV.plus(1));
+  const net = new D(p.price).div(new D(igvRate).plus(1));
   return { net, ratio: p.cost.perUnit.div(net), margin: net.minus(p.cost.perUnit) };
 }
 
@@ -83,16 +83,16 @@ async function Content({ searchParams }: Props) {
         {tab === "catalogo" ? (
           <CatalogTab products={products} editable={editable} currency={r.currency} />
         ) : tab === "precios" ? (
-          <PricesTab products={active} editable={editable} currency={r.currency} />
+          <PricesTab products={active} editable={editable} currency={r.currency} igvRate={r.igvRate} />
         ) : (
-          <MineTab products={products.filter((p) => p.active !== archived)} archived={archived} currency={r.currency} hasAny={products.length > 0} />
+          <MineTab products={products.filter((p) => p.active !== archived)} archived={archived} currency={r.currency} igvRate={r.igvRate} hasAny={products.length > 0} />
         )}
       </div>
     </>
   );
 }
 
-function MineTab({ products, archived, currency, hasAny }: { products: ProductSummary[]; archived: boolean; currency: string; hasAny: boolean }) {
+function MineTab({ products, archived, currency, igvRate, hasAny }: { products: ProductSummary[]; archived: boolean; currency: string; igvRate: string; hasAny: boolean }) {
   if (!hasAny) {
     return (
       <EmptyState title="Aún no tienes platos" text="Trae un plato del catálogo con su receta lista o crea uno propio.">
@@ -117,7 +117,7 @@ function MineTab({ products, archived, currency, hasAny }: { products: ProductSu
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => {
-            const fc = foodCost(p);
+            const fc = foodCost(p, igvRate);
             const empty = !p.cost.lines.length;
             return (
               <li key={p.id}>
@@ -156,12 +156,12 @@ function MineTab({ products, archived, currency, hasAny }: { products: ProductSu
   );
 }
 
-function PricesTab({ products, editable, currency }: { products: ProductSummary[]; editable: boolean; currency: string }) {
+function PricesTab({ products, editable, currency, igvRate }: { products: ProductSummary[]; editable: boolean; currency: string; igvRate: string }) {
   if (!products.length) return <p className="text-[#5b6b65]">Agrega platos para fijar sus precios de carta.</p>;
   return (
     <div className="overflow-hidden rounded-2xl border border-[#e2e9e5] bg-white">
       <p className="border-b border-[#e2e9e5] bg-[#f6f9f7] px-4 py-3 text-sm text-[#3f524b]">
-        Precio de carta con IGV 18 %. El food cost compara el costo de materiales por porción con el precio sin IGV. El costo completo (mano de obra y gastos) se calcula en Costo y
+        Precio de carta con IGV {igvLabel(igvRate)}. El food cost compara el costo de materiales por porción con el precio sin IGV. El costo completo (mano de obra y gastos) se calcula en Costo y
         precio por plato.
       </p>
       <div className="overflow-x-auto">
@@ -177,7 +177,7 @@ function PricesTab({ products, editable, currency }: { products: ProductSummary[
           </thead>
           <tbody className="tabular-nums">
             {products.map((p) => {
-              const fc = foodCost(p);
+              const fc = foodCost(p, igvRate);
               return (
                 <tr key={p.id} className="border-b border-[#eef2f0] align-top">
                   <td className="px-4 py-3">

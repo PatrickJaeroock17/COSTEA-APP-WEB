@@ -19,6 +19,8 @@ export type ActiveRestaurant = {
   taxIdKind: string;
   taxId: string | null;
   currency: string;
+  /** Tasa de IGV del restaurante como fracción exacta ("0.180000"). */
+  igvRate: string;
   role: Role;
 };
 export type AppContext = {
@@ -54,7 +56,7 @@ export const getAppContext = cache(async (): Promise<AppContext> => {
     supabase.from("profiles").select("name").eq("id", user.id).maybeSingle(),
     supabase
       .from("restaurants")
-      .select("id, legal_name, trade_name, tax_id_kind, tax_id, currency")
+      .select("id, legal_name, trade_name, tax_id_kind, tax_id, currency, igv_rate::text")
       .eq("active", true)
       .order("created_at"),
   ]);
@@ -84,6 +86,7 @@ export const getAppContext = cache(async (): Promise<AppContext> => {
       taxIdKind: active.tax_id_kind,
       taxId: active.tax_id,
       currency: active.currency,
+      igvRate: (active as unknown as { igv_rate: string }).igv_rate,
       role: (member?.role as Role) ?? "viewer",
     };
     periods = (periodRows ?? []).map((p) => ({

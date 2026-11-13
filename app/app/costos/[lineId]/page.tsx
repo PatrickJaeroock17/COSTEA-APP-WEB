@@ -15,6 +15,7 @@ import { formatMoney, formatQty } from "@/lib/format";
 import { PRICING_MODES, pricingInput } from "@/lib/pricing";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { igvLabel } from "@/lib/restaurants";
 
 export const metadata = { title: "costea — Costo del plato" };
 
@@ -44,7 +45,7 @@ async function Detail({ params }: Props) {
   const { result, lines } = await evaluatePlan(r.id, plan, { name: r.name, currency: r.currency });
   const line = lines.find((l) => l.id === id)!;
   const row = result.rows.find((x) => Number(x.id) === id)!;
-  const summary = portionSummary(result, id, "0.18");
+  const summary = portionSummary(result, id, r.igvRate);
   const price = row.price;
   const editable = canEdit(r.role);
   const portions = formatQty(row.quantity);
@@ -99,7 +100,7 @@ async function Detail({ params }: Props) {
           </CardHeader>
           <CardContent>
             <p className="font-brand text-4xl font-extrabold tabular-nums text-white">{price ? formatMoney(price.final, r.currency) : "—"}</p>
-            <p className="text-sm text-white/80">con IGV 18 %</p>
+            <p className="text-sm text-white/80">con IGV {igvLabel(r.igvRate)}</p>
             {price && (
               <dl className="mt-5 space-y-2 text-sm">
                 {[

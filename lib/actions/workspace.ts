@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { PERIOD_COOKIE, RESTAURANT_COOKIE, canEdit, getAppContext, getUser } from "@/lib/auth";
-import { RESTAURANT_TAX_RATE, parseMonthKey, validateRestaurant } from "@/lib/restaurants";
+import { parseIgvRate, parseMonthKey, validateRestaurant } from "@/lib/restaurants";
 import { createClient } from "@/lib/supabase/server";
 
 export type WorkspaceState = {
@@ -104,10 +104,12 @@ export async function createRestaurant(_prev: WorkspaceState, fd: FormData): Pro
 export async function updateRestaurant(_prev: WorkspaceState, fd: FormData): Promise<WorkspaceState> {
   await requireUser();
   const { restaurant } = await getAppContext();
-  const raw = Object.fromEntries(["legalName", "tradeName", "taxIdKind", "taxId", "currency"].map((k) => [k, text(fd, k)]));
+  const raw = Object.fromEntries(["legalName", "tradeName", "taxIdKind", "taxId", "currency", "igvChoice", "igvOther"].map((k) => [k, text(fd, k)]));
   if (!restaurant || restaurant.role !== "owner") return { error: "Solo el dueño puede cambiar los datos del restaurante.", values: raw };
   const { values, errors } = validateRestaurant(raw);
-  if (Object.keys(errors).length) return { error: "Revisa los datos marcados.", fieldErrors: errors, values: raw };
+  const igv = parseIgvRate(raw.igvChoice || "18", raw.igvOther);
+  const fieldErrors: Record<string, string> = { ...errors, ...("error" in igv ? { igvOther: igv.error } : {}) };
+  if (Object.keys(fieldErrors).length) return { error: "Revisa los datos marcados.", fieldErrors, values: raw };
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -118,6 +120,8 @@ export async function updateRestaurant(_prev: WorkspaceState, fd: FormData): Pro
       tax_id_kind: values.taxIdKind,
       tax_id: values.taxId || null,
       currency: values.currency,
+      // Al cambiar la tasa, la base invalida el cálculo revisado de los planes (trigger restaurants_igv_changed).
+      igv_rate: (igv as { rate: string }).rate as unknown as number,
     })
     .eq("id", restaurant.id)
     .select("id");
@@ -164,7 +168,7 @@ export async function createPeriod(_prev: WorkspaceState, fd: FormData): Promise
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("periods")
-    .insert({ restaurant_id: restaurant.id, year: parsed.year, month: parsed.month, tax_rate: Number(RESTAURANT_TAX_RATE) })
+    .insert({ restaurant_id: restaurant.id, year: parsed.year, month: parsed.month, tax_rate: restaurant.igvRate as unknown as number })
     .select("id")
     .single();
   if (error || !data) {

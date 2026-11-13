@@ -14,6 +14,8 @@ export type SaleRow = {
   quantity: string;
   unit_price: string;
   unit_cost: string;
+  /** Tasa de IGV congelada en la venta. */
+  igv_rate: string;
   products: { name: string } | null;
 };
 
@@ -26,15 +28,16 @@ const monthRange = (year: number, month: number) => {
 /**
  * Resultados reales del mes (legacy: services/sales.monthly_results): ventas del mes, gastos fijos
  * (conceptos fijos + costo total de la planilla del mes) y variables (conceptos no fijos).
+ * `igvRate` es la tasa actual del restaurante: solo expresa el punto de equilibrio con IGV; cada venta usa la suya.
  */
-export async function getMonthlyResults(restaurantId: string, period: { id: number; year: number; month: number }) {
+export async function getMonthlyResults(restaurantId: string, period: { id: number; year: number; month: number }, igvRate: string) {
   const supabase = await createClient();
   const { start, end } = monthRange(period.year, period.month);
   const [sales, concepts, employees, costs] = await Promise.all([
     fetchAll<SaleRow>((a, b) =>
       supabase
         .from("sales")
-        .select("id, product_id, sold_on, quantity::text, unit_price::text, unit_cost::text, products(name)")
+        .select("id, product_id, sold_on, quantity::text, unit_price::text, unit_cost::text, igv_rate::text, products(name)")
         .eq("restaurant_id", restaurantId)
         .gte("sold_on", start)
         .lte("sold_on", end)
@@ -51,9 +54,10 @@ export async function getMonthlyResults(restaurantId: string, period: { id: numb
   const fixed = sum(active.filter((c) => c.behavior === "fixed").map((c) => new D(c.amount))).plus(payroll);
   const variable = sum(active.filter((c) => c.behavior !== "fixed").map((c) => new D(c.amount)));
   const result = summarize(
-    sales.map((s) => ({ productId: s.product_id, productName: s.products?.name ?? `Plato #${s.product_id}`, quantity: s.quantity, unitPrice: s.unit_price, unitCost: s.unit_cost })),
+    sales.map((s) => ({ productId: s.product_id, productName: s.products?.name ?? `Plato #${s.product_id}`, quantity: s.quantity, unitPrice: s.unit_price, unitCost: s.unit_cost, taxRate: s.igv_rate })),
     fixed.toFixed(),
     variable.toFixed(),
+    igvRate,
   );
   const configured = new Set(costs.map((c) => c.employee_id));
   return {

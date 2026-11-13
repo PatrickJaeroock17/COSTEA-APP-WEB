@@ -14,6 +14,7 @@ import { evaluatePlan, getDishOptions, getPlans } from "@/lib/data/plan";
 import { formatDate, formatMoney, formatQty } from "@/lib/format";
 import { periodDates } from "@/lib/materials";
 import { PRICING_MODES } from "@/lib/pricing";
+import { igvLabel } from "@/lib/restaurants";
 
 export const metadata = { title: "costea — Costo y precio por plato" };
 
@@ -93,7 +94,7 @@ async function Content({ searchParams }: Props) {
       )}
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-ink-soft">
-          <strong className="text-heading">{plan.name}</strong> · precios de insumos al {formatDate(plan.price_date)}
+          <strong className="text-heading">{plan.name}</strong> · precios de insumos al {formatDate(plan.price_date)} · IGV {igvLabel(r.igvRate)}
           {plans.length > 1 && ` · ${plans.length} planes en ${period.label}`}
         </p>
         <div className="flex flex-wrap gap-2">

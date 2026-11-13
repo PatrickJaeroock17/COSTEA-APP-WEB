@@ -17,6 +17,7 @@ import { BASES } from "@/lib/expenses";
 import { formatMoney, formatQty } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { igvLabel } from "@/lib/restaurants";
 
 export const metadata = { title: "costea — Reportes" };
 
@@ -88,7 +89,7 @@ async function Content({ searchParams }: Props) {
   const supabase = await createClient();
   const [{ data: lastBudget }, actual] = await Promise.all([
     supabase.from("budgets").select("id").eq("plan_id", plan.id).order("number", { ascending: false }).limit(1).maybeSingle(),
-    getMonthlyResults(r.id, period),
+    getMonthlyResults(r.id, period, r.igvRate),
   ]);
   const budget = lastBudget ? await getBudget(r.id, lastBudget.id) : null;
   const snap: BudgetSnapshot | null = budget?.snapshot ?? null;
@@ -119,7 +120,7 @@ async function Content({ searchParams }: Props) {
 
       <p className="mt-4 flex items-start gap-2 rounded-2xl bg-info-soft px-4 py-3 text-sm text-info-text">
         <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
-        Producción igual a ventas; sin inventarios ni productos en proceso. Costo completo gerencial para fijar precios; no es una valoración contable de inventarios. Moneda: {cur}.
+        Producción igual a ventas; sin inventarios ni productos en proceso. Costo completo gerencial para fijar precios; no es una valoración contable de inventarios. Moneda: {cur}. IGV del restaurante: {igvLabel(r.igvRate)}.
       </p>
       {!ok && (
         <div className="mt-4">

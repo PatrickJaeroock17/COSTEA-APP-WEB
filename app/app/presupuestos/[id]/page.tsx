@@ -11,6 +11,7 @@ import { D } from "@/lib/costing/decimal";
 import { getBudget } from "@/lib/data/budgets";
 import { formatDate, formatMoney, formatQty } from "@/lib/format";
 import { PRICING_MODES } from "@/lib/pricing";
+import { igvLabel } from "@/lib/restaurants";
 
 export const metadata = { title: "costea — Presupuesto" };
 
@@ -38,6 +39,8 @@ async function Detail({ params, searchParams }: Props) {
   const { input, result } = budget.snapshot;
   const meta = input.meta ?? {};
   const currency = meta.currency ?? r.currency;
+  // Tasa congelada en la fotografía (presupuestos anteriores al IGV configurable: la de sus líneas, 18 %).
+  const igv = igvLabel(meta.igvRate ?? input.lines?.[0]?.tax ?? null);
   const t = result.totals;
   const modeOf = new Map((input.lines ?? []).map((l) => [Number(l.id), PRICING_MODES.find((m) => m.value === l.pricingMode)?.label]));
 
@@ -53,7 +56,7 @@ async function Detail({ params, searchParams }: Props) {
             {meta.plan ?? "Presupuesto"} · v{budget.number}
           </h1>
           <p className="mt-1 text-muted-foreground">
-            {meta.period} · publicado el {formatDate(budget.created_at)} · precios de insumos al {formatDate(meta.priceDate)}
+            {meta.period} · publicado el {formatDate(budget.created_at)} · precios de insumos al {formatDate(meta.priceDate)} · IGV {igv}
             {budget.archived && " · archivado"}
           </p>
         </div>
@@ -95,7 +98,7 @@ async function Detail({ params, searchParams }: Props) {
       <Card className="mt-6">
         <CardHeader>
           <CardTitle>Costo y precio por plato</CardTitle>
-          <CardDescription>Por porción, con IGV 18 % en el precio.</CardDescription>
+          <CardDescription>Por porción, con IGV {igv} en el precio (tasa congelada al publicar).</CardDescription>
         </CardHeader>
         <Table className="min-w-[860px]">
           <TableHeader>

@@ -847,28 +847,28 @@ isOneToOne: false
                   ]
                 },"restaurants": {
                   Row: {
-                    "active": boolean,"created_at": string,"currency": string,"default_tax_rate": number | null,"id": string,"legal_name": string,"owner_id": string,"tax_id": string | null,"tax_id_kind": string,"trade_name": string | null,"updated_at": string
+                    "active": boolean,"created_at": string,"currency": string,"default_tax_rate": number | null,"id": string,"igv_rate": number,"legal_name": string,"owner_id": string,"tax_id": string | null,"tax_id_kind": string,"trade_name": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"created_at"?: string,"currency"?: string,"default_tax_rate"?: number | null,"id"?: string,"legal_name": string,"owner_id"?: string,"tax_id"?: string | null,"tax_id_kind"?: string,"trade_name"?: string | null,"updated_at"?: string
+                    "active"?: boolean,"created_at"?: string,"currency"?: string,"default_tax_rate"?: number | null,"id"?: string,"igv_rate"?: number,"legal_name": string,"owner_id"?: string,"tax_id"?: string | null,"tax_id_kind"?: string,"trade_name"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "active"?: boolean,"created_at"?: string,"currency"?: string,"default_tax_rate"?: number | null,"id"?: string,"legal_name"?: string,"owner_id"?: string,"tax_id"?: string | null,"tax_id_kind"?: string,"trade_name"?: string | null,"updated_at"?: string
+                    "active"?: boolean,"created_at"?: string,"currency"?: string,"default_tax_rate"?: number | null,"id"?: string,"igv_rate"?: number,"legal_name"?: string,"owner_id"?: string,"tax_id"?: string | null,"tax_id_kind"?: string,"trade_name"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     
                   ]
                 },"sales": {
                   Row: {
-                    "created_at": string,"id": number,"product_id": number,"quantity": number,"recipe_id": number,"restaurant_id": string,"sold_on": string,"unit_cost": number,"unit_price": number,"updated_at": string
+                    "created_at": string,"id": number,"igv_rate": number,"product_id": number,"quantity": number,"recipe_id": number,"restaurant_id": string,"sold_on": string,"unit_cost": number,"unit_price": number,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id"?: never,"product_id": number,"quantity": number,"recipe_id": number,"restaurant_id": string,"sold_on": string,"unit_cost": number,"unit_price": number,"updated_at"?: string
+                    "created_at"?: string,"id"?: never,"igv_rate"?: number,"product_id": number,"quantity": number,"recipe_id": number,"restaurant_id": string,"sold_on": string,"unit_cost": number,"unit_price": number,"updated_at"?: string
                   }
                   Update: {
-                    "created_at"?: string,"id"?: never,"product_id"?: number,"quantity"?: number,"recipe_id"?: number,"restaurant_id"?: string,"sold_on"?: string,"unit_cost"?: number,"unit_price"?: number,"updated_at"?: string
+                    "created_at"?: string,"id"?: never,"igv_rate"?: number,"product_id"?: number,"quantity"?: number,"recipe_id"?: number,"restaurant_id"?: string,"sold_on"?: string,"unit_cost"?: number,"unit_price"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     {

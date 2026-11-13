@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import { Lock } from "lucide-react";
 import { Field, FormAlert, SaveButton } from "@/components/app/form";
 import { createRestaurant, updateRestaurant, type WorkspaceState } from "@/lib/actions/workspace";
-import { CURRENCIES, TAX_ID_KINDS } from "@/lib/restaurants";
+import { CURRENCIES, IGV_HELP, IGV_OPTIONS, MAX_IGV_PERCENT, TAX_ID_KINDS, igvChoice } from "@/lib/restaurants";
 
 export type RestaurantFormValues = {
   legalName: string;
@@ -12,6 +12,8 @@ export type RestaurantFormValues = {
   taxIdKind: string;
   taxId: string;
   currency: string;
+  /** Tasa de IGV guardada (fracción). */
+  igvRate?: string;
 };
 
 /** Datos del restaurante. `mode="create"` además pide el primer mes de trabajo. */
@@ -32,6 +34,9 @@ export function RestaurantForm({
   const v = { ...initial, ...state.values } as Partial<RestaurantFormValues & { month: string }>;
   const e = state.fieldErrors ?? {};
   const [kind, setKind] = useState(v.taxIdKind || "peru_ruc");
+  const saved = igvChoice(initial?.igvRate ?? "");
+  const sv = state.values as Record<string, string> | undefined;
+  const [igv, setIgv] = useState(sv?.igvChoice || saved.choice);
 
   return (
     <form action={action} className="grid gap-5 sm:grid-cols-2" noValidate>
@@ -95,10 +100,25 @@ export function RestaurantForm({
             {(p) => <input {...p} type="month" name="month" required defaultValue={v.month || defaultMonth} />}
           </Field>
         ) : (
-          <div>
-            <p className="text-sm font-bold text-[#12251f]">IGV</p>
-            <p className="mt-1.5 flex h-12 items-center rounded-xl bg-[#f2f5f3] px-4 text-[15px] text-[#3f524b]">18 % · fijo para restaurantes</p>
-          </div>
+          <>
+            <Field label="IGV de tus precios" name="igvChoice" error={e.igvChoice} hint={igv === "other" ? undefined : IGV_HELP}>
+              {(p) => (
+                <select {...p} name="igvChoice" value={igv} onChange={(ev) => setIgv(ev.target.value)}>
+                  {IGV_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                  <option value="other">Otra tasa</option>
+                </select>
+              )}
+            </Field>
+            {igv === "other" && (
+              <Field label={`Otra tasa (%, de 0 a ${MAX_IGV_PERCENT})`} name="igvOther" error={e.igvOther} hint={IGV_HELP}>
+                {(p) => <input {...p} name="igvOther" inputMode="decimal" defaultValue={sv?.igvOther ?? saved.other} placeholder="12" />}
+              </Field>
+            )}
+          </>
         )}
       </fieldset>
       <div className="flex flex-col gap-3 sm:col-span-2 sm:flex-row sm:items-center">

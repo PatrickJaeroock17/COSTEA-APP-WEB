@@ -8,7 +8,7 @@ import { PeriodForm } from "@/components/app/settings/period-form";
 import { UnitsForm } from "@/components/app/settings/units-form";
 import { RestaurantList } from "@/components/app/settings/restaurant-list";
 import { type AppContext, canEdit, getAppContext } from "@/lib/auth";
-import { displayName, periodKey } from "@/lib/restaurants";
+import { displayName, igvLabel, periodKey } from "@/lib/restaurants";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
@@ -123,7 +123,7 @@ async function RestaurantSection({ ctx, created }: { ctx: AppContext; created: b
   const { data: locked } = await supabase.rpc("restaurant_money_data", { rid: r.id });
   const owner = r.role === "owner";
   return (
-    <SectionCard title="Datos del restaurante" text="Se usan en los reportes y presupuestos. Los cambios no alteran los meses ya creados.">
+    <SectionCard title="Datos del restaurante" text="Se usan en los reportes y presupuestos. Cambiar el IGV pide revisar otra vez el cálculo de los planes; las ventas y presupuestos ya registrados conservan su tasa.">
       {created && (
         <p role="status" className="mb-5 rounded-xl bg-[#e7f6ee] px-4 py-3 text-sm font-semibold text-[#00563d]">
           Restaurante creado con su primer mes de trabajo. Ya puedes registrar insumos.
@@ -135,7 +135,7 @@ async function RestaurantSection({ ctx, created }: { ctx: AppContext; created: b
         mode="edit"
         readOnly={!owner}
         currencyLocked={Boolean(locked)}
-        initial={{ legalName: r.legalName, tradeName: r.tradeName ?? "", taxIdKind: r.taxIdKind, taxId: r.taxId ?? "", currency: r.currency }}
+        initial={{ legalName: r.legalName, tradeName: r.tradeName ?? "", taxIdKind: r.taxIdKind, taxId: r.taxId ?? "", currency: r.currency, igvRate: r.igvRate }}
       />
     </SectionCard>
   );
@@ -146,7 +146,7 @@ function PeriodsSection({ ctx }: { ctx: AppContext }) {
   return (
     <div className="space-y-6">
       {editable && (
-        <SectionCard title="Agregar un mes" text="Cada mes guarda su propio costo de personal, gastos, plan y presupuesto. IGV 18 %.">
+        <SectionCard title="Agregar un mes" text={`Cada mes guarda su propio costo de personal, gastos, plan y presupuesto. IGV ${igvLabel(ctx.restaurant?.igvRate)}.`}>
           <PeriodForm key={ctx.periods.length} defaultMonth={suggestedMonth(ctx.periods)} />
         </SectionCard>
       )}
@@ -162,7 +162,7 @@ function PeriodsSection({ ctx }: { ctx: AppContext }) {
                 )}
               >
                 <span className="font-bold text-[#032a1f]">{p.label}</span>
-                <span className="text-sm text-[#5b6b65]">{p.id === ctx.periodId ? "Mes de trabajo" : "IGV 18 %"}</span>
+                <span className="text-sm text-[#5b6b65]">{p.id === ctx.periodId ? "Mes de trabajo" : ""}</span>
               </li>
             ))}
           </ul>

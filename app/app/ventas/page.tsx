@@ -12,6 +12,7 @@ import { getMonthlyResults } from "@/lib/data/sales";
 import { formatDate, formatMoney, formatQty } from "@/lib/format";
 import { limaToday, periodDates } from "@/lib/materials";
 import { createClient } from "@/lib/supabase/server";
+import { igvLabel } from "@/lib/restaurants";
 
 export const metadata = { title: "costea — Ventas" };
 
@@ -36,14 +37,14 @@ async function Content() {
     <PageHeader
       icon={ShoppingCart}
       title="Ventas"
-      text="Registra lo vendido cada día. Cada venta guarda su precio con IGV y el costo de materiales de esa fecha, y descuenta los insumos del inventario."
+      text={`Registra lo vendido cada día. Cada venta guarda su precio con IGV, la tasa de IGV (hoy ${igvLabel(r.igvRate)}) y el costo de materiales de esa fecha, y descuenta los insumos del inventario.`}
     />
   );
   if (!period) return <>{header}<div className="mt-6"><EmptyState title="Agrega un mes de trabajo" text="Créalo en Configuración." /></div></>;
   const editable = canEdit(r.role);
   const supabase = await createClient();
   const [results, { data: products }, { data: prices }] = await Promise.all([
-    getMonthlyResults(r.id, period),
+    getMonthlyResults(r.id, period, r.igvRate),
     supabase.from("products").select("id, name").eq("restaurant_id", r.id).eq("active", true).order("name"),
     supabase.from("product_prices").select("product_id, amount::text").eq("restaurant_id", r.id),
   ]);
@@ -168,7 +169,7 @@ async function Content() {
       <Card className="mt-6">
         <CardHeader>
           <CardTitle>Ventas registradas</CardTitle>
-          <CardDescription>Precio y costo quedan como estaban el día de la venta.</CardDescription>
+          <CardDescription>Precio, IGV y costo quedan como estaban el día de la venta.</CardDescription>
         </CardHeader>
         {results.sales.length ? (
           <Table className="min-w-[720px]">
@@ -178,6 +179,7 @@ async function Content() {
                 <TableHead>Plato</TableHead>
                 <TableHead numeric>Porciones</TableHead>
                 <TableHead numeric>Precio con IGV</TableHead>
+                <TableHead numeric>IGV</TableHead>
                 <TableHead numeric>Costo materiales</TableHead>
                 <TableHead numeric>Total con IGV</TableHead>
                 {editable && <TableHead className="sr-only">Acciones</TableHead>}
@@ -190,6 +192,7 @@ async function Content() {
                   <TableCell className="font-bold text-heading">{s.products?.name ?? <TableEmpty />}</TableCell>
                   <TableCell numeric>{formatQty(s.quantity)}</TableCell>
                   <TableCell numeric>{formatMoney(s.unit_price, r.currency)}</TableCell>
+                  <TableCell numeric>{igvLabel(s.igv_rate)}</TableCell>
                   <TableCell numeric>{formatMoney(s.unit_cost, r.currency, 4)}</TableCell>
                   <TableCell numeric className="font-bold">
                     {formatMoney(new D(s.quantity).times(s.unit_price), r.currency)}

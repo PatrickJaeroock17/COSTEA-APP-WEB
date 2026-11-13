@@ -31,7 +31,7 @@ describe("crear el plan del mes", () => {
   it("crea plan y líneas en una sola operación; el primero queda activo", async () => {
     [{ id: plan }] = await create(A, [{ product_id: ceviche, quantity: "800", price: "17.70", factor: "1" }]);
     const line = await one(A, "select pl.active, l.quantity::text q, l.reference_price::text ref, l.pricing_mode, l.pricing_value::text v, l.tax_rate::text tax from production_plans pl join plan_lines l on l.plan_id = pl.id where pl.id = $1", [plan]);
-    expect(line).toEqual({ active: true, q: "800", ref: "15", pricing_mode: "manual", v: "17.70", tax: "0.18" });
+    expect(line).toEqual({ active: true, q: "800", ref: "15", pricing_mode: "manual", v: "17.70", tax: "0.180000" });
   });
 
   it("valida cantidades, precio y factor sin dejar el plan a medias", async () => {

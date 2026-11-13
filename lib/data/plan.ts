@@ -77,17 +77,21 @@ export type PlanEvaluation = {
 /**
  * Entradas del motor desde la base (legacy: planning.plan_input) y su cálculo.
  * Los insumos usan el promedio del kardex a la fecha de referencia del plan; si no hay kardex, el precio
- * guardado en la receta. Restaurantes: IGV 18 %.
+ * guardado en la receta. El impuesto es la tasa de IGV configurada en el restaurante (entra en la huella:
+ * si cambia, el cálculo revisado deja de valer).
  */
 export async function evaluatePlan(restaurantId: string, plan: PlanRow, restaurant: { name: string; currency: string }): Promise<PlanEvaluation> {
   const supabase = await createClient();
-  const [employees, costs, concepts, { data: lineData }, { data: period }] = await Promise.all([
+  const [employees, costs, concepts, { data: lineData }, { data: period }, { data: rest }] = await Promise.all([
     getEmployees(restaurantId),
     getPeriodCosts(restaurantId, plan.period_id),
     getConcepts(restaurantId, plan.period_id),
     supabase.from("plan_lines").select(LINE_COLUMNS).eq("plan_id", plan.id).order("id"),
     supabase.from("periods").select("year, month").eq("id", plan.period_id).single(),
+    supabase.from("restaurants").select("igv_rate::text").eq("id", restaurantId).single(),
   ]);
+  if (!rest) throw new Error("No se pudo leer el IGV del restaurante.");
+  const igvRate = new D((rest as unknown as { igv_rate: string }).igv_rate).toFixed();
   const planLines = (lineData ?? []) as unknown as PlanLineRow[];
   const issues: string[] = [];
 
@@ -197,7 +201,7 @@ export async function evaluatePlan(restaurantId: string, plan: PlanRow, restaura
       pricingMode: line.pricing_mode,
       pricingValue: line.pricing_value,
       adoptedPrice: line.adopted_price,
-      tax: "0.18",
+      tax: igvRate,
       materials: mats,
       pricePending: mats.some((m) => m.priceSource === "pending"),
       operations: (w?.operations ?? []).map((op) => ({ employeeId: op.employee_id, activity: op.activity, minutes: op.minutes })),
@@ -225,6 +229,7 @@ export async function evaluatePlan(restaurantId: string, plan: PlanRow, restaura
       plan: plan.name,
       planId: plan.id,
       priceDate: plan.price_date,
+      igvRate,
       assumption: "Producción igual a ventas; sin inventarios ni productos en proceso; consumo proporcional de lotes.",
     },
   };

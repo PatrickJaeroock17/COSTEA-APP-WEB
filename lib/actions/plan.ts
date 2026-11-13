@@ -172,8 +172,8 @@ export async function addPlanLine(_prev: PlanState, fd: FormData): Promise<PlanS
     p_plan: planId,
     p_product: productId,
     p_quantity: parsed.value.quantity,
-    // Venta de referencia = precio con IGV ÷ 1.18 (legacy: values["price"] / (1 + tax)).
-    p_reference_price: new D(parsed.value.pricingValue).div("1.18").toFixed(),
+    // Venta de referencia = precio con IGV ÷ (1 + tasa del restaurante) (legacy: values["price"] / (1 + tax)).
+    p_reference_price: new D(parsed.value.pricingValue).div(new D(r.igvRate).plus(1)).toFixed(),
     p_equivalent_factor: parsed.value.equivalentFactor,
     p_pricing_mode: "manual",
     p_pricing_value: parsed.value.pricingValue,

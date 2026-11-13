@@ -6,12 +6,12 @@ import { card } from "@/components/app/form";
 import { IngredientForm, ProductDataForm, ProductStatus, RemoveIngredient, SalePriceForm, ScaleForm } from "@/components/app/platos/recipe-forms";
 import { canEdit, getAppContext } from "@/lib/auth";
 import { D, decimalText } from "@/lib/costing/decimal";
-import { IGV } from "@/lib/costing/sales";
 import { getIngredientChoices, getProductDetail } from "@/lib/data/products";
 import { formatDate, formatMoney, formatQty, formatUnitPrice } from "@/lib/format";
 import { limaToday } from "@/lib/materials";
 import { QUANTITY_MODES, ratePercent } from "@/lib/recipes";
 import { cn } from "@/lib/utils";
+import { igvLabel } from "@/lib/restaurants";
 
 export const metadata = { title: "costea — Plato" };
 
@@ -66,7 +66,7 @@ async function Detail({ params, searchParams }: Props) {
   const ingredients = editable ? await getIngredientChoices(r.id, r.currency) : null;
   const choices = ingredients ? ingredients.choices.filter((c) => ingredients.active.has(c.id) || cost.lines.some((l) => l.material_id === c.id)) : [];
   const units = ingredients?.units.all ?? [];
-  const net = price ? new D(price).div(IGV.plus(1)) : null;
+  const net = price ? new D(price).div(new D(r.igvRate).plus(1)) : null;
   const foodCost = net && cost.perUnit ? cost.perUnit.div(net) : null;
   const portions = formatQty(version.output_quantity);
 
@@ -246,7 +246,7 @@ async function Detail({ params, searchParams }: Props) {
         )}
         {canEdit(r.role) && p.active && (
           <Section icon={Receipt} title="Precio de carta" text="Precio por porción que paga el cliente, con IGV. Se usa al registrar ventas.">
-            <SalePriceForm productId={p.id} amount={price ? new D(price).toFixed(2) : null} currency={r.currency} />
+            <SalePriceForm productId={p.id} amount={price ? new D(price).toFixed(2) : null} currency={r.currency} igvLabel={igvLabel(r.igvRate)} />
           </Section>
         )}
         {editable && (

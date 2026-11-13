@@ -1,5 +1,6 @@
 // Reglas de datos del restaurante y de los periodos (legacy: forms/company.py, models/period.py).
 // Sin dependencias de servidor: lo usan las acciones, los formularios y las pruebas.
+import { D } from "@/lib/costing/decimal";
 
 export const MONTH_NAMES = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -22,8 +23,41 @@ export const TAX_ID_KINDS = [
 ] as const;
 export type TaxIdKind = (typeof TAX_ID_KINDS)[number]["value"];
 
-/** En restaurantes el IGV es fijo: 18 % (legacy: apply_company_form y periods()). */
-export const RESTAURANT_TAX_RATE = "0.18";
+/**
+ * IGV del restaurante. El original lo fijaba en 18 %; ahora cada restaurante elige su tasa.
+ * Valores en % para el formulario; en la base se guarda la fracción (0.18).
+ */
+export const IGV_OPTIONS = [
+  { value: "18", label: "18 % (régimen general)" },
+  { value: "10.5", label: "10.5 % (MYPE restaurante, 2026)" },
+  { value: "10", label: "10 % (ejemplo del Excel UNI)" },
+] as const;
+export const IGV_HELP =
+  "Si tu restaurante es MYPE del rubro restaurantes puede aplicar una tasa reducida. Confírmalo con tu contador; la tasa vigente cambia por año.";
+export const MAX_IGV_PERCENT = 30;
+
+/** Lee la tasa elegida: una opción fija o "otra" con su porcentaje (0–30 %, hasta 4 decimales). Devuelve la fracción. */
+export function parseIgvRate(choice: string, other: string): { rate: string } | { error: string } {
+  const raw = (choice === "other" ? other : choice).trim().replace(",", ".");
+  if (!/^[0-9]{1,2}(\.[0-9]{1,4})?$/.test(raw)) return { error: `Escribe un porcentaje entre 0 y ${MAX_IGV_PERCENT} %, con hasta 4 decimales.` };
+  const percent = new D(raw);
+  if (percent.lt(0) || percent.gt(MAX_IGV_PERCENT)) return { error: `La tasa debe estar entre 0 y ${MAX_IGV_PERCENT} %.` };
+  // Hasta 4 decimales de porcentaje = 6 decimales de fracción: cabe exacto en numeric(7, 6).
+  return { rate: percent.div(100).toFixed() };
+}
+
+/** Fracción guardada → porcentaje legible: "0.105000" → "10.5 %". */
+export function igvLabel(rate: string | null | undefined): string {
+  if (rate === null || rate === undefined || rate === "") return "—";
+  return `${new D(rate).times(100).toDecimalPlaces(4).toFixed()} %`;
+}
+
+/** Valor del selector para una tasa guardada: una opción fija o "other". */
+export function igvChoice(rate: string): { choice: string; other: string } {
+  if (!rate) return { choice: IGV_OPTIONS[0].value, other: "" };
+  const percent = igvLabel(rate).replace(" %", "");
+  return IGV_OPTIONS.some((o) => o.value === percent) ? { choice: percent, other: "" } : { choice: "other", other: percent };
+}
 
 export const UNIT_DIMENSIONS: Record<string, string> = {
   mass: "Peso",
