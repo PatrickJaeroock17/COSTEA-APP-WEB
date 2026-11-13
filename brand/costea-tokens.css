@@ -1,4 +1,6 @@
-/* Costea — tokens de marca (Tailwind v4: pegar en app/globals.css) */
+/* Costea — tokens de marca (Tailwind v4).
+   Copia de referencia del bloque @theme de app/globals.css, que es la fuente de verdad.
+   Si cambias un token, cámbialo allí y vuelve a copiarlo aquí. Mapeo a shadcn y reglas: DESIGN.md. */
 @theme {
   /* Verde principal (del logo: #006B4B) */
   --color-brand-50:  #ecf8f2;
@@ -18,21 +20,45 @@
   --color-lime-500: #a9d63a;
   --color-lime-600: #86ae25;
 
-  /* Neutros con un toque verdoso */
-  --color-ink:     #12251f;
-  --color-muted:   #5b6b65;
-  --color-line:    #e2e9e5;
-  --color-surface: #f6f9f7;
+  /* Crema (landing y acceso; la app no usa crema) */
+  --color-cream-50:  #faf3e0;   /* paneles internos de tarjetas de la landing */
+  --color-cream-100: #faefd5;   /* secciones claras de la landing */
+  --color-cream-200: #f4e6c9;   /* portada (igual a los cuadros del chef), Cómo funciona, acceso */
+  --color-cream-300: #ead9b3;   /* bordes sobre crema */
+  --color-cream:     #faefd5;   /* alias de cream-100 (bg-cream ya en uso) */
 
-  /* Estados */
+  /* Neutros con un toque verdoso. El gris de texto es text-muted-foreground (shadcn). */
+  --color-heading:   #032a1f;
+  --color-ink:       #12251f;
+  --color-ink-soft:  #3f524b;
+  --color-subtle:    #8a9a93;
+  --color-line:      #e2e9e5;
+  --color-line-soft: #eef2f0;
+  --color-field:     #f2f5f3;
+  --color-surface:   #f6f9f7;
+
+  /* Estados: sólido (iconos, bordes), suave (fondo) y texto (AA) */
   --color-success: #0f8a62;
+  --color-success-soft: #e7f6ee;
+  --color-success-text: #00563d;
   --color-warning: #e0a100;
+  --color-warning-soft: #fff6e5;
+  --color-warning-text: #7a4b00;
   --color-danger:  #d64545;
+  --color-danger-soft: #fdecec;
+  --color-danger-text: #9b2c2c;
   --color-info:    #2b7bd6;
+  --color-info-soft: #eaf2fc;
+  --color-info-text: #1d5ba3;
 
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-brand: var(--font-nunito), ui-rounded, system-ui, sans-serif;
 
-  --radius-card: 1rem;
-  --radius-control: 0.75rem;
+  /* Sombras: tres niveles, tintadas con brand-900, opacidad máxima .18 */
+  --shadow-soft:  0 10px 30px rgb(3 42 31 / 0.06);
+  --shadow-lift:  0 18px 40px rgb(3 42 31 / 0.12);
+  --shadow-float: 0 24px 60px rgb(3 42 31 / 0.18);
+
+  --radius-control: 0.75rem;  /* 12px */
+  --radius-card: 1.5rem;      /* 24px */
 }
