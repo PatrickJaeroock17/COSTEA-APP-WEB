@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { LucideIcon } from "lucide-react";
 import { X } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /** Botón que abre un diálogo modal nativo (foco atrapado, Escape cierra). `open` lo reabre tras un error. */
@@ -33,10 +34,7 @@ export function Dialog({
       <button
         type="button"
         onClick={() => ref.current?.showModal()}
-        className={cn(
-          "inline-flex min-h-12 items-center gap-2 rounded-xl px-5 text-[15px] font-extrabold transition-colors",
-          variant === "primary" ? "bg-[#006b4b] text-white hover:bg-[#00563d]" : "bg-white text-[#006b4b] hover:bg-[#ecf8f2]",
-        )}
+        className={cn(buttonVariants({ variant: variant === "primary" ? "default" : "outline", size: "lg" }))}
       >
         {Icon && <Icon className="size-5" aria-hidden />}
         {label}
@@ -44,17 +42,17 @@ export function Dialog({
       <dialog
         ref={ref}
         aria-labelledby={id}
-        className="m-auto w-[min(640px,calc(100vw-32px))] rounded-[28px] bg-white p-0 text-[#12251f] shadow-float backdrop:bg-[#032a1f]/50"
+        className="m-auto w-[min(640px,calc(100vw-32px))] rounded-4xl bg-white p-0 text-ink shadow-float backdrop:bg-brand-900/50"
       >
         <div className="p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 id={id} className="font-brand text-2xl font-extrabold text-[#032a1f]">
+              <h2 id={id} className="font-heading text-2xl font-extrabold text-heading">
                 {title}
               </h2>
-              {text && <p className="mt-1 text-sm text-[#5b6b65]">{text}</p>}
+              {text && <p className="mt-1 text-sm text-muted-foreground">{text}</p>}
             </div>
-            <button type="button" onClick={() => ref.current?.close()} aria-label="Cerrar" className="grid size-11 shrink-0 place-items-center rounded-xl text-[#5b6b65] hover:bg-[#f6f9f7]">
+            <button type="button" onClick={() => ref.current?.close()} aria-label="Cerrar" className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "text-muted-foreground")}>
               <X className="size-5" aria-hidden />
             </button>
           </div>
