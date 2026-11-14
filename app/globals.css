@@ -232,3 +232,17 @@
 @media (prefers-reduced-motion: reduce) {
   .plan-ghost { animation: none; }
 }
+
+/* Gráficos de Reportes al imprimir: el SVG de Recharts trae viewBox, así que se escala al ancho de la hoja
+   en lugar de cortarse; sin tooltips ni cursores de hover en papel. */
+@media print {
+  [data-slot="chart"] { height: auto !important; aspect-ratio: auto !important; }
+  [data-slot="chart"] .recharts-responsive-container,
+  [data-slot="chart"] .recharts-wrapper { width: 100% !important; height: auto !important; max-width: 100%; }
+  [data-slot="chart"] .recharts-surface { width: 100% !important; height: auto !important; }
+  [data-slot="chart"] .recharts-tooltip-wrapper,
+  [data-slot="chart"] .recharts-tooltip-cursor { display: none !important; }
+  [data-report-charts] [role="progressbar"],
+  [data-report-charts] [role="progressbar"] > div { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  [data-report-charts] { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

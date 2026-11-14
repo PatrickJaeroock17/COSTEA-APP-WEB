@@ -1,10 +1,12 @@
 ﻿import Link from "next/link";
 import { Suspense } from "react";
-import { BarChart3, CheckCircle2, Info } from "lucide-react";
+import { BarChart3, CheckCircle2, Clock, Info, Receipt, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { CreateRestaurant } from "@/components/app/create-restaurant";
 import { EmptyState, PageHeader } from "@/components/app/page-header";
 import { PlanStatusBox } from "@/components/app/costos/status";
 import { PrintButton } from "@/components/app/reportes/print-button";
+import { ReportCharts } from "@/components/app/reportes/report-charts";
+import { budgetProgress, buildReportCharts } from "@/lib/report-charts";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableEmpty, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -128,21 +130,49 @@ async function Content({ searchParams }: Props) {
         </div>
       )}
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          ["Ventas netas estimadas", formatMoney(t.sales, cur)],
-          ["Costos del periodo", formatMoney(t.costs, cur)],
-          ["Resultado antes de impuesto a la renta", ok ? formatMoney(t.profit, cur) : "Pendiente"],
-          ["Mano de obra no absorbida", formatMoney(t.idle, cur)],
-        ].map(([k, v]) => (
-          <Card key={k} size="sm">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:grid-cols-2">
+        {(
+          [
+            { k: "Ventas netas estimadas", v: formatMoney(t.sales, cur), n: `Sin IGV · ${result.rows.length} ${result.rows.length === 1 ? "plato" : "platos"} en el plan`, icon: Wallet },
+            { k: "Costos del periodo", v: formatMoney(t.costs, cur), n: `${formatMoney(t.completeAssigned, cur)} asignado a platos`, icon: Receipt },
+            {
+              k: "Resultado antes de impuesto a la renta",
+              v: ok ? formatMoney(t.profit, cur) : "Pendiente",
+              n: ok ? `Margen ${pct(t.margin)} sobre ventas netas` : "Completa el plan para ver el resultado",
+              icon: ok && t.profit?.isNegative() ? TrendingDown : TrendingUp,
+              tone: !ok ? "pending" : t.profit?.isNegative() ? "loss" : "gain",
+            },
+            { k: "Mano de obra no absorbida", v: formatMoney(t.idle, cur), n: `De ${formatMoney(t.modAvailable, cur)} de MOD disponible`, icon: Clock, tone: t.idle.gt(0) ? "warn" : undefined },
+          ] as { k: string; v: string; n: string; icon: typeof Wallet; tone?: "gain" | "loss" | "pending" | "warn" }[]
+        ).map(({ k, v, n, icon: Icon, tone }) => (
+          <Card key={k} size="sm" className={cn("break-inside-avoid", tone === "gain" && "border-brand-200", tone === "loss" && "border-danger/40")}>
             <CardContent>
-              <p className="text-sm font-semibold text-muted-foreground">{k}</p>
-              <p className="mt-1 font-brand text-2xl font-extrabold tabular-nums text-heading">{v}</p>
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-xs font-semibold text-muted-foreground">{k}</p>
+                <span
+                  className={cn(
+                    "grid size-9 shrink-0 place-items-center rounded-xl",
+                    tone === "loss" ? "bg-danger-soft text-danger-text" : tone === "warn" ? "bg-warning-soft text-warning-text" : "bg-brand-50 text-brand-600",
+                  )}
+                >
+                  <Icon className="size-4.5" aria-hidden />
+                </span>
+              </div>
+              <p
+                className={cn(
+                  "mt-1 font-brand text-3xl font-extrabold tracking-tight tabular-nums",
+                  tone === "loss" ? "text-danger-text" : tone === "pending" ? "text-muted-foreground" : "text-heading",
+                )}
+              >
+                {v}
+              </p>
+              <p className={cn("mt-1.5 text-xs", tone === "gain" ? "font-semibold text-success-text" : tone === "warn" ? "text-warning-text" : "text-muted-foreground")}>{n}</p>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      <ReportCharts data={buildReportCharts(result, actual, snap, budget?.number ?? null, cur)} periodLabel={period.label} />
 
       <Section title="Cuadro de costos y precios" text="Por porción; CIF y gastos como totales asignados en el mes. Precios redondeados a céntimos; las sumas usan precisión completa.">
         <Table className="min-w-[1100px]">
@@ -426,18 +456,14 @@ async function Content({ searchParams }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {snap.result.rows.map((row) => {
-                  const sold = actual.rows.find((x) => x.name === row.name)?.quantity ?? new D(0);
-                  const planned = new D(row.quantity);
-                  return (
-                    <TableRow key={row.id}>
-                      <TableCell className="font-bold text-heading">{row.name}</TableCell>
-                      <TableCell numeric>{formatQty(planned)}</TableCell>
-                      <TableCell numeric>{formatQty(sold)}</TableCell>
-                      <TableCell numeric>{planned.isZero() ? <TableEmpty /> : pct(sold.div(planned))}</TableCell>
-                    </TableRow>
-                  );
-                })}
+                {budgetProgress(snap, actual).map(({ id, name, planned, sold, progress }) => (
+                  <TableRow key={id}>
+                    <TableCell className="font-bold text-heading">{name}</TableCell>
+                    <TableCell numeric>{formatQty(planned)}</TableCell>
+                    <TableCell numeric>{formatQty(sold)}</TableCell>
+                    <TableCell numeric>{progress === null ? <TableEmpty /> : pct(progress)}</TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
             <CardContent className="pt-4">
