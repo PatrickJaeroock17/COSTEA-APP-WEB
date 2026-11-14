@@ -20,14 +20,15 @@ beforeAll(async () => {
 }, 60_000);
 
 describe("entradas manuales", () => {
-  it("registra con referencia normalizada y no duplica", async () => {
+  it("guarda la referencia como se escribió y no duplica sin distinguir mayúsculas ni espacios", async () => {
     await t.as(A, "select public.register_receipt($1, '2026-11-02', 10, 3.5, '  F001-123   Mercado ')", [papa]);
     expect(await one(A, "select reference, quantity::text q, unit_cost::text c from inventory_movements where material_id = $1", [papa])).toEqual({
-      reference: "f001-123 mercado",
+      reference: "F001-123   Mercado",
       q: "10",
       c: "3.5",
     });
     expect((await t.fails(A, "select public.register_receipt($1, '2026-11-03', 1, 1, 'f001-123 MERCADO')", [papa]))?.message).toMatch(/ya está registrada/);
+    expect((await t.fails(A, "select public.register_receipt($1, '2026-11-03', 1, 1, ' F001-123 mercado')", [papa]))?.message).toMatch(/ya está registrada/);
   });
 
   it("valida cantidad, costo y referencia", async () => {
