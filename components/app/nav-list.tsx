@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_GROUPS } from "@/lib/nav";
-import { cn } from "@/lib/utils";
+import { cn, focusRingDark } from "@/lib/utils";
 
 /** Menú lateral por grupos. `onNavigate` cierra el cajón en móvil. */
 export function NavList({ onNavigate }: { onNavigate?: () => void }) {
@@ -28,6 +28,7 @@ export function NavList({ onNavigate }: { onNavigate?: () => void }) {
                     aria-current={on ? "page" : undefined}
                     className={cn(
                       "flex min-h-11 items-center gap-3 rounded-xl px-3 lg:min-h-10 text-body font-semibold transition-colors",
+                      focusRingDark,
                       on ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-white/5 hover:text-white",
                     )}
                   >
