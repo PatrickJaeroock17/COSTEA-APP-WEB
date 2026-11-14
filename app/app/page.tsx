@@ -6,6 +6,7 @@ import { D } from "@/lib/costing/decimal";
 import { type HomeSummary, getHomeSummary } from "@/lib/data/home";
 import { formatMoney } from "@/lib/format";
 import { AlertTriangle, Check, Lock } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Caso de comprobación de GUIA_RAPIDA.md: se muestra como ejemplo mientras el mes no tiene un plan con cálculo completo.
@@ -18,7 +19,7 @@ const EXAMPLE = [
 type Step = { title: string; text: string; state: "done" | "current" | "locked"; href: string; n?: number };
 type Alert = { tone: "warn" | "ok"; title: string; text: string };
 
-const card = "rounded-[24px] border border-[#e2e9e5] bg-white";
+const card = "rounded-3xl border border-line bg-card";
 
 export default function InicioPage() {
   return (
@@ -148,15 +149,15 @@ async function Inicio() {
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
-          <h1 className="font-brand text-4xl font-extrabold tracking-[-0.025em] text-[#032a1f] sm:text-5xl">Hola, {user.name.split(" ")[0]}</h1>
-          <p className="mt-2 text-lg text-[#5b6b65]">
+          <h1 className="font-brand text-4xl font-extrabold tracking-display text-heading sm:text-5xl">Hola, {user.name.split(" ")[0]}</h1>
+          <p className="mt-2 text-lg text-muted-foreground">
             Así va el costeo de tu restaurante{home.period ? ` en ${home.period.label}` : " este mes"}.
             {!t && <span className="text-sm"> (Cifras de ejemplo hasta completar el plan del mes.)</span>}
           </p>
         </div>
         <Link
           href={next?.href ?? "/app/costos"}
-          className="inline-flex min-h-12 items-center rounded-2xl bg-[#006b4b] px-6 text-base font-extrabold text-white transition-colors hover:bg-[#00563d]"
+          className={cn(buttonVariants({ size: "lg" }), "h-auto min-h-12 whitespace-normal text-base")}
         >
           {next ? `Continuar: ${next.title.toLowerCase()}` : "Ver costo y precio"}
         </Link>
@@ -165,67 +166,67 @@ async function Inicio() {
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         {kpis.map((k) => (
           <div key={k.label} className={cn(card, "p-6")}>
-            <p className="text-[15px] font-medium text-[#5b6b65]">{k.label}</p>
-            <p className="mt-2 font-brand text-4xl font-extrabold tracking-[-0.02em] text-[#032a1f]">{k.value}</p>
-            <p className="mt-1.5 text-sm text-[#5b6b65]">{k.note}</p>
+            <p className="text-body font-medium text-muted-foreground">{k.label}</p>
+            <p className="mt-2 font-brand text-4xl font-extrabold tracking-title text-heading">{k.value}</p>
+            <p className="mt-1.5 text-sm text-muted-foreground">{k.note}</p>
           </div>
         ))}
         <div className={cn(card, "p-6 md:col-span-3")}>
-          <p className="text-[15px] font-medium text-[#5b6b65]">Utilidad estimada</p>
-          <p className="mt-2 font-brand text-4xl font-extrabold tracking-[-0.02em] text-[#032a1f]">{t ? formatMoney(t.profit, restaurant.currency) : "S/ 3,600"}</p>
-          <p className="mt-1.5 text-sm text-[#5b6b65]">Ventas menos costos del mes</p>
+          <p className="text-body font-medium text-muted-foreground">Utilidad estimada</p>
+          <p className="mt-2 font-brand text-4xl font-extrabold tracking-title text-heading">{t ? formatMoney(t.profit, restaurant.currency) : "S/ 3,600"}</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">Ventas menos costos del mes</p>
         </div>
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:items-start">
         <section className={cn(card, "p-6 sm:p-7")} aria-labelledby="config">
           <div className="flex items-center justify-between gap-4">
-            <h2 id="config" className="font-brand text-2xl font-extrabold text-[#032a1f]">Configura tu restaurante</h2>
-            <span className="text-sm font-bold text-[#006b4b]">{done} de {steps.length} listos</span>
+            <h2 id="config" className="font-brand text-2xl font-extrabold text-heading">Configura tu restaurante</h2>
+            <span className="text-sm font-bold text-primary">{done} de {steps.length} listos</span>
           </div>
-          <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#e2e9e5]" role="progressbar" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={done}>
-            <div className="h-full rounded-full bg-[#006b4b]" style={{ width: `${(done / steps.length) * 100}%` }} />
+          <div className="mt-4 h-2 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={done}>
+            <div className="h-full rounded-full bg-primary" style={{ width: `${(done / steps.length) * 100}%` }} />
           </div>
-          <ul className="mt-2 divide-y divide-[#e2e9e5]">
+          <ul className="mt-2 divide-y divide-line">
             {steps.map((s) => (
               <li key={s.title} className="flex items-center gap-4 py-4">
                 <span
                   className={cn(
                     "grid size-10 shrink-0 place-items-center rounded-full font-brand font-extrabold",
-                    s.state === "done" && "bg-[#d2efe1] text-[#006b4b]",
-                    s.state === "current" && "bg-[#a9d63a] text-[#032a1f]",
-                    s.state === "locked" && "bg-[#eef2f0] text-[#7b8a84]",
+                    s.state === "done" && "bg-brand-100 text-brand-600",
+                    s.state === "current" && "bg-lime-500 text-brand-900",
+                    s.state === "locked" && "bg-line-soft text-subtle",
                   )}
                 >
                   {s.state === "done" ? <Check className="size-5" strokeWidth={2.5} aria-hidden /> : s.state === "locked" ? <Lock className="size-4" aria-hidden /> : s.n}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className={cn("block font-bold", s.state === "locked" ? "text-[#5b6b65]" : "text-[#032a1f]")}>{s.title}</span>
-                  <span className="block text-sm text-[#5b6b65]">{s.text}</span>
+                  <span className={cn("block font-bold", s.state === "locked" ? "text-muted-foreground" : "text-heading")}>{s.title}</span>
+                  <span className="block text-sm text-muted-foreground">{s.text}</span>
                 </span>
-                {s.state === "done" && <Link href={s.href} className="text-sm font-bold text-[#006b4b] hover:underline">Ver</Link>}
+                {s.state === "done" && <Link href={s.href} className={cn(buttonVariants({ variant: "link" }), "text-sm")}>Ver</Link>}
                 {s.state === "current" && (
-                  <Link href={s.href} className="rounded-xl bg-[#006b4b] px-5 py-2.5 text-sm font-extrabold text-white transition-colors hover:bg-[#00563d]">Completar</Link>
+                  <Link href={s.href} className={cn(buttonVariants(), "px-5 text-sm")}>Completar</Link>
                 )}
-                {s.state === "locked" && <span className="text-sm text-[#7b8a84]">Pendiente</span>}
+                {s.state === "locked" && <span className="text-sm text-muted-foreground">Pendiente</span>}
               </li>
             ))}
           </ul>
         </section>
 
         <section className={cn(card, "p-6 sm:p-7")} aria-labelledby="atencion">
-          <h2 id="atencion" className="font-brand text-2xl font-extrabold text-[#032a1f]">Requiere tu atención</h2>
+          <h2 id="atencion" className="font-brand text-2xl font-extrabold text-heading">Requiere tu atención</h2>
           <ul className="mt-5 space-y-3">
             {alerts.map((a) => (
-              <li key={a.title} className={cn("flex gap-3 rounded-2xl p-4", a.tone === "warn" ? "bg-[#fef3d8]" : "bg-[#e7f6ee]")}>
+              <li key={a.title} className={cn("flex gap-3 rounded-2xl p-4", a.tone === "warn" ? "bg-warning-soft" : "bg-success-soft")}>
                 {a.tone === "warn" ? (
-                  <AlertTriangle className="mt-0.5 size-5 shrink-0 text-[#b7791f]" aria-hidden />
+                  <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden />
                 ) : (
-                  <Check className="mt-0.5 size-5 shrink-0 text-[#006b4b]" strokeWidth={2.5} aria-hidden />
+                  <Check className="mt-0.5 size-5 shrink-0 text-primary" strokeWidth={2.5} aria-hidden />
                 )}
                 <span>
-                  <span className="block font-bold text-[#032a1f]">{a.title}</span>
-                  <span className="block text-sm leading-relaxed text-[#3f524b]">{a.text}</span>
+                  <span className="block font-bold text-heading">{a.title}</span>
+                  <span className="block text-sm leading-relaxed text-ink-soft">{a.text}</span>
                 </span>
               </li>
             ))}
