@@ -20,7 +20,7 @@ type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ agregado
 export default function InsumoPage(props: Props) {
   return (
     <div className="mx-auto max-w-6xl">
-      <Suspense fallback={<div className="h-[600px] animate-pulse rounded-[24px] bg-white" aria-busy="true" aria-label="Cargando" />}>
+      <Suspense fallback={<div className="h-[600px] animate-pulse rounded-3xl bg-card" aria-busy="true" aria-label="Cargando" />}>
         <Detail {...props} />
       </Suspense>
     </div>
@@ -31,10 +31,10 @@ function Section({ icon: Icon, title, text, children, id }: { icon: typeof Tag; 
   return (
     <section id={id} className={cn(card, "p-5 sm:p-7")}>
       <div className="flex items-center gap-2.5">
-        <Icon className="size-5 text-[#006b4b]" aria-hidden />
-        <h2 className="font-brand text-xl font-extrabold text-[#032a1f]">{title}</h2>
+        <Icon className="size-5 text-primary" aria-hidden />
+        <h2 className="font-brand text-xl font-extrabold text-heading">{title}</h2>
       </div>
-      {text && <p className="mt-1 text-sm text-[#5b6b65]">{text}</p>}
+      {text && <p className="mt-1 text-sm text-muted-foreground">{text}</p>}
       <div className="mt-5">{children}</div>
     </section>
   );
@@ -43,9 +43,9 @@ function Section({ icon: Icon, title, text, children, id }: { icon: typeof Tag; 
 function Stat({ label, value, note, tone }: { label: string; value: string; note?: string; tone?: "warn" }) {
   return (
     <div className={cn(card, "p-5")}>
-      <p className="text-sm font-semibold text-[#5b6b65]">{label}</p>
-      <p className={cn("mt-1 font-brand text-2xl font-extrabold tabular-nums", tone === "warn" ? "text-[#9b5c00]" : "text-[#032a1f]")}>{value}</p>
-      {note && <p className="mt-1 text-xs text-[#5b6b65]">{note}</p>}
+      <p className="text-sm font-semibold text-muted-foreground">{label}</p>
+      <p className={cn("mt-1 font-brand text-2xl font-extrabold tabular-nums", tone === "warn" ? "text-warning-text" : "text-heading")}>{value}</p>
+      {note && <p className="mt-1 text-xs text-muted-foreground">{note}</p>}
     </div>
   );
 }
@@ -71,9 +71,9 @@ function PriceChart({ points, currency }: { points: { date: string; value: Insta
   return (
     <figure className="mb-5">
       <svg viewBox={`0 0 ${W} ${H}`} className="h-36 w-full" role="img" aria-label={`Evolución del precio: de ${formatUnitPrice(points[0].value, currency)} a ${formatUnitPrice(points.at(-1)!.value, currency)}`}>
-        <polyline points={xy.map((p) => `${p.x},${p.y}`).join(" ")} fill="none" stroke="#006b4b" strokeWidth="2.5" strokeLinejoin="round" />
+        <polyline points={xy.map((p) => `${p.x},${p.y}`).join(" ")} fill="none" className="stroke-primary" strokeWidth="2.5" strokeLinejoin="round" />
         {xy.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="4" fill="#fff" stroke="#006b4b" strokeWidth="2">
+          <circle key={i} cx={p.x} cy={p.y} r="4" className="fill-card stroke-primary" strokeWidth="2">
             <title>{`${formatDate(p.date)}: ${formatUnitPrice(p.value, currency)}`}</title>
           </circle>
         ))}
@@ -105,25 +105,25 @@ async function Detail({ params, searchParams }: Props) {
 
   return (
     <>
-      <Link href="/app/insumos" className="inline-flex min-h-11 items-center gap-2 rounded-xl text-sm font-bold text-[#006b4b] hover:underline">
+      <Link href="/app/insumos" className="inline-flex min-h-11 items-center gap-2 rounded-xl text-sm font-bold text-primary hover:underline">
         <ArrowLeft className="size-4" aria-hidden />
         Insumos
       </Link>
       <div className="mt-2 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="font-mono text-sm font-bold text-[#5b6b65]">{m.code}</p>
-          <h1 className="font-brand text-3xl font-extrabold tracking-[-0.02em] text-[#032a1f] sm:text-4xl">{materialName(m)}</h1>
+          <p className="font-mono text-sm font-bold text-muted-foreground">{m.code}</p>
+          <h1 className="font-brand text-3xl font-extrabold tracking-title text-heading sm:text-4xl">{materialName(m)}</h1>
           <p className="mt-2 flex flex-wrap gap-2 text-sm">
-            <span className="rounded-full bg-white px-3 py-1 font-semibold text-[#3f524b]">{m.category}</span>
-            <span className="rounded-full bg-white px-3 py-1 font-semibold text-[#3f524b]">Unidad base: {base.name}</span>
-            <span className="rounded-full bg-[#ecf8f2] px-3 py-1 font-semibold text-[#00563d]">{m.catalog_material_id ? "Catálogo general" : "Insumo propio"}</span>
-            {!m.active && <span className="rounded-full bg-[#f2f5f3] px-3 py-1 font-bold text-[#5b6b65]">Archivado</span>}
+            <span className="rounded-full bg-card px-3 py-1 font-semibold text-ink-soft">{m.category}</span>
+            <span className="rounded-full bg-card px-3 py-1 font-semibold text-ink-soft">Unidad base: {base.name}</span>
+            <span className="rounded-full bg-brand-50 px-3 py-1 font-semibold text-brand-700">{m.catalog_material_id ? "Catálogo general" : "Insumo propio"}</span>
+            {!m.active && <span className="rounded-full bg-field px-3 py-1 font-bold text-muted-foreground">Archivado</span>}
           </p>
         </div>
       </div>
 
       {(sp.agregado || sp.creado) && (
-        <p role="status" className="mt-4 rounded-xl bg-[#e7f6ee] px-4 py-3 text-sm font-semibold text-[#00563d]">
+        <p role="status" className="mt-4 rounded-xl bg-success-soft px-4 py-3 text-sm font-semibold text-success-text">
           {sp.agregado ? "Insumo agregado desde el catálogo con su precio de referencia." : "Insumo creado con su precio inicial."}
         </p>
       )}
@@ -166,26 +166,26 @@ async function Detail({ params, searchParams }: Props) {
           <Section icon={History} title="Historial de precios" text="Cada versión es inmutable. El precio vigente es el de fecha más reciente hasta el día de referencia.">
             <PriceChart points={history.map((v) => ({ date: v.effective_on, value: versionResult(toCostVersion(v)) }))} currency={r.currency} />
             {history.length ? (
-              <ul className="divide-y divide-[#e2e9e5]">
+              <ul className="divide-y divide-line">
                 {[...history].reverse().map((v) => {
                   const cv = toCostVersion(v);
                   const unitCost = versionResult(cv);
                   const purchase = v.mode === "purchase" && cv.mode === "purchase" ? acquisitionCost(cv.quantity, cv.factor, cv.netAmount, cv.nonrecoverableTax, cv.attributableCost, cv.recoverableTax) : null;
                   return (
-                    <li key={v.id} className={cn("flex flex-wrap items-start justify-between gap-x-4 gap-y-1 py-3", current?.id === v.id && "rounded-xl bg-[#ecf8f2] px-3")}>
+                    <li key={v.id} className={cn("flex flex-wrap items-start justify-between gap-x-4 gap-y-1 py-3", current?.id === v.id && "rounded-xl bg-brand-50 px-3")}>
                       <span className="min-w-0">
-                        <span className="block text-sm font-bold text-[#032a1f]">
+                        <span className="block text-sm font-bold text-heading">
                           {formatDate(v.effective_on)}
-                          {current?.id === v.id && <span className="ml-2 text-xs font-bold text-[#006b4b]">Vigente</span>}
+                          {current?.id === v.id && <span className="ml-2 text-xs font-bold text-primary">Vigente</span>}
                         </span>
-                        <span className="block text-xs text-[#5b6b65]">{v.source}</span>
+                        <span className="block text-xs text-muted-foreground">{v.source}</span>
                         {purchase && (
-                          <span className="block text-xs text-[#5b6b65]">
+                          <span className="block text-xs text-muted-foreground">
                             {formatQty(v.quantity)} {v.purchase_unit} · costo {formatMoney(purchase.acquisitionAmount, r.currency)} · IGV recuperable aparte {formatMoney(purchase.recoverableTax, r.currency)}
                           </span>
                         )}
                       </span>
-                      <span className="text-sm font-bold tabular-nums text-[#12251f]">
+                      <span className="text-sm font-bold tabular-nums text-ink">
                         {formatUnitPrice(unitCost, r.currency)} / {base.symbol}
                       </span>
                     </li>
@@ -193,7 +193,7 @@ async function Detail({ params, searchParams }: Props) {
                 })}
               </ul>
             ) : (
-              <p className="text-sm text-[#5b6b65]">Aún no hay precios.</p>
+              <p className="text-sm text-muted-foreground">Aún no hay precios.</p>
             )}
           </Section>
         </div>
@@ -203,19 +203,19 @@ async function Detail({ params, searchParams }: Props) {
             {conversions.length ? (
               <ul className="mb-5 space-y-2">
                 {conversions.map((c) => (
-                  <li key={c.id} className="rounded-xl bg-[#f6f9f7] px-4 py-3">
-                    <span className="flex justify-between gap-3 text-sm font-bold text-[#032a1f]">
+                  <li key={c.id} className="rounded-xl bg-surface px-4 py-3">
+                    <span className="flex justify-between gap-3 text-sm font-bold text-heading">
                       <span>1 {c.label}</span>
                       <span className="tabular-nums">
                         {formatQty(c.factor, 6)} {base.symbol}
                       </span>
                     </span>
-                    <span className="block text-xs text-[#5b6b65]">{c.evidence}</span>
+                    <span className="block text-xs text-muted-foreground">{c.evidence}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="mb-5 text-sm text-[#5b6b65]">Sin presentaciones. Las unidades de la misma dimensión ya se convierten solas.</p>
+              <p className="mb-5 text-sm text-muted-foreground">Sin presentaciones. Las unidades de la misma dimensión ya se convierten solas.</p>
             )}
             {editable && <ConversionForm materialId={m.id} baseSymbol={base.symbol} />}
           </Section>
@@ -228,12 +228,12 @@ async function Detail({ params, searchParams }: Props) {
               />
             ) : (
               <dl className="grid grid-cols-2 gap-3 text-sm">
-                <dt className="text-[#5b6b65]">Proveedor</dt>
+                <dt className="text-muted-foreground">Proveedor</dt>
                 <dd className="font-semibold">{m.supplier ?? "—"}</dd>
               </dl>
             )}
             {canEdit(r.role) && (
-              <div className="mt-5 border-t border-[#e2e9e5] pt-4">
+              <div className="mt-5 border-t border-line pt-4">
                 <StatusButton materialId={m.id} active={m.active} />
               </div>
             )}
@@ -247,7 +247,7 @@ async function Detail({ params, searchParams }: Props) {
             <div className="-mx-5 overflow-x-auto px-5 sm:-mx-7 sm:px-7">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
-                  <tr className="border-b border-[#e2e9e5] text-left text-xs font-extrabold uppercase tracking-[0.06em] text-[#5b6b65]">
+                  <tr className="border-b border-line text-left text-xs font-extrabold uppercase tracking-label text-muted-foreground">
                     <th className="py-2 pr-3 font-extrabold">Fecha</th>
                     <th className="py-2 pr-3 font-extrabold">Movimiento</th>
                     <th className="py-2 pr-3 text-right font-extrabold">Entrada</th>
@@ -270,7 +270,7 @@ async function Detail({ params, searchParams }: Props) {
                             ? "Compra"
                             : mv.reference;
                     return (
-                      <tr key={mv.id} className={cn("border-b border-[#eef2f0]", mv.voided && "text-[#8a9a93] line-through")}>
+                      <tr key={mv.id} className={cn("border-b border-line-soft", mv.voided && "text-subtle line-through")}>
                         <td className="py-2.5 pr-3 whitespace-nowrap">{formatDate(mv.movement_on)}</td>
                         <td className="py-2.5 pr-3">{label}</td>
                         <td className="py-2.5 pr-3 text-right">{mv.kind === "in" ? formatQty(mv.quantity) : ""}</td>
@@ -279,7 +279,7 @@ async function Detail({ params, searchParams }: Props) {
                         <td className="py-2.5 pr-3 text-right">
                           {formatQty(row.quantity)} {base.symbol}
                         </td>
-                        <td className="py-2.5 text-right">{row.value === null ? <span className="text-[#9b5c00]">Pendiente</span> : formatMoney(row.value, r.currency)}</td>
+                        <td className="py-2.5 text-right">{row.value === null ? <span className="text-warning-text">Pendiente</span> : formatMoney(row.value, r.currency)}</td>
                       </tr>
                     );
                   })}
@@ -287,7 +287,7 @@ async function Detail({ params, searchParams }: Props) {
               </table>
             </div>
           ) : (
-            <p className="text-sm text-[#5b6b65]">Sin movimientos. Registra una compra para empezar.</p>
+            <p className="text-sm text-muted-foreground">Sin movimientos. Registra una compra para empezar.</p>
           )}
         </Section>
       </div>
