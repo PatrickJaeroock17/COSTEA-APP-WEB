@@ -80,6 +80,9 @@
   --tracking-label:     0.06em;  /* rótulos y cabeceras de tabla en mayúsculas */
   --tracking-overline:  0.12em;  /* rótulos de grupo del menú */
 
+  /* Interlineado de títulos grandes (H2 de la landing, cierre) */
+  --leading-display: 1.05;
+
   /* Layout de la app */
   --spacing-sidebar: 17.5rem;  /* 280px: menú lateral fijo */
 }
@@ -126,6 +129,7 @@
   --radius-2xl: 1rem;     /* 16px  paneles, mosaicos, popovers */
   --radius-3xl: 1.5rem;   /* 24px  tarjetas de la app */
   --radius-4xl: 1.75rem;  /* 28px  tarjetas de la landing, diálogos */
+  --radius-5xl: 2rem;     /* 32px  contenedor de acceso y bloque de cierre (solo esos dos) */
 }
 
 /* Tema de shadcn con los valores de la marca (DESIGN.md §11). Solo tema claro. */
@@ -239,16 +243,6 @@
 .grow-y { animation: grow-y 0.7s ease-out both; }
 @media (prefers-reduced-motion: reduce) {
   .grow-x, .grow-y { animation: none; }
-}
-
-/* Tarjetas "fantasma" de la sección Planes */
-@keyframes plan-ghost {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 1; }
-}
-.plan-ghost { animation: plan-ghost 3.2s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) {
-  .plan-ghost { animation: none; }
 }
 
 /* Gráficos de Reportes al imprimir: el SVG de Recharts trae viewBox, así que se escala al ancho de la hoja

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Decimal from "decimal.js";
 import { IGV, soles } from "@/lib/costing/price";
-import { cn } from "@/lib/utils";
+import { cn, focusRing } from "@/lib/utils";
 
 // Platos de ejemplo: costo completo y precio de carta (con IGV).
 const DISHES = [
@@ -34,19 +34,19 @@ export function BenefitsDemo() {
   return (
     <div className="relative">
       {/* Tarjetas de la portada, ahora con los datos del plato elegido */}
-      <div className="hero-bob pointer-events-none absolute -top-7 right-4 z-10 rounded-2xl bg-white px-4 py-2.5 shadow-[0_12px_30px_rgba(3,42,31,0.18)] [--bob-dur:5s] sm:right-8">
-        <p className="text-xs font-semibold text-[#5b6b65]">Costo completo (ejemplo)</p>
-        <p className="font-brand text-xl font-extrabold tabular-nums text-[#032a1f]">{soles(sel.cost)}</p>
+      <div className="hero-bob pointer-events-none absolute -top-7 right-4 z-10 rounded-2xl bg-white px-4 py-2.5 shadow-float [--bob-dur:5s] sm:right-8">
+        <p className="text-xs font-semibold text-muted-foreground">Costo completo (ejemplo)</p>
+        <p className="font-brand text-xl font-extrabold tabular-nums text-heading">{soles(sel.cost)}</p>
       </div>
-      <div className="hero-bob pointer-events-none absolute -bottom-6 right-4 z-10 rounded-2xl bg-[#006b4b] px-4 py-2.5 shadow-[0_12px_30px_rgba(3,42,31,0.18)] [--bob-delay:0.6s] [--bob-dur:5.8s] sm:right-8">
-        <p className="text-xs font-semibold text-[#d8ee9c]">Margen (ejemplo)</p>
+      <div className="hero-bob pointer-events-none absolute -bottom-6 right-4 z-10 rounded-2xl bg-primary px-4 py-2.5 shadow-float [--bob-delay:0.6s] [--bob-dur:5.8s] sm:right-8">
+        <p className="text-xs font-semibold text-lime-300">Margen (ejemplo)</p>
         <p className="font-brand text-xl font-extrabold tabular-nums text-white">{(sel.margin.toNumber() * 100).toFixed(0)} %</p>
       </div>
 
-      <div className="rounded-[28px] border border-[#ead9b3]/70 bg-white p-5 pb-10 pt-10 shadow-[0_10px_30px_rgba(3,42,31,0.06)] sm:p-7 sm:pb-11 sm:pt-11">
+      <div className="rounded-4xl border border-cream-300/70 bg-white p-5 pb-10 pt-10 shadow-soft sm:p-7 sm:pb-11 sm:pt-11">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="font-brand text-lg font-extrabold text-[#032a1f]">Tu carta, plato por plato</p>
-          <div className="flex rounded-full bg-[#f4e6c9]/70 p-1 text-xs font-bold" role="group" aria-label="Ordenar por">
+          <p className="font-brand text-lg font-extrabold text-heading">Tu carta, plato por plato</p>
+          <div className="flex rounded-full bg-field p-1 text-xs font-bold" role="group" aria-label="Ordenar por">
             {(
               [
                 ["margin", "Margen %"],
@@ -60,7 +60,8 @@ export function BenefitsDemo() {
                 aria-pressed={sort === k}
                 className={cn(
                   "rounded-full px-3.5 py-1.5 transition-colors",
-                  sort === k ? "bg-[#006b4b] text-white" : "text-[#3f524b] hover:text-[#032a1f]",
+                  focusRing,
+                  sort === k ? "bg-primary text-primary-foreground" : "text-ink-soft hover:text-heading",
                 )}
               >
                 {label}
@@ -82,18 +83,19 @@ export function BenefitsDemo() {
                   aria-pressed={on}
                   className={cn(
                     "w-full rounded-2xl px-4 py-3 text-left transition-colors",
-                    on ? "bg-[#ecf8f2] ring-1 ring-[#006b4b]/30" : "bg-[#faf3e0] hover:bg-[#f4e6c9]/70",
+                    focusRing,
+                    on ? "bg-brand-50 ring-1 ring-primary/30" : "bg-surface hover:bg-field",
                   )}
                 >
                   <span className="flex items-center justify-between gap-3 text-sm">
-                    <span className="font-bold text-[#032a1f]">{r.name}</span>
-                    <span className="font-brand font-extrabold tabular-nums text-[#006b4b]">
+                    <span className="font-bold text-heading">{r.name}</span>
+                    <span className="font-brand font-extrabold tabular-nums text-primary">
                       {sort === "margin" ? `${(r.margin.toNumber() * 100).toFixed(0)} %` : soles(r.result)}
                     </span>
                   </span>
-                  <span className="mt-2 block h-2 overflow-hidden rounded-full bg-[#ead9b3]">
+                  <span className="mt-2 block h-2 overflow-hidden rounded-full bg-line">
                     <span
-                      className={cn("block h-full rounded-full transition-[width] duration-700", i === 0 ? "bg-[#a9d63a]" : "bg-[#006b4b]")}
+                      className={cn("block h-full rounded-full transition-[width] duration-700", i === 0 ? "bg-lime-500" : "bg-primary")}
                       style={{ width: `${pct}%` }}
                     />
                   </span>
@@ -102,7 +104,7 @@ export function BenefitsDemo() {
             );
           })}
         </ul>
-        <p className="mt-4 text-xs text-[#5b6b65]">Valores de ejemplo, con IGV 18 %. Toca un plato para ver su costo y margen.</p>
+        <p className="mt-4 text-xs text-muted-foreground">Valores de ejemplo, con IGV 18 %. Toca un plato para ver su costo y margen.</p>
       </div>
     </div>
   );

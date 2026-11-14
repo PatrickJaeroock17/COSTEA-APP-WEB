@@ -1,51 +1,28 @@
 ﻿import Link from "next/link";
 import { Reveal } from "@/components/landing/reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
+import { buttonVariants } from "@/components/ui/button";
+import { cn, focusRingDark } from "@/lib/utils";
 
-function Ghost({ delay }: { delay: number }) {
-  return (
-    <div
-      style={{ animationDelay: `${delay}ms` }}
-      className="plan-ghost rounded-3xl border border-dashed border-white/20 bg-white/[0.04] p-6"
-      aria-hidden
-    >
-      <div className="h-4 w-24 rounded-full bg-white/15" />
-      <div className="mt-5 h-9 w-32 rounded-xl bg-white/10" />
-      <div className="mt-6 space-y-3">
-        <div className="h-3 w-full rounded-full bg-white/10" />
-        <div className="h-3 w-5/6 rounded-full bg-white/10" />
-        <div className="h-3 w-2/3 rounded-full bg-white/10" />
-      </div>
-    </div>
-  );
-}
-
+/** Planes aún sin definir: un bloque compacto con el aviso y el registro (sin precios ni contenido inventado). */
 export function Plans() {
   return (
-    <section id="planes" className="relative scroll-mt-4 overflow-hidden bg-[#032a1f] py-20 sm:py-28">
-      <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 size-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#a9d63a]/20 blur-3xl" />
+    <section id="planes" className="relative scroll-mt-4 overflow-hidden bg-brand-900 py-20 sm:py-24">
+      <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 size-155 -translate-x-1/2 -translate-y-1/2 rounded-full bg-lime-500/20 blur-3xl" />
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <span className="inline-block rounded-full bg-white/10 px-3.5 py-[7px] text-[13px] font-bold text-[#d8ee9c]">
-            Próximamente
-          </span>
-          <h2 className="mt-4 font-brand text-4xl font-extrabold leading-[1.05] tracking-[-0.025em] text-white sm:text-5xl">
-            Planes
-          </h2>
-          <p className="mt-4 text-lg leading-relaxed text-[#cfe3da]">
-            Estamos definiendo los planes y sus precios. Crea tu cuenta y te avisaremos cuando estén disponibles.
-          </p>
+        <Reveal className="mx-auto flex max-w-2xl flex-col items-center text-center">
+          <SectionHeading
+            tone="dark"
+            eyebrow="Próximamente"
+            title="Planes"
+            text="Estamos definiendo los planes y sus precios. Crea tu cuenta y te avisaremos cuando estén disponibles."
+          />
           <Link
             href="/registro"
-            className="mt-8 inline-flex min-h-14 items-center rounded-full bg-[#a9d63a] px-8 text-base font-extrabold text-[#032a1f] transition-colors hover:bg-[#bfe05f]"
+            className={cn(buttonVariants({ shape: "pill", size: "xl" }), "mt-8 bg-lime-500 px-8 text-brand-900 hover:bg-lime-400", focusRingDark)}
           >
             Crear mi cuenta
           </Link>
-        </Reveal>
-
-        <Reveal delay={150} className="mt-14 grid gap-5 md:grid-cols-3">
-          <Ghost delay={0} />
-          <Ghost delay={250} />
-          <Ghost delay={500} />
         </Reveal>
       </div>
     </section>

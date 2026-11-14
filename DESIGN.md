@@ -110,7 +110,8 @@ Escala:
 | Etiqueta tipo píldora | `text-[13px] font-bold text-brand-700 bg-white/70 rounded-full px-3.5 py-[7px]` |
 
 Tokens de tamaño e interletrado (en `@theme` de `app/globals.css`; no usar los valores sueltos):
-`text-body` 15 px · `text-small` 13 px · `text-caption` 11 px · `tracking-display` −0.025em · `tracking-title` −0.02em · `tracking-label` 0.06em · `tracking-overline` 0.12em.
+`text-body` 15 px · `text-small` 13 px · `text-caption` 11 px · `tracking-display` −0.025em · `tracking-title` −0.02em · `tracking-label` 0.06em · `tracking-overline` 0.12em · `leading-display` 1.05 (H2 de la landing y cierre).
+Todo token propio nuevo se registra también en `lib/utils.ts` (tailwind-merge); si no, `cn()` lo descarta.
 
 Reglas:
 - Títulos en **tipo oración**, nunca en mayúsculas (las mayúsculas solo en rótulos y cabeceras de tabla).
@@ -132,7 +133,7 @@ Base `--radius: 0.75rem` (12 px). Los radios se fijan en valores exactos (no mul
 | `rounded-2xl` | 16 px | Paneles internos, mosaicos de icono, popovers, tarjetas flotantes |
 | **`rounded-3xl`** | **24 px** | **Tarjetas de la app**, ítems de acordeón/pasos de la landing |
 | `rounded-4xl` | 28 px | Tarjetas grandes de la landing, diálogos |
-| `rounded-[32px]` | 32 px | Contenedor de acceso y bloque de cierre (solo esos dos) |
+| `rounded-5xl` | 32 px | Contenedor de acceso y bloque de cierre (solo esos dos) |
 | `rounded-full` | — | Píldoras: botones de landing, chips, avatares, insignias |
 
 ---
@@ -150,7 +151,7 @@ Solo tres niveles, todos tintados con `brand-900` (`rgb(3 42 31)`), nunca negro 
 Prohibido: opacidades > 0.18, `blur` > 60 px, sombras de color (lima/verde brillante), sombras internas decorativas.
 En la app las tarjetas van **sin sombra**, solo con borde `line`; la sombra aparece al elevar (menús, diálogos).
 
-Brillos decorativos (`blur-3xl`): solo en la landing, verde o lima, opacidad ≤ 20 %, **máximo uno por sección**. Nunca en la app ni en el acceso.
+Brillos decorativos (`blur-3xl`): solo en la landing, verde o lima, opacidad ≤ 20 %, **máximo uno por sección**. Nunca en la app ni en el acceso. Hoy solo lo usa Planes (y la portada).
 
 ---
 
@@ -168,7 +169,9 @@ Base 4 px (escala de Tailwind). Objetivo táctil mínimo **44 px** (`min-h-11`/`
 | Tarjeta | app `p-5 sm:p-6`; landing `p-6 sm:p-7`; panel interno `p-4` |
 | Formulario | campos `space-y-4`; grupos `gap-4` en rejilla de 2 columnas desde `sm` |
 
-Fondos por zona: landing alterna `cream-200` / `cream-100` / `brand-900`; acceso `cream-200`; app `surface`.
+Fondos por zona: landing alterna `cream-200` / `cream-100` / `brand-900` (portada 200 · Qué incluye 100 · Cómo funciona 200 · Qué ganas 100 · Planes 900 · Preguntas 200 · cierre y pie 100); acceso `cream-200` liso, sin imagen de fondo; app `surface`.
+Encabezados de sección de la landing: `components/landing/section-heading.tsx` (píldora + H2 + texto), no copiados a mano.
+Maquetas de pantallas en la landing (demos, vistas previas): por dentro usan los tokens de la app (`line`, `surface`, `field`, `chart-*`); el panel que las contiene sigue en `cream-50`.
 
 ---
 
@@ -198,7 +201,7 @@ En móvil puede ir a ancho completo (`w-full`).
 | `link` | `text-primary font-bold hover:underline underline-offset-4` | igual |
 | `icon` | — | `size-11 rounded-xl` (táctil) |
 
-Reglas: hover = un tono más oscuro (sin `opacity`); foco `ring-4 ring-ring/15 border-ring`; deshabilitado `opacity-60`; cargando = `Loader2` girando a la izquierda del texto. El primario siempre es `brand-600`; `brand-900` no es color de botón sobre fondo claro.
+Reglas: hover = un tono más oscuro (sin `opacity`); foco `ring-4 ring-ring/15 border-ring` en controles con borde; en enlaces y botones sin borde, `focusRing` (claro) o `focusRingDark` (sobre `brand-900`) de `lib/utils.ts`; deshabilitado `opacity-60`; cargando = `Loader2` girando a la izquierda del texto. El primario siempre es `brand-600`; `brand-900` no es color de botón sobre fondo claro.
 En una misma barra no se mezclan píldoras y rectángulos.
 
 ---

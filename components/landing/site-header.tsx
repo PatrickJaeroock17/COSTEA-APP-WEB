@@ -1,6 +1,8 @@
 ﻿import Link from "next/link";
 import { Menu } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { buttonVariants } from "@/components/ui/button";
+import { cn, focusRing } from "@/lib/utils";
 
 const links = [
   { href: "#incluye", label: "Qué incluye" },
@@ -9,47 +11,43 @@ const links = [
   { href: "#preguntas", label: "Preguntas" },
 ];
 
+const menuItem = cn("flex min-h-11 items-center rounded-xl px-4 text-body hover:bg-cream-200/60", focusRing);
+
 /** Cabecera de la portada: va dentro del escenario del hero para quedar anclada con el chef en móvil. */
 export function SiteHeader() {
   return (
     <header className="absolute inset-x-0 top-0 z-20">
-      <div className="flex h-14 items-center justify-between gap-2 pl-5 pr-3 pt-3 md:h-[116px] md:gap-3 md:px-16 md:pt-6">
+      <div className="flex h-14 items-center justify-between gap-2 pl-5 pr-3 pt-3 md:h-29 md:gap-3 md:px-16 md:pt-6">
         <Logo />
-        <nav className="hidden items-center gap-9 text-[15px] font-semibold text-[#12251f] md:flex">
+        <nav aria-label="Secciones" className="hidden items-center gap-9 text-body font-semibold text-ink md:flex">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="transition-colors hover:text-[#006b4b]">
+            <a key={l.href} href={l.href} className={cn("rounded-md transition-colors hover:text-primary", focusRing)}>
               {l.label}
             </a>
           ))}
         </nav>
         <div className="flex items-center gap-1 md:gap-3">
-          <Link
-            href="/ingresar"
-            className="inline-flex min-h-11 items-center rounded-full border-[1.5px] border-[#006b4b] bg-white/55 px-4 text-sm font-bold text-[#006b4b] transition-colors hover:bg-white/80"
-          >
+          <Link href="/ingresar" className={cn(buttonVariants({ variant: "outline", shape: "pill" }), "h-11 text-sm font-bold")}>
             Iniciar sesión
           </Link>
-          <Link
-            href="/registro"
-            className="hidden min-h-11 items-center rounded-full bg-primary px-5 text-[15px] font-bold text-primary-foreground transition-colors hover:bg-brand-700 md:inline-flex"
-          >
+          <Link href="/registro" className={cn(buttonVariants({ shape: "pill" }), "hidden h-11 px-5 font-bold md:inline-flex")}>
             Crear cuenta
           </Link>
           {/* Menú móvil sin JavaScript */}
           <details className="group relative md:hidden">
             <summary
               aria-label="Abrir menú"
-              className="grid size-11 cursor-pointer list-none place-items-center text-[#032a1f] marker:hidden [&::-webkit-details-marker]:hidden"
+              className={cn("grid size-11 cursor-pointer list-none place-items-center rounded-xl text-heading marker:hidden [&::-webkit-details-marker]:hidden", focusRing)}
             >
               <Menu className="size-6" strokeWidth={2} aria-hidden />
             </summary>
-            <div className="absolute right-0 top-12 w-56 rounded-2xl bg-white p-2 shadow-[0_12px_30px_rgba(3,42,31,0.18)]">
+            <div className="absolute right-0 top-12 w-56 rounded-2xl bg-popover p-1.5 shadow-lift">
               {links.map((l) => (
-                <a key={l.href} href={l.href} className="block rounded-xl px-4 py-3 text-[15px] font-semibold text-[#12251f] hover:bg-[#f4e6c9]/60">
+                <a key={l.href} href={l.href} className={cn(menuItem, "font-semibold text-ink")}>
                   {l.label}
                 </a>
               ))}
-              <Link href="/registro" className="block rounded-xl px-4 py-3 text-[15px] font-bold text-[#006b4b] hover:bg-[#f4e6c9]/60">
+              <Link href="/registro" className={cn(menuItem, "font-bold text-primary")}>
                 Crear cuenta
               </Link>
             </div>
@@ -59,4 +57,3 @@ export function SiteHeader() {
     </header>
   );
 }
-
