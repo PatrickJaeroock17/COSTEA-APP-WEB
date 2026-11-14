@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { MailCheck } from "lucide-react";
-import { Divider, FormAlert, PasswordField, SubmitButton, TextField } from "@/components/auth/fields";
+import { Divider, FormAlert, PasswordField, SubmitButton, TextField, authLink } from "@/components/auth/fields";
 import { GoogleButton } from "@/components/auth/google-button";
 import { signUp, type FormState } from "@/lib/actions/auth";
 
@@ -13,12 +13,12 @@ export function RegisterForm() {
   if (state.message) {
     return (
       <div className="space-y-5 text-center">
-        <span className="mx-auto grid size-14 place-items-center rounded-full bg-[#e7f6ee] text-[#006b4b]">
+        <span className="mx-auto grid size-14 place-items-center rounded-full bg-success-soft text-success">
           <MailCheck className="size-7" aria-hidden />
         </span>
-        <p className="text-[15px] leading-relaxed text-[#2c3f38]" role="status">{state.message}</p>
-        <p className="text-sm text-[#5b6b65]">¿No llegó? Revisa la carpeta de spam o espera un minuto.</p>
-        <Link href="/ingresar" className="inline-block text-sm font-extrabold text-[#006b4b] hover:underline">Ir a iniciar sesión</Link>
+        <p className="text-body leading-relaxed text-ink-soft" role="status">{state.message}</p>
+        <p className="text-sm text-muted-foreground">¿No llegó? Revisa la carpeta de spam o espera un minuto.</p>
+        <Link href="/ingresar" className={authLink}>Ir a iniciar sesión</Link>
       </div>
     );
   }
@@ -36,9 +36,9 @@ export function RegisterForm() {
       </form>
       <Divider />
       <GoogleButton />
-      <p className="text-center text-sm text-[#5b6b65]">
+      <p className="text-center text-sm text-muted-foreground">
         ¿Ya tienes cuenta?{" "}
-        <Link href="/ingresar" className="font-extrabold text-[#032a1f] hover:text-[#006b4b] hover:underline">Inicia sesión</Link>
+        <Link href="/ingresar" className={authLink}>Inicia sesión</Link>
       </p>
     </div>
   );

@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Divider, FormAlert, PasswordField, SubmitButton, TextField } from "@/components/auth/fields";
+import { Divider, FormAlert, PasswordField, SubmitButton, TextField, authLink } from "@/components/auth/fields";
 import { GoogleButton } from "@/components/auth/google-button";
 import { signIn, type FormState } from "@/lib/actions/auth";
+import { cn } from "@/lib/utils";
 
 export function LoginForm() {
   const params = useSearchParams();
@@ -22,16 +23,16 @@ export function LoginForm() {
           required
           autoComplete="current-password"
           placeholder="Tu contraseña"
-          aside={<Link href="/recuperar" className="text-sm font-bold text-[#006b4b] hover:underline">¿Olvidaste tu contraseña?</Link>}
+          aside={<Link href="/recuperar" className={cn(authLink, "text-sm")}>¿Olvidaste tu contraseña?</Link>}
         />
         <FormAlert error={state.error ?? linkError} />
         <SubmitButton>Iniciar sesión</SubmitButton>
       </form>
       <Divider />
       <GoogleButton next={next} />
-      <p className="text-center text-sm text-[#5b6b65]">
+      <p className="text-center text-sm text-muted-foreground">
         ¿No tienes cuenta?{" "}
-        <Link href="/registro" className="font-extrabold text-[#032a1f] hover:text-[#006b4b] hover:underline">Regístrate</Link>
+        <Link href="/registro" className={authLink}>Regístrate</Link>
       </p>
     </div>
   );
