@@ -64,6 +64,24 @@
 
   --radius-control: 0.75rem;  /* 12px */
   --radius-card: 1.5rem;      /* 24px */
+
+  /* Menú lateral (brand-900): iconos y rótulos de grupo. El resto usa las variables --sidebar-* de shadcn. */
+  --color-sidebar-icon:  #9dc0b0;
+  --color-sidebar-label: #7fa393;
+
+  /* Tamaños de texto fuera de la escala de Tailwind (DESIGN.md §2). Sin alto de línea propio: heredan. */
+  --text-body:    0.9375rem;  /* 15px: cuerpo, ítems del menú, controles */
+  --text-small:   0.8125rem;  /* 13px: texto pequeño, píldoras */
+  --text-caption: 0.6875rem;  /* 11px: rótulos de grupo del menú */
+
+  /* Interletrado (DESIGN.md §2) */
+  --tracking-display:  -0.025em; /* portada, H2 de la landing, saludo del Inicio */
+  --tracking-title:    -0.02em;  /* H1 de módulo, cifras KPI grandes */
+  --tracking-label:     0.06em;  /* rótulos y cabeceras de tabla en mayúsculas */
+  --tracking-overline:  0.12em;  /* rótulos de grupo del menú */
+
+  /* Layout de la app */
+  --spacing-sidebar: 17.5rem;  /* 280px: menú lateral fijo */
 }
 
 

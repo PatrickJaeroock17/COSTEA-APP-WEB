@@ -73,6 +73,18 @@ Real vs. presupuesto: real = `brand-600`, presupuesto = `cream-300`.
 Menú lateral, sección Planes y cierre de la landing usan `brand-900`. **No es un modo oscuro**: costea es solo tema claro por ahora.
 Sobre `brand-900`: texto `#ffffff`, texto secundario `#cfe3da`, iconos `#9dc0b0`, rótulos `#7fa393`, ítem activo `#0f4d38`, acento `lime-500`.
 
+Tokens del menú lateral (no escribir los hex en los componentes):
+
+| Clase | Valor | Para |
+|---|---|---|
+| `bg-sidebar` | `#032a1f` | Fondo del menú lateral y del cajón móvil |
+| `text-sidebar-foreground` | `#cfe3da` | Texto de los ítems |
+| `text-sidebar-icon` | `#9dc0b0` | Iconos de ítems inactivos, correo del usuario, botones de la tarjeta de usuario |
+| `text-sidebar-label` | `#7fa393` | Rótulos de grupo (Preparar, Costear…) |
+| `bg-sidebar-accent` / `text-sidebar-accent-foreground` | `#0f4d38` / `#ffffff` | Ítem activo |
+| `bg-sidebar-primary` / `text-sidebar-primary` | `#a9d63a` | Icono activo, avatar |
+| `bg-brand-800` | `#0b3f2e` | Tarjeta de usuario del menú |
+
 ---
 
 ## 2. Tipografía
@@ -85,16 +97,20 @@ Sobre `brand-900`: texto `#ffffff`, texto secundario `#cfe3da`, iconos `#9dc0b0`
 Escala:
 | Rol | Clases |
 |---|---|
-| Display (portada) | `font-brand font-extrabold text-[33px] md:text-[clamp(40px,4.6vw,62px)] leading-[1.04] tracking-[-0.025em]` |
+| Display (portada) | `font-brand font-extrabold text-[33px] md:text-[clamp(40px,4.6vw,62px)] leading-[1.04] tracking-display` |
 | H2 sección landing | `font-brand font-extrabold text-4xl sm:text-5xl leading-[1.05] tracking-[-0.025em]` |
-| H1 de módulo (app) / título de acceso | `font-brand font-extrabold text-3xl sm:text-4xl tracking-[-0.02em]` |
+| H1 de módulo (app) / título de acceso | `font-brand font-extrabold text-3xl sm:text-4xl tracking-title` |
 | H3 tarjeta | `font-brand font-extrabold text-lg` / `text-xl` |
 | Cifra KPI | `font-brand font-extrabold text-2xl`–`text-4xl tabular-nums` |
 | Lead | `text-lg leading-relaxed text-ink-soft` (landing) |
-| Cuerpo | `text-[15px]`/`text-base`, `leading-relaxed` |
-| Pequeño | `text-sm` (14) / `text-[13px]` |
-| Rótulo / cabecera de tabla | `text-xs font-extrabold uppercase tracking-[0.06em] text-muted-foreground` |
+| Cuerpo | `text-body` (15)/`text-base`, `leading-relaxed` |
+| Pequeño | `text-sm` (14) / `text-small` (13) |
+| Rótulo / cabecera de tabla | `text-xs font-extrabold uppercase tracking-label text-muted-foreground` |
+| Rótulo de grupo del menú | `text-caption font-bold uppercase tracking-overline text-sidebar-label` |
 | Etiqueta tipo píldora | `text-[13px] font-bold text-brand-700 bg-white/70 rounded-full px-3.5 py-[7px]` |
+
+Tokens de tamaño e interletrado (en `@theme` de `app/globals.css`; no usar los valores sueltos):
+`text-body` 15 px · `text-small` 13 px · `text-caption` 11 px · `tracking-display` −0.025em · `tracking-title` −0.02em · `tracking-label` 0.06em · `tracking-overline` 0.12em.
 
 Reglas:
 - Títulos en **tipo oración**, nunca en mayúsculas (las mayúsculas solo en rótulos y cabeceras de tabla).
@@ -147,7 +163,7 @@ Base 4 px (escala de Tailwind). Objetivo táctil mínimo **44 px** (`min-h-11`/`
 | Contenedor landing | `mx-auto max-w-7xl px-5 sm:px-8` |
 | Sección landing | `py-20 sm:py-28`; rótulo → título `mt-4`; título → contenido `mt-12` |
 | Portada | `md:px-16`, alto `min-h-[max(100vh,780px)]` (ver `brand/HERO-REFERENCIA.md`) |
-| App: contenido | `px-4 py-8 sm:px-6 lg:px-8 lg:py-10`; menú lateral `w-[280px]`; barra superior `min-h-16` |
+| App: contenido | `px-4 py-8 sm:px-6 lg:px-8 lg:py-10`; menú lateral `w-sidebar` (280 px, contenido `lg:pl-sidebar`); barra superior `min-h-16` |
 | App: entre bloques | `space-y-6` / `gap-6`; entre tarjetas de una rejilla `gap-4` |
 | Tarjeta | app `p-5 sm:p-6`; landing `p-6 sm:p-7`; panel interno `p-4` |
 | Formulario | campos `space-y-4`; grupos `gap-4` en rejilla de 2 columnas desde `sm` |

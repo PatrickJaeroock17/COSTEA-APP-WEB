@@ -16,7 +16,7 @@ export function Logo({ variant = "light", className }: { variant?: "light" | "da
       <span
         className={cn(
           "font-brand text-2xl font-extrabold leading-none tracking-[-0.01em] md:text-[28px]",
-          variant === "light" ? "text-[#006b4b]" : "text-white",
+          variant === "light" ? "text-brand-600" : "text-white",
         )}
       >
         costea

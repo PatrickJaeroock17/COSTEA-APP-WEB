@@ -23,7 +23,7 @@ export type ShellProps = {
 
 function MenuLink({ href, label, close }: { href: string; label: string; close: () => void }) {
   return (
-    <Link href={href} onClick={close} className="flex min-h-10 items-center gap-2 whitespace-nowrap rounded-xl px-3 text-sm font-bold text-[#006b4b] hover:bg-[#ecf8f2]">
+    <Link href={href} onClick={close} className="flex min-h-10 items-center gap-2 whitespace-nowrap rounded-xl px-3 text-sm font-bold text-primary hover:bg-accent">
       <Plus className="size-4" aria-hidden />
       {label}
     </Link>
@@ -31,22 +31,22 @@ function MenuLink({ href, label, close }: { href: string; label: string; close: 
 }
 
 function UserCard({ user, onNavigate }: { user: ShellProps["user"]; onNavigate?: () => void }) {
-  const icon = "grid size-9 shrink-0 place-items-center rounded-xl text-[#9dc0b0] transition-colors hover:bg-white/10 hover:text-white";
+  const icon = "grid size-9 shrink-0 place-items-center rounded-xl text-sidebar-icon transition-colors hover:bg-white/10 hover:text-white";
   return (
-    <div className="flex items-center gap-2.5 rounded-2xl bg-[#0b3f2e] p-2.5">
-      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#a9d63a] font-brand text-lg font-extrabold uppercase text-[#032a1f]">
+    <div className="flex items-center gap-2.5 rounded-2xl bg-brand-800 p-2.5">
+      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-sidebar-primary font-brand text-lg font-extrabold uppercase text-sidebar-primary-foreground">
         {user.name.charAt(0) || "?"}
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-bold text-white">{user.name}</span>
-        <span className="block truncate text-xs text-[#9dc0b0]">{user.email}</span>
+        <span className="block truncate text-xs text-sidebar-icon">{user.email}</span>
       </span>
       <Link href={SETTINGS_ITEM.href} onClick={onNavigate} className={icon} aria-label="Configuración y cuenta" title="Configuración y cuenta">
-        <Settings className="size-[18px]" aria-hidden />
+        <Settings className="size-4.5" aria-hidden />
       </Link>
       <form action={signOut}>
         <button type="submit" className={icon} aria-label="Cerrar sesión" title="Cerrar sesión">
-          <LogOut className="size-[18px]" aria-hidden />
+          <LogOut className="size-4.5" aria-hidden />
         </button>
       </form>
     </div>
@@ -97,8 +97,8 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
     : [{ value: "", label: "Sin restaurante" }];
 
   return (
-    <div className="min-h-screen bg-[#f6f9f7] text-[#12251f]">
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-[280px] flex-col bg-[#032a1f] px-4 pb-4 pt-6 lg:flex print:hidden">
+    <div className="min-h-screen bg-background text-foreground">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-sidebar flex-col bg-sidebar px-4 pb-4 pt-6 lg:flex print:hidden">
         <Logo variant="dark" className="px-3" />
         <div className="mt-8 flex-1 overflow-y-auto pr-1">
           <NavList />
@@ -107,8 +107,8 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
       </aside>
 
       <div className={`fixed inset-0 z-40 lg:hidden ${drawer ? "" : "pointer-events-none"}`} aria-hidden={!drawer}>
-        <div onClick={() => setDrawer(false)} className={`absolute inset-0 bg-[#032a1f]/60 transition-opacity duration-300 ${drawer ? "opacity-100" : "opacity-0"}`} />
-        <aside className={`absolute inset-y-0 left-0 flex w-[300px] max-w-[85vw] flex-col bg-[#032a1f] px-4 pb-4 pt-5 transition-transform duration-300 ${drawer ? "translate-x-0" : "-translate-x-full"}`}>
+        <div onClick={() => setDrawer(false)} className={`absolute inset-0 bg-brand-900/60 transition-opacity duration-300 ${drawer ? "opacity-100" : "opacity-0"}`} />
+        <aside className={`absolute inset-y-0 left-0 flex w-75 max-w-[85vw] flex-col bg-sidebar px-4 pb-4 pt-5 transition-transform duration-300 ${drawer ? "translate-x-0" : "-translate-x-full"}`}>
           <div className="flex items-center justify-between px-3">
             <Logo variant="dark" />
             <button type="button" onClick={() => setDrawer(false)} aria-label="Cerrar menú" className="grid size-11 place-items-center rounded-xl text-white hover:bg-white/10">
@@ -122,9 +122,9 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
         </aside>
       </div>
 
-      <div className="lg:pl-[280px] print:pl-0">
-        <header className="sticky top-0 z-10 print:hidden flex min-h-16 items-center gap-2 border-b border-[#e2e9e5] bg-white/90 px-3 py-2 backdrop-blur sm:gap-3 sm:px-6 lg:px-8">
-          <button type="button" onClick={() => setDrawer(true)} aria-label="Abrir menú" aria-expanded={drawer} className="grid size-11 shrink-0 place-items-center rounded-xl text-[#032a1f] hover:bg-[#f6f9f7] lg:hidden">
+      <div className="lg:pl-sidebar print:pl-0">
+        <header className="sticky top-0 z-10 print:hidden flex min-h-16 items-center gap-2 border-b border-line bg-card/90 px-3 py-2 backdrop-blur sm:gap-3 sm:px-6 lg:px-8">
+          <button type="button" onClick={() => setDrawer(true)} aria-label="Abrir menú" aria-expanded={drawer} className="grid size-11 shrink-0 place-items-center rounded-xl text-heading hover:bg-surface lg:hidden">
             <Menu className="size-6" aria-hidden />
           </button>
           <SelectMenu
@@ -147,7 +147,7 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
             className="min-w-0 flex-1 sm:flex-none"
           />
           {sampleData && (
-            <span className="ml-auto hidden rounded-full bg-[#d2efe1] px-4 py-2 text-sm font-bold text-[#00563d] md:inline-block">
+            <span className="ml-auto hidden rounded-full bg-brand-100 px-4 py-2 text-sm font-bold text-brand-700 md:inline-block">
               Cifras de ejemplo
             </span>
           )}
@@ -161,16 +161,16 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
 /** Mientras se lee la sesión. */
 export function AppShellSkeleton() {
   return (
-    <div className="min-h-screen bg-[#f6f9f7]">
-      <aside className="fixed inset-y-0 left-0 hidden w-[280px] bg-[#032a1f] px-7 pt-7 lg:block">
+    <div className="min-h-screen bg-background">
+      <aside className="fixed inset-y-0 left-0 hidden w-sidebar bg-sidebar px-7 pt-7 lg:block">
         <Logo variant="dark" />
       </aside>
-      <div className="lg:pl-[280px]">
-        <div className="h-16 border-b border-[#e2e9e5] bg-white" />
+      <div className="lg:pl-sidebar">
+        <div className="h-16 border-b border-line bg-card" />
         <div className="space-y-4 px-4 py-10 sm:px-6 lg:px-8" aria-busy="true" aria-label="Cargando">
-          <div className="h-12 w-64 animate-pulse rounded-2xl bg-[#e2e9e5]" />
+          <div className="h-12 w-64 animate-pulse rounded-2xl bg-line" />
           <div className="grid gap-4 md:grid-cols-3">
-            {[0, 1, 2].map((i) => <div key={i} className="h-36 animate-pulse rounded-[24px] bg-white" />)}
+            {[0, 1, 2].map((i) => <div key={i} className="h-36 animate-pulse rounded-3xl bg-card" />)}
           </div>
         </div>
       </div>
