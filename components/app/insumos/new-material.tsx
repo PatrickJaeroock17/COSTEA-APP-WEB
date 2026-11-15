@@ -31,7 +31,7 @@ export function NewMaterial({
       <button
         type="button"
         onClick={() => ref.current?.showModal()}
-        className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#006b4b] px-5 text-[15px] font-extrabold text-white transition-colors hover:bg-[#00563d]"
+        className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-brand-600 px-5 text-[15px] font-extrabold text-white transition-colors hover:bg-brand-700"
       >
         <Plus className="size-5" aria-hidden />
         Nuevo insumo
@@ -39,17 +39,17 @@ export function NewMaterial({
       <dialog
         ref={ref}
         aria-labelledby="nuevo-insumo-titulo"
-        className="m-auto w-[min(640px,calc(100vw-32px))] rounded-[28px] bg-white p-0 text-[#12251f] shadow-float backdrop:bg-[#032a1f]/50"
+        className="m-auto w-[min(640px,calc(100vw-32px))] rounded-[28px] bg-white p-0 text-ink shadow-float backdrop:bg-brand-900/50"
       >
         <form action={action} className="p-6 sm:p-8" noValidate>
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 id="nuevo-insumo-titulo" className="font-brand text-2xl font-extrabold text-[#032a1f]">
+              <h2 id="nuevo-insumo-titulo" className="font-brand text-2xl font-extrabold text-heading">
                 Nuevo insumo propio
               </h2>
-              <p className="mt-1 text-sm text-[#5b6b65]">Recibe un código según su categoría. Si está en el catálogo general, agrégalo desde ahí.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Recibe un código según su categoría. Si está en el catálogo general, agrégalo desde ahí.</p>
             </div>
-            <button type="button" onClick={() => ref.current?.close()} aria-label="Cerrar" className="grid size-11 shrink-0 place-items-center rounded-xl text-[#5b6b65] hover:bg-[#f6f9f7]">
+            <button type="button" onClick={() => ref.current?.close()} aria-label="Cerrar" className="grid size-11 shrink-0 place-items-center rounded-xl text-muted-foreground hover:bg-surface">
               <X className="size-5" aria-hidden />
             </button>
           </div>

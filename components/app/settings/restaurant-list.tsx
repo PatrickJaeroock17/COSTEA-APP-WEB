@@ -23,7 +23,7 @@ function ArchiveButton({ id, name }: { id: string; name: string }) {
   const [confirm, setConfirm] = useState(false);
   if (!confirm) {
     return (
-      <button type="button" onClick={() => setConfirm(true)} className="inline-flex min-h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold text-[#5b6b65] hover:bg-[#f6f9f7]">
+      <button type="button" onClick={() => setConfirm(true)} className="inline-flex min-h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold text-muted-foreground hover:bg-surface">
         <Archive className="size-4" aria-hidden />
         Archivar
       </button>
@@ -32,9 +32,9 @@ function ArchiveButton({ id, name }: { id: string; name: string }) {
   return (
     <form action={archiveRestaurant} className="flex flex-wrap items-center gap-2" role="group" aria-label={`Confirmar archivar ${name}`}>
       <input type="hidden" name="id" value={id} />
-      <span className="text-sm text-[#3f524b]">¿Archivar? Sus datos se conservan.</span>
-      <Pending className="bg-[#9b2c2c] text-white hover:bg-[#7f2424]">Sí, archivar</Pending>
-      <button type="button" onClick={() => setConfirm(false)} className="min-h-10 rounded-xl px-3 text-sm font-bold text-[#5b6b65] hover:bg-[#f6f9f7]">
+      <span className="text-sm text-ink-soft">¿Archivar? Sus datos se conservan.</span>
+      <Pending className="bg-danger-text text-white hover:bg-danger-strong">Sí, archivar</Pending>
+      <button type="button" onClick={() => setConfirm(false)} className="min-h-10 rounded-xl px-3 text-sm font-bold text-muted-foreground hover:bg-surface">
         Cancelar
       </button>
     </form>
@@ -43,19 +43,19 @@ function ArchiveButton({ id, name }: { id: string; name: string }) {
 
 export function RestaurantList({ items }: { items: RestaurantItem[] }) {
   return (
-    <ul className="divide-y divide-[#e2e9e5]">
+    <ul className="divide-y divide-line">
       {items.map((r) => (
         <li key={r.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center">
-          <span className={cn("grid size-11 shrink-0 place-items-center rounded-2xl", r.active ? "bg-[#ecf8f2] text-[#006b4b]" : "bg-[#f2f5f3] text-[#8a9a93]")}>
+          <span className={cn("grid size-11 shrink-0 place-items-center rounded-2xl", r.active ? "bg-brand-50 text-brand-600" : "bg-field text-subtle")}>
             <Store className="size-5" aria-hidden />
           </span>
           <span className="min-w-0 flex-1">
             <span className="flex flex-wrap items-center gap-2">
-              <span className={cn("font-bold", r.active ? "text-[#032a1f]" : "text-[#5b6b65]")}>{r.name}</span>
-              {r.current && <span className="rounded-full bg-[#d2efe1] px-2.5 py-0.5 text-xs font-bold text-[#00563d]">En uso</span>}
-              {!r.active && <span className="rounded-full bg-[#f2f5f3] px-2.5 py-0.5 text-xs font-bold text-[#5b6b65]">Archivado</span>}
+              <span className={cn("font-bold", r.active ? "text-heading" : "text-muted-foreground")}>{r.name}</span>
+              {r.current && <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-bold text-brand-700">En uso</span>}
+              {!r.active && <span className="rounded-full bg-field px-2.5 py-0.5 text-xs font-bold text-muted-foreground">Archivado</span>}
             </span>
-            {r.name !== r.legalName && <span className="block truncate text-sm text-[#5b6b65]">{r.legalName}</span>}
+            {r.name !== r.legalName && <span className="block truncate text-sm text-muted-foreground">{r.legalName}</span>}
           </span>
           {r.owner &&
             (r.active ? (
@@ -63,7 +63,7 @@ export function RestaurantList({ items }: { items: RestaurantItem[] }) {
             ) : (
               <form action={restoreRestaurant}>
                 <input type="hidden" name="id" value={r.id} />
-                <Pending className="text-[#006b4b] hover:bg-[#ecf8f2]">
+                <Pending className="text-brand-600 hover:bg-brand-50">
                   <ArchiveRestore className="size-4" aria-hidden />
                   Restaurar
                 </Pending>

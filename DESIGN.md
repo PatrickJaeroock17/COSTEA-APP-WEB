@@ -51,9 +51,13 @@ La app (`/app`) no usa crema: usa `surface`.
 | `subtle` | `#8a9a93` | Solo placeholders y separadores con texto ("o") |
 | `line` | `#e2e9e5` | Bordes de tarjetas, inputs secundarios, divisores |
 | `line-soft` | `#eef2f0` | Separadores entre filas de tabla |
+| `line-strong` | `#c9d6cf` | Borde de casillas de verificación personalizadas |
 | `field` | `#f2f5f3` | Fondo de inputs en reposo |
 | `surface` | `#f6f9f7` | Fondo de la app, hover de filas y botones fantasma |
 | `white` | `#ffffff` | Tarjetas, popovers, diálogos |
+| `warning-strong` | `#9b5c00` | Texto de aviso "Sin precio" y "Pendiente" (más claro que `warning-text`) |
+| `danger-strong` | `#7f2424` | Hover de botones de borrar y texto de confirmación de borrado (el fondo es `danger-text`) |
+| `danger-soft-hover` | `#fbdcdc` | Hover del botón destructivo suave |
 
 ### Estados
 | Estado | Fondo suave | Sólido | Texto (AA) |

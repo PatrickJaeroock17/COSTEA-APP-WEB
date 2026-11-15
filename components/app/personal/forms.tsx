@@ -62,8 +62,8 @@ export function EmployeeForm({ employee }: { employee: { id: number; name: strin
       <Field label="Documento (opcional)" name="document" error={e.document}>
         {(p) => <input {...p} name="document" maxLength={40} defaultValue={v.document ?? employee.document ?? ""} />}
       </Field>
-      <label className="flex min-h-11 items-center gap-3 text-sm font-bold text-[#12251f] sm:col-span-2">
-        <input type="checkbox" name="active" defaultChecked={v.active ? v.active === "on" : employee.active} className="size-5 accent-[#006b4b]" />
+      <label className="flex min-h-11 items-center gap-3 text-sm font-bold text-ink sm:col-span-2">
+        <input type="checkbox" name="active" defaultChecked={v.active ? v.active === "on" : employee.active} className="size-5 accent-brand-600" />
         Activo (si lo desactivas, ya no aparece al asignar operaciones)
       </label>
       <div className="flex flex-col gap-3 sm:col-span-2 sm:flex-row sm:items-center">
@@ -79,22 +79,22 @@ export function DeleteEmployee({ employeeId, months, operations }: { employeeId:
   const [confirm, setConfirm] = useState(false);
   if (!confirm) {
     return (
-      <button type="button" onClick={() => setConfirm(true)} className="inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-bold text-[#9b2c2c] hover:bg-[#fdecec]">
+      <button type="button" onClick={() => setConfirm(true)} className="inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-bold text-danger-text hover:bg-danger-soft">
         <Trash2 className="size-4" aria-hidden />
         Eliminar trabajador
       </button>
     );
   }
   return (
-    <form action={action} className="rounded-xl bg-[#fdecec] p-4">
+    <form action={action} className="rounded-xl bg-danger-soft p-4">
       <input type="hidden" name="employeeId" value={employeeId} />
-      <p className="text-sm text-[#7f2424]">
+      <p className="text-sm text-danger-strong">
         Se borran sus {months} {months === 1 ? "costo mensual" : "costos mensuales"} y {operations} {operations === 1 ? "operación" : "operaciones"} en recetas. Los presupuestos publicados no
         cambian. Si solo dejó de trabajar, mejor desactívalo.
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <SaveButton className="min-h-10 bg-[#9b2c2c] px-4 text-sm hover:bg-[#7f2424]">Sí, eliminar</SaveButton>
-        <button type="button" onClick={() => setConfirm(false)} className="min-h-10 rounded-xl px-3 text-sm font-bold text-[#5b6b65] hover:bg-white">
+        <SaveButton className="min-h-10 bg-danger-text px-4 text-sm hover:bg-danger-strong">Sí, eliminar</SaveButton>
+        <button type="button" onClick={() => setConfirm(false)} className="min-h-10 rounded-xl px-3 text-sm font-bold text-muted-foreground hover:bg-white">
           Cancelar
         </button>
       </div>
@@ -119,9 +119,9 @@ function Num({ name, label, values, set, errors, hint, suffix }: { name: string;
 
 function Group({ title, children, text }: { title: string; text?: string; children: React.ReactNode }) {
   return (
-    <fieldset className="rounded-2xl border border-[#e2e9e5] p-4 sm:p-5">
-      <legend className="px-1 text-sm font-extrabold text-[#032a1f]">{title}</legend>
-      {text && <p className="-mt-1 mb-3 text-xs text-[#5b6b65]">{text}</p>}
+    <fieldset className="rounded-2xl border border-line p-4 sm:p-5">
+      <legend className="px-1 text-sm font-extrabold text-heading">{title}</legend>
+      {text && <p className="-mt-1 mb-3 text-xs text-muted-foreground">{text}</p>}
       <div className="grid gap-4 sm:grid-cols-2">{children}</div>
     </fieldset>
   );
@@ -159,7 +159,7 @@ export function PayrollForm({ employeeId, periodId, periodLabel, initial, curren
             { value: "detailed", label: "Desglose de sueldo, beneficios y seguros" },
             { value: "consolidated", label: "Importes mensuales consolidados" },
           ].map((m) => (
-            <label key={m.value} className={cn("flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-4 text-sm font-bold", values.mode === m.value || (m.value === "detailed" && detailed) ? "border-[#006b4b] bg-[#ecf8f2] text-[#006b4b]" : "border-[#e2e9e5] text-[#3f524b]")}>
+            <label key={m.value} className={cn("flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-4 text-sm font-bold", values.mode === m.value || (m.value === "detailed" && detailed) ? "border-brand-600 bg-brand-50 text-brand-600" : "border-line text-ink-soft")}>
               <input type="radio" name="mode" value={m.value} checked={m.value === "detailed" ? detailed : !detailed} onChange={() => set("mode", m.value)} className="sr-only" />
               {m.label}
             </label>
@@ -221,8 +221,8 @@ export function PayrollForm({ employeeId, periodId, periodLabel, initial, curren
       </div>
 
       <aside className="lg:sticky lg:top-24 lg:self-start">
-        <div className="rounded-2xl bg-[#032a1f] p-5 text-white">
-          <p className="text-sm font-semibold text-[#9dc0b0]">Costo de {periodLabel}</p>
+        <div className="rounded-2xl bg-brand-900 p-5 text-white">
+          <p className="text-sm font-semibold text-sidebar-icon">Costo de {periodLabel}</p>
           <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums">{r ? formatMoney(r.total, currency) : "—"}</p>
           <dl className="mt-4 space-y-2 text-sm">
             {[
@@ -234,12 +234,12 @@ export function PayrollForm({ employeeId, periodId, periodLabel, initial, curren
               ["A ventas", r ? formatMoney(r.indirect.sales, currency) : "—"],
             ].map(([k, val]) => (
               <div key={k} className="flex justify-between gap-3">
-                <dt className="text-[#9dc0b0]">{k}</dt>
+                <dt className="text-sidebar-icon">{k}</dt>
                 <dd className="font-bold tabular-nums">{val}</dd>
               </div>
             ))}
           </dl>
-          {"errors" in preview && <p className="mt-4 text-xs text-[#d8ee9c]">Completa los datos para ver el cálculo.</p>}
+          {"errors" in preview && <p className="mt-4 text-xs text-lime-300">Completa los datos para ver el cálculo.</p>}
         </div>
         <div className="mt-4 flex flex-col gap-3">
           <SaveButton className="w-full">Guardar costo de {periodLabel}</SaveButton>
@@ -258,7 +258,7 @@ function Remove({ recipeId, position }: { recipeId: number; position: number }) 
     <>
       <input type="hidden" name="recipeId" value={recipeId} />
       <input type="hidden" name="position" value={position} />
-      <button type="submit" disabled={pending} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-bold text-[#9b2c2c] hover:bg-[#fdecec] disabled:opacity-60">
+      <button type="submit" disabled={pending} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-bold text-danger-text hover:bg-danger-soft disabled:opacity-60">
         {pending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Trash2 className="size-4" aria-hidden />}
         Quitar
       </button>
@@ -288,12 +288,12 @@ export function OperationsEditor({
   return (
     <div className="space-y-5">
       {operations.length ? (
-        <ul className="divide-y divide-[#e2e9e5] rounded-2xl border border-[#e2e9e5]">
+        <ul className="divide-y divide-line rounded-2xl border border-line">
           {operations.map((op, i) => (
             <li key={`${op.employee_id}-${op.activity}`} className="flex flex-wrap items-center gap-3 px-4 py-3">
               <span className="min-w-0 flex-1">
-                <span className="block font-bold text-[#032a1f]">{op.activity}</span>
-                <span className="block text-sm text-[#5b6b65]">{names[op.employee_id] ?? `Trabajador #${op.employee_id}`}</span>
+                <span className="block font-bold text-heading">{op.activity}</span>
+                <span className="block text-sm text-muted-foreground">{names[op.employee_id] ?? `Trabajador #${op.employee_id}`}</span>
               </span>
               <span className="text-sm font-bold tabular-nums">{formatQty(op.minutes, 2)} min / lote</span>
               <form action={removeOperation}>
@@ -303,10 +303,10 @@ export function OperationsEditor({
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-[#5b6b65]">Sin operaciones. Agrega quién prepara el plato y cuántos minutos le toma el lote completo.</p>
+        <p className="text-sm text-muted-foreground">Sin operaciones. Agrega quién prepara el plato y cuántos minutos le toma el lote completo.</p>
       )}
 
-      <form action={action} className="grid gap-4 rounded-2xl bg-[#f6f9f7] p-4 sm:grid-cols-[1fr_1fr_140px_auto] sm:items-end" noValidate key={state.message}>
+      <form action={action} className="grid gap-4 rounded-2xl bg-surface p-4 sm:grid-cols-[1fr_1fr_140px_auto] sm:items-end" noValidate key={state.message}>
         <input type="hidden" name="recipeId" value={recipeId} />
         <Field label="Trabajador" name="employeeId" error={e.employeeId}>
           {(p) => (
@@ -339,12 +339,12 @@ export function OperationsEditor({
 
       <form action={flagAction} className="flex flex-wrap items-center gap-4 text-sm">
         <input type="hidden" name="recipeId" value={recipeId} />
-        <label className="flex min-h-11 items-center gap-2 font-semibold text-[#12251f]">
-          <input type="checkbox" name="noMaterials" defaultChecked={flags.noMaterials} disabled={hasLines} className="size-5 accent-[#006b4b]" />
+        <label className="flex min-h-11 items-center gap-2 font-semibold text-ink">
+          <input type="checkbox" name="noMaterials" defaultChecked={flags.noMaterials} disabled={hasLines} className="size-5 accent-brand-600" />
           No requiere materiales
         </label>
-        <label className="flex min-h-11 items-center gap-2 font-semibold text-[#12251f]">
-          <input type="checkbox" name="noLabor" defaultChecked={flags.noLabor} disabled={operations.length > 0} className="size-5 accent-[#006b4b]" />
+        <label className="flex min-h-11 items-center gap-2 font-semibold text-ink">
+          <input type="checkbox" name="noLabor" defaultChecked={flags.noLabor} disabled={operations.length > 0} className="size-5 accent-brand-600" />
           No requiere mano de obra directa
         </label>
         <SaveButton className="min-h-10 px-4 text-sm">Guardar</SaveButton>

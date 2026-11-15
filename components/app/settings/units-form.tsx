@@ -19,17 +19,17 @@ export function UnitsForm({ units, readOnly }: { units: UnitOption[]; readOnly: 
       <fieldset disabled={readOnly} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <legend className="sr-only">Unidades disponibles</legend>
         {groups.map((g) => (
-          <div key={g.label} className="rounded-2xl bg-[#f6f9f7] p-4">
-            <p className="text-xs font-extrabold uppercase tracking-[0.08em] text-[#5b6b65]">{g.label}</p>
+          <div key={g.label} className="rounded-2xl bg-surface p-4">
+            <p className="text-xs font-extrabold uppercase tracking-[0.08em] text-muted-foreground">{g.label}</p>
             <div className="mt-3 space-y-2">
               {g.units.map((u) => (
-                <label key={u.code} className="group flex min-h-11 cursor-pointer items-center gap-3 rounded-xl bg-white px-3 has-[:checked]:ring-2 has-[:checked]:ring-[#006b4b]/30">
+                <label key={u.code} className="group flex min-h-11 cursor-pointer items-center gap-3 rounded-xl bg-white px-3 has-[:checked]:ring-2 has-[:checked]:ring-brand-600/30">
                   <input type="checkbox" name="unit" value={u.code} defaultChecked={u.enabled} className="peer sr-only" />
-                  <span className="grid size-5 place-items-center rounded-md border-2 border-[#c9d6cf] text-white transition-colors peer-checked:border-[#006b4b] peer-checked:bg-[#006b4b] peer-focus-visible:ring-4 peer-focus-visible:ring-[#006b4b]/20">
+                  <span className="grid size-5 place-items-center rounded-md border-2 border-line-strong text-white transition-colors peer-checked:border-brand-600 peer-checked:bg-brand-600 peer-focus-visible:ring-4 peer-focus-visible:ring-brand-600/20">
                     <Check className="size-3.5" strokeWidth={3} aria-hidden />
                   </span>
-                  <span className="flex-1 text-sm font-semibold text-[#12251f]">{u.name}</span>
-                  <span className="text-sm tabular-nums text-[#5b6b65]">{u.symbol}</span>
+                  <span className="flex-1 text-sm font-semibold text-ink">{u.name}</span>
+                  <span className="text-sm tabular-nums text-muted-foreground">{u.symbol}</span>
                 </label>
               ))}
             </div>

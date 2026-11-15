@@ -8,19 +8,19 @@ export function ModulePlaceholder({ href }: { href: string }) {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="flex items-center gap-3">
-        <span className="grid size-12 place-items-center rounded-2xl bg-[#006b4b] text-[#a9d63a]">
+        <span className="grid size-12 place-items-center rounded-2xl bg-brand-600 text-lime-500">
           <Icon className="size-6" aria-hidden />
         </span>
-        <h1 className="font-brand text-3xl font-extrabold tracking-[-0.02em] text-[#032a1f] sm:text-4xl">{item.label}</h1>
+        <h1 className="font-brand text-3xl font-extrabold tracking-[-0.02em] text-heading sm:text-4xl">{item.label}</h1>
       </div>
-      <p className="mt-4 text-lg text-[#3f524b]">{item.desc}</p>
-      <div className="mt-8 flex items-start gap-4 rounded-[24px] border border-dashed border-[#006b4b]/30 bg-white p-6">
-        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#ecf8f2] text-[#006b4b]">
+      <p className="mt-4 text-lg text-ink-soft">{item.desc}</p>
+      <div className="mt-8 flex items-start gap-4 rounded-[24px] border border-dashed border-brand-600/30 bg-white p-6">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-600">
           <Hammer className="size-5" aria-hidden />
         </span>
         <div>
-          <p className="font-bold text-[#032a1f]">Este módulo se construye en la {item.phase}.</p>
-          <p className="mt-1 text-sm text-[#5b6b65]">Mientras tanto, ya puedes configurar tu restaurante, sus meses de trabajo y sus unidades en Configuración.</p>
+          <p className="font-bold text-heading">Este módulo se construye en la {item.phase}.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Mientras tanto, ya puedes configurar tu restaurante, sus meses de trabajo y sus unidades en Configuración.</p>
         </div>
       </div>
     </div>

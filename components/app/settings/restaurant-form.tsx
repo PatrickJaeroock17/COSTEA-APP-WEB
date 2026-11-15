@@ -89,7 +89,7 @@ export function RestaurantForm({
               {currencyLocked && (
                 <>
                   <input type="hidden" name="currency" value={v.currency} />
-                  <Lock className="pointer-events-none absolute right-10 top-[22px] size-4 text-[#5b6b65]" aria-hidden />
+                  <Lock className="pointer-events-none absolute right-10 top-[22px] size-4 text-muted-foreground" aria-hidden />
                 </>
               )}
             </div>

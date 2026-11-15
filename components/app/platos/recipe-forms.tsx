@@ -147,7 +147,7 @@ export function IngredientForm({
           </Field>
           {!choice.prices.length && (
             <p className="text-sm sm:col-span-2">
-              <Link href={`/app/insumos/${choice.id}`} className="font-bold text-[#006b4b] underline">
+              <Link href={`/app/insumos/${choice.id}`} className="font-bold text-brand-600 underline">
                 Registrar un precio para {choice.name}
               </Link>
             </p>
@@ -174,7 +174,7 @@ export function RemoveIngredient({ productId, revision, materialId, name }: { pr
   const [confirm, setConfirm] = useState(false);
   if (!confirm) {
     return (
-      <button type="button" onClick={() => setConfirm(true)} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-bold text-[#9b2c2c] hover:bg-[#fdecec]">
+      <button type="button" onClick={() => setConfirm(true)} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-bold text-danger-text hover:bg-danger-soft">
         <Trash2 className="size-4" aria-hidden />
         Quitar
       </button>
@@ -185,8 +185,8 @@ export function RemoveIngredient({ productId, revision, materialId, name }: { pr
       <input type="hidden" name="productId" value={productId} />
       <input type="hidden" name="revision" value={revision} />
       <input type="hidden" name="materialId" value={materialId} />
-      <SmallSubmit className="bg-[#9b2c2c] text-white hover:bg-[#7f2424]">Sí, quitar</SmallSubmit>
-      <button type="button" onClick={() => setConfirm(false)} className="min-h-10 rounded-xl px-3 text-sm font-bold text-[#5b6b65] hover:bg-[#f6f9f7]">
+      <SmallSubmit className="bg-danger-text text-white hover:bg-danger-strong">Sí, quitar</SmallSubmit>
+      <button type="button" onClick={() => setConfirm(false)} className="min-h-10 rounded-xl px-3 text-sm font-bold text-muted-foreground hover:bg-surface">
         Cancelar
       </button>
     </form>
@@ -258,26 +258,26 @@ export function ProductStatus({ productId, revision, active }: { productId: numb
         <form action={setProductActive}>
           <input type="hidden" name="productId" value={productId} />
           <input type="hidden" name="state" value={active ? "archived" : "active"} />
-          <SmallSubmit className={active ? "text-[#5b6b65] hover:bg-[#f6f9f7]" : "bg-[#ecf8f2] text-[#006b4b] hover:bg-[#d2efe1]"}>
+          <SmallSubmit className={active ? "text-muted-foreground hover:bg-surface" : "bg-brand-50 text-brand-600 hover:bg-brand-100"}>
             {active ? <Archive className="size-4" aria-hidden /> : <ArchiveRestore className="size-4" aria-hidden />}
             {active ? "Archivar plato" : "Restaurar plato"}
           </SmallSubmit>
         </form>
         {!confirmDelete && (
-          <button type="button" onClick={() => setConfirmDelete(true)} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-bold text-[#9b2c2c] hover:bg-[#fdecec]">
+          <button type="button" onClick={() => setConfirmDelete(true)} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-bold text-danger-text hover:bg-danger-soft">
             <Trash2 className="size-4" aria-hidden />
             Eliminar plato
           </button>
         )}
       </div>
       {confirmDelete && (
-        <form action={action} className="rounded-xl bg-[#fdecec] p-4">
+        <form action={action} className="rounded-xl bg-danger-soft p-4">
           <input type="hidden" name="productId" value={productId} />
           <input type="hidden" name="revision" value={revision} />
-          <p className="text-sm text-[#7f2424]">Se borran el plato y todas sus versiones. Solo es posible si no tiene ventas, planes ni gastos asignados. No se puede deshacer.</p>
+          <p className="text-sm text-danger-strong">Se borran el plato y todas sus versiones. Solo es posible si no tiene ventas, planes ni gastos asignados. No se puede deshacer.</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <SmallSubmit className="bg-[#9b2c2c] text-white hover:bg-[#7f2424]">Sí, eliminar</SmallSubmit>
-            <button type="button" onClick={() => setConfirmDelete(false)} className="min-h-10 rounded-xl px-3 text-sm font-bold text-[#5b6b65] hover:bg-white">
+            <SmallSubmit className="bg-danger-text text-white hover:bg-danger-strong">Sí, eliminar</SmallSubmit>
+            <button type="button" onClick={() => setConfirmDelete(false)} className="min-h-10 rounded-xl px-3 text-sm font-bold text-muted-foreground hover:bg-white">
               Cancelar
             </button>
           </div>

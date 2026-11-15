@@ -37,6 +37,7 @@
   --color-subtle:    #8a9a93;
   --color-line:      #e2e9e5;
   --color-line-soft: #eef2f0;
+  --color-line-strong: #c9d6cf;  /* borde de casillas de verificación */
   --color-field:     #f2f5f3;
   --color-surface:   #f6f9f7;
 
@@ -47,9 +48,12 @@
   --color-warning: #e0a100;
   --color-warning-soft: #fff6e5;
   --color-warning-text: #7a4b00;
+  --color-warning-strong: #9b5c00; /* aviso "Sin precio" y "Pendiente" */
   --color-danger:  #d64545;
   --color-danger-soft: #fdecec;
   --color-danger-text: #9b2c2c;
+  --color-danger-strong: #7f2424; /* hover de borrar y texto de confirmación */
+  --color-danger-soft-hover: #fbdcdc; /* hover del botón destructivo suave */
   --color-info:    #2b7bd6;
   --color-info-soft: #eaf2fc;
   --color-info-text: #1d5ba3;

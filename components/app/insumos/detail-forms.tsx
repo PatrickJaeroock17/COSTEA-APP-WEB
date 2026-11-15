@@ -61,7 +61,7 @@ function PurchaseEntryForm({ materialId, options, baseSymbol, defaultDate, token
       <Field label="Fecha" name="movementOn" error={e.movementOn}>
         {(p) => <input {...p} type="date" name="movementOn" required defaultValue={v.movementOn || defaultDate} />}
       </Field>
-      <p className="text-sm text-[#5b6b65] sm:col-span-2">Suma stock al kardex y registra el precio como versión nueva desde esa fecha.</p>
+      <p className="text-sm text-muted-foreground sm:col-span-2">Suma stock al kardex y registra el precio como versión nueva desde esa fecha.</p>
       <Footer state={state} label="Registrar compra" />
     </form>
   );
@@ -162,7 +162,7 @@ export function MaterialActions(props: ActionsProps) {
             onClick={() => setTab(t.key)}
             className={cn(
               "min-h-11 whitespace-nowrap rounded-xl px-4 text-sm font-bold transition-colors",
-              tab === t.key ? "bg-[#ecf8f2] text-[#006b4b]" : "text-[#5b6b65] hover:bg-[#f6f9f7]",
+              tab === t.key ? "bg-brand-50 text-brand-600" : "text-muted-foreground hover:bg-surface",
             )}
           >
             {t.label}
@@ -212,7 +212,7 @@ export function MaterialDataForm({
     <form action={run} className="grid gap-4 sm:grid-cols-2" noValidate>
       <input type="hidden" name="materialId" value={material.id} />
       <Field label="Código" name="code" error={e.code} hint={material.fromCatalog ? "Lo define el catálogo general." : "Tres letras, guion y tres números."}>
-        {(p) => <input {...p} name="code" maxLength={7} readOnly={material.fromCatalog} aria-readonly={material.fromCatalog || undefined} defaultValue={val("code")} className={cn(p.className, "font-mono uppercase", material.fromCatalog && "text-[#5b6b65]")} />}
+        {(p) => <input {...p} name="code" maxLength={7} readOnly={material.fromCatalog} aria-readonly={material.fromCatalog || undefined} defaultValue={val("code")} className={cn(p.className, "font-mono uppercase", material.fromCatalog && "text-muted-foreground")} />}
       </Field>
       <Field label="Categoría" name="category" error={e.category}>
         {(p) => (
@@ -248,7 +248,7 @@ function StatusSubmit({ active }: { active: boolean }) {
       disabled={pending}
       className={cn(
         "inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-bold transition-colors disabled:opacity-60",
-        active ? "text-[#5b6b65] hover:bg-[#f6f9f7]" : "bg-[#ecf8f2] text-[#006b4b] hover:bg-[#d2efe1]",
+        active ? "text-muted-foreground hover:bg-surface" : "bg-brand-50 text-brand-600 hover:bg-brand-100",
       )}
     >
       {pending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : active ? <Archive className="size-4" aria-hidden /> : <ArchiveRestore className="size-4" aria-hidden />}
@@ -262,7 +262,7 @@ export function StatusButton({ materialId, active }: { materialId: number; activ
   const [confirm, setConfirm] = useState(false);
   if (active && !confirm) {
     return (
-      <button type="button" onClick={() => setConfirm(true)} className="inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-bold text-[#5b6b65] hover:bg-[#f6f9f7]">
+      <button type="button" onClick={() => setConfirm(true)} className="inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-bold text-muted-foreground hover:bg-surface">
         <Archive className="size-4" aria-hidden />
         Archivar insumo
       </button>
@@ -272,10 +272,10 @@ export function StatusButton({ materialId, active }: { materialId: number; activ
     <form action={setMaterialActive} className="flex flex-wrap items-center gap-2">
       <input type="hidden" name="materialId" value={materialId} />
       <input type="hidden" name="state" value={active ? "archived" : "active"} />
-      {active && <span className="text-sm text-[#3f524b]">¿Archivar? Se conserva su historial.</span>}
+      {active && <span className="text-sm text-ink-soft">¿Archivar? Se conserva su historial.</span>}
       <StatusSubmit active={active} />
       {active && (
-        <button type="button" onClick={() => setConfirm(false)} className="min-h-11 rounded-xl px-3 text-sm font-bold text-[#5b6b65] hover:bg-[#f6f9f7]">
+        <button type="button" onClick={() => setConfirm(false)} className="min-h-11 rounded-xl px-3 text-sm font-bold text-muted-foreground hover:bg-surface">
           Cancelar
         </button>
       )}

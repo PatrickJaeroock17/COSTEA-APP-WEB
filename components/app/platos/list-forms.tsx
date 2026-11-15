@@ -56,7 +56,7 @@ export type CatalogDishCard = { id: number; name: string; description: string | 
 function BringButton() {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" disabled={pending} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#006b4b] px-4 text-sm font-extrabold text-white hover:bg-[#00563d] disabled:opacity-60">
+    <button type="submit" disabled={pending} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-brand-600 px-4 text-sm font-extrabold text-white hover:bg-brand-700 disabled:opacity-60">
       {pending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <ChefHat className="size-4" aria-hidden />}
       Traer a mi carta
     </button>
@@ -69,22 +69,22 @@ export function CatalogDishes({ dishes, canAdd, blockedReason }: { dishes: Catal
   const groups = [...new Set(dishes.map((d) => d.category ?? "Otros"))];
   return (
     <div className="space-y-8">
-      <p className="text-[#3f524b]">
+      <p className="text-ink-soft">
         Recetas estándar de cevichería con cantidades, mermas y equivalencias. Al traer un plato se copian sus insumos con el precio del catálogo y se comprueba que el
         inventario alcance para un lote.
       </p>
-      {blockedReason && <p className="rounded-xl bg-[#fff6e5] px-4 py-3 text-sm text-[#7a4b00]">{blockedReason}</p>}
+      {blockedReason && <p className="rounded-xl bg-warning-soft px-4 py-3 text-sm text-warning-text">{blockedReason}</p>}
       {groups.map((group) => (
         <section key={group}>
-          <h2 className="font-brand text-lg font-extrabold text-[#032a1f]">{group}</h2>
+          <h2 className="font-brand text-lg font-extrabold text-heading">{group}</h2>
           <ul className="mt-3 grid gap-4 md:grid-cols-2">
             {dishes
               .filter((d) => (d.category ?? "Otros") === group)
               .map((d) => (
-                <li key={d.id} className="flex flex-col rounded-[24px] border border-[#e2e9e5] bg-white p-5">
-                  <p className="font-bold text-[#032a1f]">{d.name}</p>
-                  {d.description && <p className="mt-1 line-clamp-3 text-sm text-[#5b6b65]">{d.description}</p>}
-                  <p className="mt-3 text-xs font-semibold text-[#5b6b65]">
+                <li key={d.id} className="flex flex-col rounded-[24px] border border-line bg-white p-5">
+                  <p className="font-bold text-heading">{d.name}</p>
+                  {d.description && <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">{d.description}</p>}
+                  <p className="mt-3 text-xs font-semibold text-muted-foreground">
                     {d.ingredients} insumos · rinde {d.portions} {d.portions === "1" ? "porción" : "porciones"}
                   </p>
                   {failed === d.id && state.error && (
@@ -94,7 +94,7 @@ export function CatalogDishes({ dishes, canAdd, blockedReason }: { dishes: Catal
                   )}
                   <div className="mt-4 flex-1" />
                   {d.mine ? (
-                    <Link href={`/app/platos/${d.mine}`} className="inline-flex min-h-11 w-max items-center gap-2 rounded-xl bg-[#ecf8f2] px-4 text-sm font-bold text-[#006b4b]">
+                    <Link href={`/app/platos/${d.mine}`} className="inline-flex min-h-11 w-max items-center gap-2 rounded-xl bg-brand-50 px-4 text-sm font-bold text-brand-600">
                       <Check className="size-4" aria-hidden />
                       Ya está en tu carta
                     </Link>
@@ -129,12 +129,12 @@ export function PriceCell({ productId, amount, currency, editable }: { productId
           defaultValue={state.values?.amount ?? amount ?? ""}
           placeholder="0.00"
           aria-invalid={state.error ? true : undefined}
-          className={cn(inputClass, "mt-0 h-10 text-right tabular-nums", state.error && "border-[#c53030]")}
+          className={cn(inputClass, "mt-0 h-10 text-right tabular-nums", state.error && "border-danger")}
         />
       </label>
       <SaveButton className="min-h-10 px-3 text-sm">Guardar</SaveButton>
-      {state.error && <p role="alert" className="basis-full text-right text-xs font-semibold text-[#9b2c2c]">{state.error}</p>}
-      {state.message && <p role="status" className="basis-full text-right text-xs font-semibold text-[#00563d]">Guardado</p>}
+      {state.error && <p role="alert" className="basis-full text-right text-xs font-semibold text-danger-text">{state.error}</p>}
+      {state.message && <p role="status" className="basis-full text-right text-xs font-semibold text-brand-700">Guardado</p>}
     </form>
   );
 }
