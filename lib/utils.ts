@@ -12,8 +12,8 @@ const twMerge = extendTailwindMerge({
       tracking: ["display", "title", "label", "overline"],
       leading: ["display"],
       radius: ["5xl"],
-      spacing: ["sidebar"],
-      shadow: ["soft", "lift", "float"],
+      spacing: ["sidebar", "section", "nav"],
+      shadow: ["soft", "lift", "float", "card"],
     },
   },
 })

@@ -31,15 +31,15 @@ Nada de degradados morados/arcoíris, sombras exageradas, brillos ni "glassmorph
 
 Regla de lima: **nunca como color de texto sobre blanco o crema** (no pasa contraste). Solo como relleno con texto `brand-900` encima, o como texto/icono sobre `brand-900`/`brand-600`.
 
-### Crema (landing y acceso)
+### Crema (marco de la portada y acceso)
 | Token | Hex | Uso |
 |---|---|---|
-| `cream-50` | `#faf3e0` | Paneles internos de tarjetas de la landing (demos, vistas previas) |
-| `cream-100` | `#faefd5` | Secciones claras de la landing (Qué incluye, Qué ganas, Preguntas, pie) |
-| **`cream-200`** | **`#f4e6c9`** | **Crema de la portada** (debe coincidir con los cuadros del chef), Cómo funciona, fondo del acceso |
+| `cream-50` | `#faf3e0` | Sin uso en la landing desde el rediseño (ver §13) |
+| `cream-100` | `#faefd5` | Sin uso en la landing desde el rediseño (ver §13) |
+| **`cream-200`** | **`#f4e6c9`** | **Crema de la portada** (debe coincidir con los cuadros del chef; solo dentro del marco redondeado), fondo del acceso |
 | `cream-300` | `#ead9b3` | Bordes y separadores sobre crema, serie "presupuesto" en gráficos |
 
-La app (`/app`) no usa crema: usa `surface`.
+La app (`/app`) no usa crema: usa `surface`. La landing tampoco, salvo el marco de la portada: usa `surface-page` (§13).
 
 ### Neutros (con matiz verde)
 | Token | Hex | Uso |
@@ -54,6 +54,7 @@ La app (`/app`) no usa crema: usa `surface`.
 | `line-strong` | `#c9d6cf` | Borde de casillas de verificación personalizadas |
 | `field` | `#f2f5f3` | Fondo de inputs en reposo |
 | `surface` | `#f6f9f7` | Fondo de la app, hover de filas y botones fantasma |
+| `surface-page` | `#f6f7f6` | Fondo único de la landing y de los paneles internos de sus tarjetas (§13) |
 | `white` | `#ffffff` | Tarjetas, popovers, diálogos |
 | `warning-strong` | `#9b5c00` | Texto de aviso "Sin precio" y "Pendiente" (más claro que `warning-text`) |
 | `danger-strong` | `#7f2424` | Hover de botones de borrar y texto de confirmación de borrado (el fondo es `danger-text`) |
@@ -102,7 +103,7 @@ Escala:
 | Rol | Clases |
 |---|---|
 | Display (portada) | `font-brand font-extrabold text-[33px] md:text-[clamp(40px,4.6vw,62px)] leading-[1.04] tracking-display` |
-| H2 sección landing | `font-brand font-extrabold text-4xl sm:text-5xl leading-[1.05] tracking-[-0.025em]` |
+| H2 sección landing | `font-brand font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-display tracking-display`; la parte final puede ir en `text-primary` (§13) |
 | H1 de módulo (app) / título de acceso | `font-brand font-extrabold text-3xl sm:text-4xl tracking-title` |
 | H3 tarjeta | `font-brand font-extrabold text-lg` / `text-xl` |
 | Cifra KPI | `font-brand font-extrabold text-2xl`–`text-4xl tabular-nums` |
@@ -111,7 +112,7 @@ Escala:
 | Pequeño | `text-sm` (14) / `text-small` (13) |
 | Rótulo / cabecera de tabla | `text-xs font-extrabold uppercase tracking-label text-muted-foreground` |
 | Rótulo de grupo del menú | `text-caption font-bold uppercase tracking-overline text-sidebar-label` |
-| Etiqueta tipo píldora | `text-[13px] font-bold text-brand-700 bg-white/70 rounded-full px-3.5 py-[7px]` |
+| Etiqueta tipo píldora | Portada: `text-[13px] font-bold text-brand-700 bg-white/70 rounded-full px-3.5 py-[7px]`. Secciones: chip blanco con borde `line` y punto lima (§13) |
 
 Tokens de tamaño e interletrado (en `@theme` de `app/globals.css`; no usar los valores sueltos):
 `text-body` 15 px · `text-small` 13 px · `text-caption` 11 px · `tracking-display` −0.025em · `tracking-title` −0.02em · `tracking-label` 0.06em · `tracking-overline` 0.12em · `leading-display` 1.05 (H2 de la landing y cierre).
@@ -135,8 +136,8 @@ Base `--radius: 0.75rem` (12 px). Los radios se fijan en valores exactos (no mul
 | `rounded-lg` | 10 px | Botones icono dentro de inputs |
 | **`rounded-xl`** | **12 px** | **Controles**: inputs, botones de app, selects, ítems de menú |
 | `rounded-2xl` | 16 px | Paneles internos, mosaicos de icono, popovers, tarjetas flotantes |
-| **`rounded-3xl`** | **24 px** | **Tarjetas de la app**, ítems de acordeón/pasos de la landing |
-| `rounded-4xl` | 28 px | Tarjetas grandes de la landing, diálogos |
+| **`rounded-3xl`** | **24 px** | **Tarjetas de la app y de la landing**, marco de la portada, ítems de acordeón/pasos |
+| `rounded-4xl` | 28 px | Diálogos |
 | `rounded-5xl` | 32 px | Contenedor de acceso y bloque de cierre (solo esos dos) |
 | `rounded-full` | — | Píldoras: botones de landing, chips, avatares, insignias |
 
@@ -144,18 +145,19 @@ Base `--radius: 0.75rem` (12 px). Los radios se fijan en valores exactos (no mul
 
 ## 4. Sombras
 
-Solo tres niveles, todos tintados con `brand-900` (`rgb(3 42 31)`), nunca negro puro:
+Tres niveles más la sombra de tarjeta de la landing, todos tintados con `brand-900` (`rgb(3 42 31)`), nunca negro puro:
 
 | Token | Valor | Para |
 |---|---|---|
-| `shadow-soft` | `0 10px 30px rgb(3 42 31 / 0.06)` | Tarjetas de la landing en reposo |
+| `shadow-card` | `0 1px 2px rgb(3 42 31 / 0.04), 0 10px 24px -14px rgb(3 42 31 / 0.10)` | Tarjetas de la landing (con borde `line`), paso y pregunta activos |
+| `shadow-soft` | `0 10px 30px rgb(3 42 31 / 0.06)` | Reservada (antes: tarjetas de la landing) |
 | `shadow-lift` | `0 18px 40px rgb(3 42 31 / 0.12)` | Hover de tarjetas, paso/pregunta activa, menús desplegables, popovers |
 | `shadow-float` | `0 24px 60px rgb(3 42 31 / 0.18)` | Diálogos, contenedor de acceso, tarjetas flotantes del hero |
 
 Prohibido: opacidades > 0.18, `blur` > 60 px, sombras de color (lima/verde brillante), sombras internas decorativas.
 En la app las tarjetas van **sin sombra**, solo con borde `line`; la sombra aparece al elevar (menús, diálogos).
 
-Brillos decorativos (`blur-3xl`): solo en la landing, verde o lima, opacidad ≤ 20 %, **máximo uno por sección**. Nunca en la app ni en el acceso. Hoy solo lo usa Planes (y la portada).
+Brillos decorativos (`blur-3xl`): solo en la landing, verde o lima, opacidad ≤ 20 %, **máximo uno por sección**. Nunca en la app ni en el acceso. Desde el rediseño la landing no usa ninguno.
 
 ---
 
@@ -165,17 +167,17 @@ Base 4 px (escala de Tailwind). Objetivo táctil mínimo **44 px** (`min-h-11`/`
 
 | Contexto | Regla |
 |---|---|
-| Contenedor landing | `mx-auto max-w-7xl px-5 sm:px-8` |
-| Sección landing | `py-20 sm:py-28`; rótulo → título `mt-4`; título → contenido `mt-12` |
-| Portada | `md:px-16`, alto `min-h-[max(100vh,780px)]` (ver `brand/HERO-REFERENCIA.md`) |
+| Contenedor landing | `mx-auto w-full max-w-7xl px-4 sm:px-6` (`container` de `components/landing/styles.ts`): barra, marco de la portada, secciones y pie |
+| Sección landing | `py-section` (36–64 px) y `scroll-mt-nav`; chip → título `mt-3`; título → contenido `mt-8` |
+| Portada | marco `rounded-3xl bg-cream-200` dentro del contenedor; `md:px-16`, alto `clamp(620px, 100svh − barra − 16px, 820px)` (ver `brand/HERO-REFERENCIA.md`) |
 | App: contenido | `px-4 py-8 sm:px-6 lg:px-8 lg:py-10`; menú lateral `w-sidebar` (280 px, contenido `lg:pl-sidebar`); barra superior `min-h-16` |
 | App: entre bloques | `space-y-6` / `gap-6`; entre tarjetas de una rejilla `gap-4` |
-| Tarjeta | app `p-5 sm:p-6`; landing `p-6 sm:p-7`; panel interno `p-4` |
+| Tarjeta | app `p-5 sm:p-6`; landing `p-5 sm:p-6`; panel interno `p-4` |
 | Formulario | campos `space-y-4`; grupos `gap-4` en rejilla de 2 columnas desde `sm` |
 
-Fondos por zona: landing alterna `cream-200` / `cream-100` / `brand-900` (portada 200 · Qué incluye 100 · Cómo funciona 200 · Qué ganas 100 · Planes 900 · Preguntas 200 · cierre y pie 100); acceso `cream-200` liso, sin imagen de fondo; app `surface`.
+Fondos por zona: landing `surface-page` de principio a fin, sin bandas de color (las únicas excepciones son el marco crema de la portada y la tarjeta `brand-900` del cierre; ver §13); acceso `cream-200` liso, sin imagen de fondo; app `surface`.
 Encabezados de sección de la landing: `components/landing/section-heading.tsx` (píldora + H2 + texto), no copiados a mano.
-Maquetas de pantallas en la landing (demos, vistas previas): por dentro usan los tokens de la app (`line`, `surface`, `field`, `chart-*`); el panel que las contiene sigue en `cream-50`.
+Maquetas de pantallas en la landing (demos, vistas previas): por dentro usan los tokens de la app (`line`, `surface`, `field`, `chart-*`); el panel que las contiene va en `surface-page`.
 
 ---
 
@@ -215,8 +217,8 @@ En una misma barra no se mezclan píldoras y rectángulos.
 | Tipo | Clases |
 |---|---|
 | Tarjeta de app | `rounded-3xl border border-line bg-card` (sin sombra) |
-| Tarjeta de landing | `rounded-4xl border border-cream-300/70 bg-white shadow-soft`; hover opcional `-translate-y-1 shadow-lift` |
-| Panel interno | `rounded-2xl bg-cream-50` (landing) / `rounded-2xl bg-surface` (app) |
+| Tarjeta de landing | `rounded-3xl border border-line bg-white shadow-card` (`card` de `components/landing/styles.ts`); sin hover si no es clicable |
+| Panel interno | `rounded-2xl bg-surface-page` (landing) / `rounded-2xl bg-surface` (app) |
 | Tarjeta KPI | tarjeta de app + rótulo `text-sm font-semibold text-muted-foreground` + cifra `font-brand text-3xl font-extrabold tabular-nums text-heading` |
 | Mosaico de icono | `size-11 rounded-2xl` · principal `bg-brand-600 text-lime-500` · secundario `bg-brand-50 text-brand-600` |
 | Estado vacío | `rounded-3xl border border-dashed border-brand-600/30 bg-white px-6 py-10 text-center` |
@@ -358,3 +360,44 @@ Al traer uno:
 2. Ajustar radios y sombras a las secciones 3 y 4.
 3. Comprobar `prefers-reduced-motion` y contraste AA.
 4. @magicui/@smoothui solo para la landing o para microinteracciones de la app (p. ej. contador de cifras, marquesina). Evitar los efectos de arcoíris, aurora, partículas, meteoros, haces de luz y bordes brillantes salvo que se rehagan solo con verde/lima y sin brillo.
+
+---
+
+## 13. Landing
+
+La landing (`/`) es **una sola página continua, blanca y verde**. La app (`/app`) y el acceso no cambian con esta sección.
+
+### Fondo y color
+- Fondo único `surface-page` (`#f6f7f6`) en toda la página: barra, secciones y pie. **Sin fondos alternados ni bandas de color de borde a borde.**
+- Solo dos bloques tienen color propio, y ambos van dentro de una tarjeta redondeada: el **marco de la portada** (`rounded-3xl bg-cream-200`, el crema de los cuadros del chef) y el **cierre** (`rounded-5xl bg-brand-900`).
+- Tarjetas: blancas, borde fino `line` de 1 px y `shadow-card`. Paneles internos (demos, vistas previas): `surface-page`.
+- Verde de marca para botones, acentos, el punto de la sección activa y la parte final de los títulos. Lima solo como acento puntual: punto del chip, checks, círculo del CTA, barra del paso activo, la barra del mejor plato.
+- Planes es una tarjeta compacta dentro del flujo (texto a la izquierda, botón a la derecha), no una banda.
+
+### Ritmo
+- Todas las secciones usan `section` (`py-section scroll-mt-nav`) y `container` de `components/landing/styles.ts`. `--spacing-section` = `clamp(2.25rem, 4.5vw, 4rem)`: entre dos bloques nunca hay más de 128 px.
+- Chip → H2 `mt-3`; H2 → texto `mt-3`; encabezado → contenido `mt-8`. Rejillas de tarjetas con `gap-3` (12 px).
+- "Qué incluye" es un bento de una sola rejilla (`lg:grid-cols-6`): 3 demos grandes y 6 tarjetas chicas, todas `col-span-2`.
+
+### Barra superior (`components/landing/site-header.tsx`)
+- `sticky top-0`, alto `h-nav` (64 px). Arriba es transparente; al bajar más de 8 px: `bg-white/80 backdrop-blur-[14px]` y línea inferior `line`.
+- Rejilla `1fr auto 1fr`: logo · enlaces centrados · Iniciar sesión + Crear cuenta.
+- La sección que cruza el centro de la pantalla (IntersectionObserver) se marca con `aria-current` y un punto `bg-primary` bajo el enlace.
+- Móvil: botón de menú (`aria-expanded`, `aria-controls`) que abre un panel dentro de la misma barra translúcida. Escape lo cierra y devuelve el foco al botón; elegir un enlace también lo cierra.
+
+### Títulos de sección (`components/landing/section-heading.tsx`)
+- Chip: `rounded-full border border-line bg-white text-small font-bold text-brand-700` con un punto `lime-500`.
+- H2: `font-brand text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-display tracking-display text-heading`. La parte final va en `text-primary` con la prop `accent` (`title="Qué" accent="incluye"`). Los títulos de una sola palabra (Planes, Preguntas) van enteros en `heading`.
+
+### Pie (`components/landing/site-footer.tsx`)
+- Fila: marca (logo, frase, redes en círculos de 44 px con `aria-label`) + 3 columnas con título `text-small text-muted-foreground` (Producto, Cuenta, Empresa). 2 columnas en tablet, 1 en móvil.
+- Debajo, la palabra "costea" gigante, decorativa (`aria-hidden`): degradado de `brand-100` a transparente recortado al texto.
+- Barra final con línea superior `line`: copyright a la izquierda, enlaces legales a la derecha.
+
+### Movimiento (paquete `motion`, import desde `"motion/react"`)
+- `components/motion/reveal.tsx`: `Reveal` (un bloque) y `Stagger` (los hijos directos en cascada de 70 ms; sirve como rejilla). Entrada única al hacer scroll: opacidad + `translateY(18px)`, 600 ms, curva `EASE` `[0.22, 1, 0.36, 1]`.
+- **El HTML sale visible del servidor.** Solo se oculta, ya con JS, lo que está por debajo de la pantalla; por eso no hay CLS y con JS lento o sin JS el contenido se lee igual. No usar `initial={{ opacity: 0 }}` en contenido de la landing.
+- Barras de "Qué ganas": crecen al entrar con `translateX` dentro de un riel con `overflow-hidden` (no se anima `width`).
+- Acordeón de Preguntas: `motion.div` con `initial={false}` y `height: "auto"` (350 ms). Es la única animación de la landing que no es `transform`/`opacity`, porque responde a un clic.
+- Botones primarios: clase `btn-sheen` (`app/globals.css`): suben 1 px y los cruza un brillo. Solo con `hover: hover`.
+- Nada en bucle salvo lo que ya tenía la portada. Con `prefers-reduced-motion`: sin desplazamientos, todo visible de inmediato.

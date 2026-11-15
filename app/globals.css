@@ -23,10 +23,10 @@
   --color-lime-500: #a9d63a;
   --color-lime-600: #86ae25;
 
-  /* Crema (landing y acceso; la app no usa crema) */
-  --color-cream-50:  #faf3e0;   /* paneles internos de tarjetas de la landing */
-  --color-cream-100: #faefd5;   /* secciones claras de la landing */
-  --color-cream-200: #f4e6c9;   /* portada (igual a los cuadros del chef), Cómo funciona, acceso */
+  /* Crema (solo el marco de la portada y el acceso; el resto de la landing y la app no usan crema) */
+  --color-cream-50:  #faf3e0;   /* (sin uso en la landing desde el rediseño) */
+  --color-cream-100: #faefd5;   /* (sin uso en la landing desde el rediseño) */
+  --color-cream-200: #f4e6c9;   /* marco de la portada (igual a los cuadros del chef) y acceso */
   --color-cream-300: #ead9b3;   /* bordes sobre crema */
   --color-cream:     #faefd5;   /* alias de cream-100 (bg-cream ya en uso) */
 
@@ -40,6 +40,7 @@
   --color-line-strong: #c9d6cf;  /* borde de casillas de verificación */
   --color-field:     #f2f5f3;
   --color-surface:   #f6f9f7;
+  --color-surface-page: #f6f7f6; /* fondo único de la landing (DESIGN.md §13) */
 
   /* Estados: sólido (iconos, bordes), suave (fondo) y texto (AA) */
   --color-success: #0f8a62;
@@ -65,6 +66,7 @@
   --shadow-soft:  0 10px 30px rgb(3 42 31 / 0.06);
   --shadow-lift:  0 18px 40px rgb(3 42 31 / 0.12);
   --shadow-float: 0 24px 60px rgb(3 42 31 / 0.18);
+  --shadow-card:  0 1px 2px rgb(3 42 31 / 0.04), 0 10px 24px -14px rgb(3 42 31 / 0.10); /* tarjetas de la landing */
 
   --radius-control: 0.75rem;  /* 12px */
   --radius-card: 1.5rem;      /* 24px */
@@ -89,6 +91,10 @@
 
   /* Layout de la app */
   --spacing-sidebar: 17.5rem;  /* 280px: menú lateral fijo */
+
+  /* Layout de la landing (DESIGN.md §13) */
+  --spacing-section: clamp(2.25rem, 4.5vw, 4rem);  /* padding vertical de cada sección: 36–64 px */
+  --spacing-nav: 4rem;                             /* alto de la barra superior fija */
 }
 
 
@@ -140,7 +146,7 @@
 :root {
   --radius: 0.75rem;
 
-  --background: #f6f9f7;            /* surface: lienzo de la app; landing y acceso pintan su crema */
+  --background: #f6f9f7;            /* surface: lienzo de la app; la landing pinta surface-page y el acceso su crema */
   --foreground: #12251f;            /* ink */
   --card: #ffffff;
   --card-foreground: #12251f;
@@ -231,6 +237,28 @@
 
 
 
+
+/* Botones primarios de la landing: suben 1 px y los cruza un brillo al pasar el cursor (DESIGN.md §13) */
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.25s ease, background-color 0.2s ease;
+}
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.28) 50%, transparent 70%);
+  transform: translateX(-110%);
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  pointer-events: none;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn-sheen:hover { transform: translateY(-1px); }
+  .btn-sheen:hover::after { transform: translateX(110%); }
+}
 
 /* Barra de progreso del paso activo en "Cómo funciona" */
 @keyframes step-progress {

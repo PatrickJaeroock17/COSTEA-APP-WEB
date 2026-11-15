@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Plantillas de referencia y proyecto original: no son código de la app.
+    "referencias/**",
+    "legacy/**",
   ]),
 ]);
 
