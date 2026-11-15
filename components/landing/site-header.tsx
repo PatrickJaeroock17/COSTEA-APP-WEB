@@ -11,8 +11,8 @@ import { cn, focusRing } from "@/lib/utils";
 const links = [
   { id: "incluye", label: "Qué incluye" },
   { id: "como-funciona", label: "Cómo funciona" },
-  { id: "planes", label: "Planes" },
   { id: "preguntas", label: "Preguntas" },
+  { id: "planes", label: "Planes" },
 ];
 
 const menuItem = cn("flex min-h-11 items-center rounded-xl px-3 text-body hover:bg-brand-50", focusRing);

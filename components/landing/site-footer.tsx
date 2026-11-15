@@ -38,8 +38,8 @@ const columns: { title: string; links: Item[] }[] = [
     links: [
       { label: "Qué incluye", href: "#incluye" },
       { label: "Cómo funciona", href: "#como-funciona" },
-      { label: "Planes", href: "#planes" },
       { label: "Preguntas", href: "#preguntas" },
+      { label: "Planes", href: "#planes" },
     ],
   },
   {
