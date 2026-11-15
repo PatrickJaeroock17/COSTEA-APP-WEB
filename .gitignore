@@ -43,3 +43,6 @@ next-env.d.ts
 
 #referencias visuales
 referencias/
+
+# originales de fotos y videos de stock (se procesan hacia public/media)
+medios-fuente/
