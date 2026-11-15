@@ -28,10 +28,10 @@ export default function ConfiguracionPage({ searchParams }: Props) {
   return (
     <div className="mx-auto max-w-5xl">
       <div className="flex items-center gap-3">
-        <span className="grid size-12 place-items-center rounded-2xl bg-[#006b4b] text-[#a9d63a]">
+        <span className="grid size-12 place-items-center rounded-2xl bg-brand-600 text-lime-500">
           <Settings className="size-6" aria-hidden />
         </span>
-        <h1 className="font-brand text-3xl font-extrabold tracking-[-0.02em] text-[#032a1f] sm:text-4xl">Configuración</h1>
+        <h1 className="font-brand text-3xl font-extrabold tracking-[-0.02em] text-heading sm:text-4xl">Configuración</h1>
       </div>
       <Suspense fallback={<div className="mt-8 h-96 animate-pulse rounded-[24px] bg-white" aria-busy="true" aria-label="Cargando" />}>
         <Content searchParams={searchParams} />
@@ -78,7 +78,7 @@ async function Content({ searchParams }: Props) {
                 aria-current={section === key ? "page" : undefined}
                 className={cn(
                   "flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-bold transition-colors",
-                  section === key ? "bg-[#032a1f] text-white" : "text-[#3f524b] hover:bg-[#f6f9f7]",
+                  section === key ? "bg-brand-900 text-white" : "text-ink-soft hover:bg-surface",
                 )}
               >
                 <Icon className="size-4" aria-hidden />
@@ -101,8 +101,8 @@ async function Content({ searchParams }: Props) {
 function SectionCard({ title, text, children }: { title: string; text?: string; children: React.ReactNode }) {
   return (
     <section className={cn(card, "p-6 sm:p-8")}>
-      <h2 className="font-brand text-xl font-extrabold text-[#032a1f]">{title}</h2>
-      {text && <p className="mt-1 text-[#5b6b65]">{text}</p>}
+      <h2 className="font-brand text-xl font-extrabold text-heading">{title}</h2>
+      {text && <p className="mt-1 text-muted-foreground">{text}</p>}
       <div className="mt-6">{children}</div>
     </section>
   );
@@ -110,7 +110,7 @@ function SectionCard({ title, text, children }: { title: string; text?: string; 
 
 function ReadOnlyNote({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-5 flex items-center gap-2 rounded-xl bg-[#f6f9f7] px-4 py-3 text-sm text-[#3f524b]">
+    <p className="mb-5 flex items-center gap-2 rounded-xl bg-surface px-4 py-3 text-sm text-ink-soft">
       <Lock className="size-4 shrink-0" aria-hidden />
       {children}
     </p>
@@ -125,7 +125,7 @@ async function RestaurantSection({ ctx, created }: { ctx: AppContext; created: b
   return (
     <SectionCard title="Datos del restaurante" text="Se usan en los reportes y presupuestos. Cambiar el IGV pide revisar otra vez el cálculo de los planes; las ventas y presupuestos ya registrados conservan su tasa.">
       {created && (
-        <p role="status" className="mb-5 rounded-xl bg-[#e7f6ee] px-4 py-3 text-sm font-semibold text-[#00563d]">
+        <p role="status" className="mb-5 rounded-xl bg-success-soft px-4 py-3 text-sm font-semibold text-brand-700">
           Restaurante creado con su primer mes de trabajo. Ya puedes registrar insumos.
         </p>
       )}
@@ -158,16 +158,16 @@ function PeriodsSection({ ctx }: { ctx: AppContext }) {
                 key={p.id}
                 className={cn(
                   "flex min-h-14 items-center justify-between gap-3 rounded-2xl border px-4",
-                  p.id === ctx.periodId ? "border-[#006b4b]/40 bg-[#ecf8f2]" : "border-[#e2e9e5]",
+                  p.id === ctx.periodId ? "border-brand-600/40 bg-brand-50" : "border-line",
                 )}
               >
-                <span className="font-bold text-[#032a1f]">{p.label}</span>
-                <span className="text-sm text-[#5b6b65]">{p.id === ctx.periodId ? "Mes de trabajo" : ""}</span>
+                <span className="font-bold text-heading">{p.label}</span>
+                <span className="text-sm text-muted-foreground">{p.id === ctx.periodId ? "Mes de trabajo" : ""}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-[#5b6b65]">Aún no hay meses. Agrega el primero arriba.</p>
+          <p className="text-muted-foreground">Aún no hay meses. Agrega el primero arriba.</p>
         )}
       </SectionCard>
     </div>
@@ -212,7 +212,7 @@ async function RestaurantsSection({ ctx }: { ctx: AppContext }) {
   return (
     <div className="space-y-6">
       <SectionCard title="Mis restaurantes" text="Archivar oculta un restaurante sin borrar sus datos.">
-        {items.length ? <RestaurantList items={items} /> : <p className="text-[#5b6b65]">Aún no tienes restaurantes.</p>}
+        {items.length ? <RestaurantList items={items} /> : <p className="text-muted-foreground">Aún no tienes restaurantes.</p>}
       </SectionCard>
       <SectionCard title="Nuevo restaurante" text="Se crea con su primer mes de trabajo y queda seleccionado.">
         <RestaurantForm mode="create" defaultMonth={limaMonth()} />

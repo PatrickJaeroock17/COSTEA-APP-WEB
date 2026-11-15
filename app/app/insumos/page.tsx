@@ -82,7 +82,7 @@ async function Content({ searchParams }: Props) {
                 aria-current={tab === t.key ? "page" : undefined}
                 className={cn(
                   "flex min-h-11 items-center rounded-xl px-4 text-sm font-bold transition-colors",
-                  tab === t.key ? "bg-[#032a1f] text-white" : "text-[#3f524b] hover:bg-[#f6f9f7]",
+                  tab === t.key ? "bg-brand-900 text-white" : "text-ink-soft hover:bg-surface",
                 )}
               >
                 {t.label}
@@ -130,7 +130,7 @@ function MineSection({
         <input type="hidden" name="tab" value="mios" />
         <label className="relative flex-1">
           <span className="sr-only">Buscar insumos</span>
-          <Search className="pointer-events-none absolute left-4 top-[30px] size-4 -translate-y-1/2 text-[#5b6b65]" aria-hidden />
+          <Search className="pointer-events-none absolute left-4 top-[30px] size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <input name="q" defaultValue={query} placeholder="Buscar por nombre, código, categoría o proveedor" className={cn(inputClass, "pl-11")} />
         </label>
         <label className="sm:w-48">
@@ -141,13 +141,13 @@ function MineSection({
             <option value="todos">Todos</option>
           </select>
         </label>
-        <button type="submit" className="mt-1.5 h-12 rounded-xl bg-[#032a1f] px-5 text-sm font-extrabold text-white hover:bg-[#006b4b]">
+        <button type="submit" className="mt-1.5 h-12 rounded-xl bg-brand-900 px-5 text-sm font-extrabold text-white hover:bg-brand-600">
           Buscar
         </button>
       </form>
 
       {withoutPrice > 0 && (
-        <p className="mt-4 flex items-center gap-2 rounded-xl bg-[#fff6e5] px-4 py-3 text-sm text-[#7a4b00]">
+        <p className="mt-4 flex items-center gap-2 rounded-xl bg-warning-soft px-4 py-3 text-sm text-warning-text">
           <AlertTriangle className="size-4 shrink-0" aria-hidden />
           {withoutPrice === 1 ? "1 insumo no tiene" : `${withoutPrice} insumos no tienen`} precio vigente a esta fecha.
         </p>
@@ -156,36 +156,36 @@ function MineSection({
       {!summaries.length ? (
         <div className="mt-6">
           <EmptyState title="Aún no tienes insumos" text="Agrégalos desde el catálogo general o crea uno propio con su precio.">
-            <Link href="/app/insumos?tab=catalogo" className="inline-flex min-h-11 items-center rounded-xl bg-[#006b4b] px-5 text-sm font-extrabold text-white">
+            <Link href="/app/insumos?tab=catalogo" className="inline-flex min-h-11 items-center rounded-xl bg-brand-600 px-5 text-sm font-extrabold text-white">
               Ver catálogo general
             </Link>
           </EmptyState>
         </div>
       ) : (
-        <div className="mt-4 overflow-hidden rounded-2xl border border-[#e2e9e5] bg-white">
-          <div className="hidden grid-cols-[88px_1fr_150px_150px_28px] gap-4 border-b border-[#e2e9e5] bg-[#f6f9f7] px-4 py-3 text-xs font-extrabold uppercase tracking-[0.06em] text-[#5b6b65] md:grid">
+        <div className="mt-4 overflow-hidden rounded-2xl border border-line bg-white">
+          <div className="hidden grid-cols-[88px_1fr_150px_150px_28px] gap-4 border-b border-line bg-surface px-4 py-3 text-xs font-extrabold uppercase tracking-[0.06em] text-muted-foreground md:grid">
             <span>Código</span>
             <span>Insumo</span>
             <span className="text-right">Precio vigente</span>
             <span className="text-right">Stock</span>
             <span />
           </div>
-          <ul className="divide-y divide-[#e2e9e5]">
+          <ul className="divide-y divide-line">
             {rows.map((m) => {
               const unit = units.get(m.base_unit_code)?.symbol ?? m.base_unit_code;
               return (
                 <li key={m.id}>
                   <Link
                     href={`/app/insumos/${m.id}`}
-                    className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 px-4 py-3 transition-colors hover:bg-[#f6f9f7] md:grid-cols-[88px_1fr_150px_150px_28px]"
+                    className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 px-4 py-3 transition-colors hover:bg-surface md:grid-cols-[88px_1fr_150px_150px_28px]"
                   >
-                    <span className="order-2 font-mono text-xs font-bold text-[#5b6b65] md:order-none">{m.code}</span>
+                    <span className="order-2 font-mono text-xs font-bold text-muted-foreground md:order-none">{m.code}</span>
                     <span className="order-1 col-span-2 min-w-0 md:order-none md:col-span-1">
                       <span className="flex items-center gap-2">
-                        <span className="truncate font-bold text-[#032a1f]">{materialName(m)}</span>
-                        {!m.active && <span className="rounded-full bg-[#f2f5f3] px-2 py-0.5 text-xs font-bold text-[#5b6b65]">Archivado</span>}
+                        <span className="truncate font-bold text-heading">{materialName(m)}</span>
+                        {!m.active && <span className="rounded-full bg-field px-2 py-0.5 text-xs font-bold text-muted-foreground">Archivado</span>}
                       </span>
-                      <span className="block truncate text-xs text-[#5b6b65]">
+                      <span className="block truncate text-xs text-muted-foreground">
                         {m.category}
                         {m.catalog_material_id ? " · Catálogo" : " · Propio"}
                       </span>
@@ -193,26 +193,26 @@ function MineSection({
                     <span className="order-3 text-right text-sm tabular-nums md:order-none">
                       {m.price ? (
                         <>
-                          <span className="font-bold text-[#12251f]">{formatUnitPrice(m.price, currency)}</span>
-                          <span className="text-[#5b6b65]"> / {unit}</span>
+                          <span className="font-bold text-ink">{formatUnitPrice(m.price, currency)}</span>
+                          <span className="text-muted-foreground"> / {unit}</span>
                         </>
                       ) : (
-                        <span className="font-semibold text-[#9b5c00]">Sin precio</span>
+                        <span className="font-semibold text-warning-strong">Sin precio</span>
                       )}
                     </span>
-                    <span className="order-4 hidden text-right text-sm tabular-nums text-[#3f524b] md:block">
-                      {m.pending ? <span className="text-[#9b5c00]">Pendiente</span> : m.stock ? `${formatQty(m.stock)} ${unit}` : "—"}
+                    <span className="order-4 hidden text-right text-sm tabular-nums text-ink-soft md:block">
+                      {m.pending ? <span className="text-warning-strong">Pendiente</span> : m.stock ? `${formatQty(m.stock)} ${unit}` : "—"}
                     </span>
-                    <ChevronRight className="hidden size-4 text-[#8a9a93] md:block" aria-hidden />
+                    <ChevronRight className="hidden size-4 text-subtle md:block" aria-hidden />
                   </Link>
                 </li>
               );
             })}
-            {!rows.length && <li className="px-4 py-8 text-center text-sm text-[#5b6b65]">Ningún insumo coincide con la búsqueda.</li>}
+            {!rows.length && <li className="px-4 py-8 text-center text-sm text-muted-foreground">Ningún insumo coincide con la búsqueda.</li>}
           </ul>
         </div>
       )}
-      <p className="mt-3 text-xs text-[#5b6b65]">
+      <p className="mt-3 text-xs text-muted-foreground">
         Valor del stock al promedio ponderado:{" "}
         {formatMoney(sum(summaries.filter((m) => m.active && m.stock && m.average).map((m) => m.stock!.times(m.average!))), currency)}
       </p>

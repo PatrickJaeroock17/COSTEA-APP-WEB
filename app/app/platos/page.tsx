@@ -59,7 +59,7 @@ async function Content({ searchParams }: Props) {
         {editable && <NewProduct categories={categories} />}
       </PageHeader>
       {params.eliminado && (
-        <p role="status" className="mt-4 rounded-xl bg-[#e7f6ee] px-4 py-3 text-sm font-semibold text-[#00563d]">
+        <p role="status" className="mt-4 rounded-xl bg-success-soft px-4 py-3 text-sm font-semibold text-brand-700">
           Plato eliminado.
         </p>
       )}
@@ -70,7 +70,7 @@ async function Content({ searchParams }: Props) {
               <Link
                 href={`/app/platos?tab=${t.key}`}
                 aria-current={tab === t.key ? "page" : undefined}
-                className={cn("flex min-h-11 items-center whitespace-nowrap rounded-xl px-4 text-sm font-bold transition-colors", tab === t.key ? "bg-[#032a1f] text-white" : "text-[#3f524b] hover:bg-[#f6f9f7]")}
+                className={cn("flex min-h-11 items-center whitespace-nowrap rounded-xl px-4 text-sm font-bold transition-colors", tab === t.key ? "bg-brand-900 text-white" : "text-ink-soft hover:bg-surface")}
               >
                 {t.label}
                 {t.key === "mios" ? ` (${active.length})` : ""}
@@ -96,7 +96,7 @@ function MineTab({ products, archived, currency, igvRate, hasAny }: { products: 
   if (!hasAny) {
     return (
       <EmptyState title="Aún no tienes platos" text="Trae un plato del catálogo con su receta lista o crea uno propio.">
-        <Link href="/app/platos?tab=catalogo" className="inline-flex min-h-11 items-center rounded-xl bg-[#006b4b] px-5 text-sm font-extrabold text-white">
+        <Link href="/app/platos?tab=catalogo" className="inline-flex min-h-11 items-center rounded-xl bg-brand-600 px-5 text-sm font-extrabold text-white">
           Ver catálogo de platos
         </Link>
       </EmptyState>
@@ -105,15 +105,15 @@ function MineTab({ products, archived, currency, igvRate, hasAny }: { products: 
   return (
     <>
       <div className="mb-4 flex gap-2 text-sm">
-        <Link href="/app/platos?tab=mios" className={cn("rounded-full px-3 py-1.5 font-bold", !archived ? "bg-[#d2efe1] text-[#00563d]" : "text-[#5b6b65] hover:bg-white")}>
+        <Link href="/app/platos?tab=mios" className={cn("rounded-full px-3 py-1.5 font-bold", !archived ? "bg-brand-100 text-brand-700" : "text-muted-foreground hover:bg-white")}>
           Activos
         </Link>
-        <Link href="/app/platos?tab=mios&estado=archivados" className={cn("rounded-full px-3 py-1.5 font-bold", archived ? "bg-[#d2efe1] text-[#00563d]" : "text-[#5b6b65] hover:bg-white")}>
+        <Link href="/app/platos?tab=mios&estado=archivados" className={cn("rounded-full px-3 py-1.5 font-bold", archived ? "bg-brand-100 text-brand-700" : "text-muted-foreground hover:bg-white")}>
           Archivados
         </Link>
       </div>
       {!products.length ? (
-        <p className="text-[#5b6b65]">{archived ? "No hay platos archivados." : "No hay platos activos."}</p>
+        <p className="text-muted-foreground">{archived ? "No hay platos archivados." : "No hay platos activos."}</p>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => {
@@ -121,28 +121,28 @@ function MineTab({ products, archived, currency, igvRate, hasAny }: { products: 
             const empty = !p.cost.lines.length;
             return (
               <li key={p.id}>
-                <Link href={`/app/platos/${p.id}`} className="flex h-full flex-col rounded-[24px] border border-[#e2e9e5] bg-white p-5 transition-shadow hover:shadow-[0_12px_30px_rgba(3,42,31,0.08)]">
-                  <span className="text-xs font-bold uppercase tracking-[0.06em] text-[#5b6b65]">{p.menu_category ?? "Sin categoría"}</span>
-                  <span className="mt-1 font-brand text-lg font-extrabold leading-snug text-[#032a1f]">{p.name}</span>
-                  <span className="mt-1 text-xs text-[#5b6b65]">
+                <Link href={`/app/platos/${p.id}`} className="flex h-full flex-col rounded-[24px] border border-line bg-white p-5 transition-shadow hover:shadow-[0_12px_30px_rgba(3,42,31,0.08)]">
+                  <span className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{p.menu_category ?? "Sin categoría"}</span>
+                  <span className="mt-1 font-brand text-lg font-extrabold leading-snug text-heading">{p.name}</span>
+                  <span className="mt-1 text-xs text-muted-foreground">
                     Versión {p.version.number} · rinde {formatQty(p.version.output_quantity)} {p.version.output_quantity === "1" ? "porción" : "porciones"}
                     {p.source_key ? " · del catálogo" : ""}
                   </span>
                   <span className="mt-4 flex-1" />
                   {empty ? (
-                    <span className="flex items-center gap-2 text-sm font-semibold text-[#9b5c00]">
+                    <span className="flex items-center gap-2 text-sm font-semibold text-warning-strong">
                       <AlertTriangle className="size-4" aria-hidden />
                       Sin insumos todavía
                     </span>
                   ) : (
                     <span className="grid grid-cols-2 gap-3 text-sm">
                       <span>
-                        <span className="block text-xs text-[#5b6b65]">Materiales / porción</span>
-                        <span className="font-bold tabular-nums text-[#12251f]">{formatMoney(p.cost.perUnit, currency)}</span>
+                        <span className="block text-xs text-muted-foreground">Materiales / porción</span>
+                        <span className="font-bold tabular-nums text-ink">{formatMoney(p.cost.perUnit, currency)}</span>
                       </span>
                       <span>
-                        <span className="block text-xs text-[#5b6b65]">Food cost</span>
-                        <span className="font-bold tabular-nums text-[#12251f]">{fc ? pct(fc.ratio) : "Sin precio"}</span>
+                        <span className="block text-xs text-muted-foreground">Food cost</span>
+                        <span className="font-bold tabular-nums text-ink">{fc ? pct(fc.ratio) : "Sin precio"}</span>
                       </span>
                     </span>
                   )}
@@ -157,17 +157,17 @@ function MineTab({ products, archived, currency, igvRate, hasAny }: { products: 
 }
 
 function PricesTab({ products, editable, currency, igvRate }: { products: ProductSummary[]; editable: boolean; currency: string; igvRate: string }) {
-  if (!products.length) return <p className="text-[#5b6b65]">Agrega platos para fijar sus precios de carta.</p>;
+  if (!products.length) return <p className="text-muted-foreground">Agrega platos para fijar sus precios de carta.</p>;
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#e2e9e5] bg-white">
-      <p className="border-b border-[#e2e9e5] bg-[#f6f9f7] px-4 py-3 text-sm text-[#3f524b]">
+    <div className="overflow-hidden rounded-2xl border border-line bg-white">
+      <p className="border-b border-line bg-surface px-4 py-3 text-sm text-ink-soft">
         Precio de carta con IGV {igvLabel(igvRate)}. El food cost compara el costo de materiales por porción con el precio sin IGV. El costo completo (mano de obra y gastos) se calcula en Costo y
         precio por plato.
       </p>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
-            <tr className="border-b border-[#e2e9e5] text-left text-xs font-extrabold uppercase tracking-[0.06em] text-[#5b6b65]">
+            <tr className="border-b border-line text-left text-xs font-extrabold uppercase tracking-[0.06em] text-muted-foreground">
               <th className="px-4 py-3 font-extrabold">Plato</th>
               <th className="px-4 py-3 text-right font-extrabold">Materiales / porción</th>
               <th className="px-4 py-3 text-right font-extrabold">Precio con IGV</th>
@@ -179,9 +179,9 @@ function PricesTab({ products, editable, currency, igvRate }: { products: Produc
             {products.map((p) => {
               const fc = foodCost(p, igvRate);
               return (
-                <tr key={p.id} className="border-b border-[#eef2f0] align-top">
+                <tr key={p.id} className="border-b border-line-soft align-top">
                   <td className="px-4 py-3">
-                    <Link href={`/app/platos/${p.id}`} className="font-bold text-[#032a1f] hover:underline">
+                    <Link href={`/app/platos/${p.id}`} className="font-bold text-heading hover:underline">
                       {p.name}
                     </Link>
                   </td>
