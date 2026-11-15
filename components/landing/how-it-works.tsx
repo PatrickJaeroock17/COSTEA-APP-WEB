@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { useInView, usePrefersReducedMotion } from "@/components/landing/reveal";
+import { DotGrid } from "@/components/landing/decor";
 import { card, container, panel, section } from "@/components/landing/styles";
 import { Reveal } from "@/components/motion/reveal";
 import { priceFromMargin, soles } from "@/lib/costing/price";
@@ -184,7 +185,8 @@ export function HowItWorks() {
 
   return (
     <section id="como-funciona" className={section}>
-      <div className={container}>
+      <DotGrid />
+      <div className={cn(container, "relative")}>
         <Reveal>
           <SectionHeading eyebrow="En cuatro pasos" title="Cómo" accent="funciona" />
         </Reveal>
@@ -198,14 +200,21 @@ export function HowItWorks() {
           <ol className="space-y-2.5">
             {steps.map((s, i) => {
               const on = i === active;
+              const done = i < active;
               return (
-                <li key={s.title}>
+                <li key={s.title} className="relative">
+                  {/* Tramo que une este paso con el siguiente: se llena de verde al completarlo */}
+                  {i < steps.length - 1 && (
+                    <span aria-hidden className="pointer-events-none absolute left-[2.6875rem] top-[4.0625rem] -bottom-[1.9375rem] z-10 w-0.5 -translate-x-1/2 overflow-hidden rounded-full bg-line">
+                      <span className={cn("block size-full origin-top bg-primary transition-transform duration-500 ease-out", done ? "scale-y-100" : "scale-y-0")} />
+                    </span>
+                  )}
                   <button
                     type="button"
                     onClick={() => setActive(i)}
                     aria-current={on ? "step" : undefined}
                     className={cn(
-                      "relative w-full overflow-hidden rounded-3xl border p-5 text-left transition-[background-color,border-color,box-shadow] duration-300 sm:p-6",
+                      "relative w-full overflow-hidden rounded-3xl border p-5 text-left transition-[background-color,border-color,box-shadow] duration-300",
                       focusRing,
                       on ? "border-line bg-white shadow-card" : "border-transparent hover:bg-white/70",
                     )}
@@ -213,13 +222,17 @@ export function HowItWorks() {
                     <span className="flex items-start gap-4">
                       <span
                         className={cn(
-                          "grid size-10 shrink-0 place-items-center rounded-full font-brand text-lg font-extrabold transition-colors duration-300",
-                          on ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary",
+                          "grid size-11 shrink-0 place-items-center rounded-full font-brand text-lg font-extrabold transition-[background-color,color,box-shadow] duration-300",
+                          on
+                            ? "bg-linear-to-br from-brand-500 to-brand-700 text-white shadow-badge ring-4 ring-brand-100"
+                            : done
+                              ? "bg-primary text-primary-foreground"
+                              : "border border-line bg-white text-primary",
                         )}
                       >
                         {i + 1}
                       </span>
-                      <span>
+                      <span className="pt-1.5">
                         <span className="block font-brand text-xl font-extrabold text-heading">{s.title}</span>
                         <span
                           className={cn(
