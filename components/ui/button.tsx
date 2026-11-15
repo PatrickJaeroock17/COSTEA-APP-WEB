@@ -22,7 +22,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-brand-100 aria-expanded:bg-brand-100",
         ghost: "font-bold text-ink hover:bg-surface aria-expanded:bg-surface",
         destructive:
-          "bg-danger-soft text-danger-text hover:bg-[#fbdcdc] focus-visible:border-danger focus-visible:ring-danger/15",
+          "bg-danger-soft text-danger-text hover:bg-danger-soft-hover focus-visible:border-danger focus-visible:ring-danger/15",
         link: "h-auto px-0 font-bold text-primary underline-offset-4 hover:underline",
       },
       shape: {
