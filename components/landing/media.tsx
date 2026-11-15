@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image, { type StaticImageData } from "next/image";
-import { useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { mediaFrame } from "@/components/landing/styles";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +23,11 @@ export function Tint({ tone }: { tone: keyof typeof tints }) {
   return <div aria-hidden className={cn("pointer-events-none absolute inset-0", tints[tone])} />;
 }
 
-/** Foto dentro del marco común, con velo de marca opcional. */
+/**
+ * Foto con parallax leve (±`shift` px, máx. 24) y un zoom muy lento (1 → 1.04) al entrar en pantalla.
+ * La imagen sobresale `shift` px por arriba y por abajo del marco para que el desplazamiento nunca deje huecos.
+ * Con `prefers-reduced-motion` queda fija.
+ */
 export function Photo({
   src,
   alt,
@@ -31,6 +35,7 @@ export function Photo({
   className,
   imageClassName,
   tint = "none",
+  shift = 24,
 }: {
   src: StaticImageData;
   alt: string;
@@ -40,9 +45,27 @@ export function Photo({
   tint?: keyof typeof tints;
   shift?: 0 | 12 | 24;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], [-shift, shift]);
+  const still = reduced || shift === 0;
   return (
-    <div className={cn(mediaFrame, className)}>
-      <Image src={src} alt={alt} fill sizes={sizes} placeholder="blur" className={cn("object-cover", imageClassName)} />
+    <div ref={ref} className={cn(mediaFrame, className)}>
+      <motion.div
+        className={cn("absolute inset-x-0", shift === 24 ? "-inset-y-6" : shift === 12 ? "-inset-y-3" : "inset-y-0")}
+        style={still ? undefined : { y }}
+      >
+        <motion.div
+          className="relative size-full"
+          initial={false}
+          whileInView={reduced ? undefined : { scale: 1.04 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 6, ease: "easeOut" }}
+        >
+          <Image src={src} alt={alt} fill sizes={sizes} placeholder="blur" className={cn("object-cover", imageClassName)} />
+        </motion.div>
+      </motion.div>
       <Tint tone={tint} />
     </div>
   );

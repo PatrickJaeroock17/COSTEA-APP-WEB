@@ -1,5 +1,6 @@
 import { LoopVideo, Photo, Tint } from "@/components/landing/media";
 import { container, mediaFrame } from "@/components/landing/styles";
+import { Stagger } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
 import emplatado from "@/public/media/galeria-emplatado.jpg";
 import limonPoster from "@/public/media/galeria-limon-poster.jpg";
@@ -14,7 +15,7 @@ import lomo from "@/public/media/galeria-lomo-saltado.jpg";
 export function Gallery() {
   return (
     <section aria-label="La cocina de un restaurante, en imágenes" className="relative py-section">
-      <div className={cn(container, "grid grid-cols-2 gap-3 md:grid-cols-[1.05fr_1.7fr_0.8fr_1.15fr] md:items-end")}>
+      <Stagger className={cn(container, "grid grid-cols-2 gap-3 md:grid-cols-[1.05fr_1.7fr_0.8fr_1.15fr] md:items-end")}>
         <Photo
           src={lomo}
           alt="Lomo saltado con cebolla y tomate en un plato de cerámica azul"
@@ -49,7 +50,7 @@ export function Gallery() {
           shift={12}
           className="col-span-2 aspect-[16/9] md:col-span-1 md:aspect-auto md:h-[19rem]"
         />
-      </div>
+      </Stagger>
     </section>
   );
 }

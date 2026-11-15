@@ -447,7 +447,10 @@ No se usa `dot-pattern` de Magic UI (pinta un `<circle>` animable por punto: mil
 - **El HTML sale visible del servidor.** Solo se oculta, ya con JS, lo que está por debajo de la pantalla; por eso no hay CLS y con JS lento o sin JS el contenido se lee igual. No usar `initial={{ opacity: 0 }}` en contenido de la landing.
 - `components/motion/parallax.tsx`: `Parallax`, desplazamiento vertical de ±28–40 px ligado al scroll. **Solo para fondos decorativos** (las dos auroras).
 - `components/motion/in-view.tsx`: `InView` marca `data-inview`; con `"false"`, `app/globals.css` pausa todas las animaciones CSS de dentro. **Todo lo que anima en bucle (marquee, destello del CTA, haz del borde) va dentro de un `InView`**: nada corre fuera de pantalla.
+- **Fotos** (`Photo` en `components/landing/media.tsx`): parallax de ±24 px como máximo (±12 px en las piezas chicas de la galería) dentro del marco con `overflow-hidden`; la imagen sobresale esa misma distancia por arriba y por abajo para no dejar huecos. Al entrar en pantalla, un zoom muy lento de `scale 1 → 1.04` en 6 s (la única animación que sale del rango de 150–400 ms, a propósito: no debe notarse como movimiento). La galería entra en cascada con `Stagger`.
+- Fotos de Cómo funciona: las cuatro apiladas; al cambiar de paso, fundido de 600 ms y el mismo zoom lento durante los 5,5 s del paso (`transition-[opacity,scale]`).
+- Videos: solo corren en pantalla (`LoopVideo` los pausa al salir) y aparecen con un fundido de 300 ms sobre el póster.
 - Barras de "Qué ganas": crecen al entrar con `translateX` dentro de un riel con `overflow-hidden` (no se anima `width`).
 - Acordeón de Preguntas: `motion.div` con `initial={false}` y `height: "auto"` (350 ms). Responde a un clic, por eso anima la altura.
 - Botones primarios secundarios (barra, menú): clase `btn-sheen`. El CTA principal usa `ShimmerLink`.
-- Con `prefers-reduced-motion`: sin desplazamientos ni bucles (el destello y el haz no se montan, el marquee queda quieto), todo visible de inmediato.
+- Con `prefers-reduced-motion`: sin desplazamientos ni bucles (el destello y el haz no se montan, el marquee queda quieto), fotos sin parallax ni zoom y videos en póster; todo visible de inmediato.

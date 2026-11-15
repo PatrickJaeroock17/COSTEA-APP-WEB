@@ -278,7 +278,7 @@ export function HowItWorks() {
               <i className="size-2.5 rounded-full bg-line-strong" />
               <span className="ml-2 text-caption font-semibold text-muted-foreground">Vista de ejemplo</span>
             </div>
-            {/* Foto del paso: las cuatro apiladas; cambia con fundido */}
+            {/* Foto del paso: las cuatro apiladas; cambia con fundido y un zoom muy lento mientras dura el paso */}
             <div className="relative isolate aspect-[16/10] overflow-hidden rounded-2xl bg-brand-100 sm:aspect-[2/1]">
               {photos.map((p, i) => (
                 <Image
@@ -290,8 +290,8 @@ export function HowItWorks() {
                   sizes="(min-width: 1024px) 620px, 100vw"
                   placeholder="blur"
                   className={cn(
-                    "object-cover transition-opacity duration-500 ease-out motion-reduce:transition-none",
-                    i === active ? "opacity-100" : "opacity-0",
+                    "object-cover transition-[opacity,scale] ease-out motion-reduce:transition-none",
+                    i === active ? "scale-[1.04] opacity-100 duration-[600ms,5500ms]" : "scale-100 opacity-0 duration-[600ms,0ms] delay-[0ms,600ms]",
                   )}
                 />
               ))}
