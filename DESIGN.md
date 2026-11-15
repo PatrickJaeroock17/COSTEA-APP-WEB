@@ -5,7 +5,7 @@ Los tres usan **el mismo tema**: los tokens de marca de `brand/costea-tokens.css
 Si este archivo y el código no coinciden, manda este archivo (o se actualiza aquí primero).
 
 Principios: **cálido, claro, redondeado, sobrio**. Mucho espacio en blanco, tarjetas suaves, verde de marca como color de acción y lima solo como acento.
-Nada de degradados morados/arcoíris, sombras exageradas, brillos ni "glassmorphism" genérico.
+Nada de degradados morados/arcoíris, sombras exageradas, brillos ni "glassmorphism" genérico. La landing y el acceso sí usan profundidad en verde (aurora, puntos, haz en el borde), con las reglas de §13.
 
 ---
 
@@ -31,12 +31,12 @@ Nada de degradados morados/arcoíris, sombras exageradas, brillos ni "glassmorph
 
 Regla de lima: **nunca como color de texto sobre blanco o crema** (no pasa contraste). Solo como relleno con texto `brand-900` encima, o como texto/icono sobre `brand-900`/`brand-600`.
 
-### Crema (marco de la portada y acceso)
+### Crema (solo el marco de la portada)
 | Token | Hex | Uso |
 |---|---|---|
 | `cream-50` | `#faf3e0` | Sin uso en la landing desde el rediseño (ver §13) |
 | `cream-100` | `#faefd5` | Sin uso en la landing desde el rediseño (ver §13) |
-| **`cream-200`** | **`#f4e6c9`** | **Crema de la portada** (debe coincidir con los cuadros del chef; solo dentro del marco redondeado), fondo del acceso |
+| **`cream-200`** | **`#f4e6c9`** | **Crema de la portada** (debe coincidir con los cuadros del chef; solo dentro del marco redondeado) |
 | `cream-300` | `#ead9b3` | Bordes y separadores sobre crema, serie "presupuesto" en gráficos |
 
 La app (`/app`) no usa crema: usa `surface`. La landing tampoco, salvo el marco de la portada: usa `surface-page` (§13).
@@ -149,15 +149,18 @@ Tres niveles más la sombra de tarjeta de la landing, todos tintados con `brand-
 
 | Token | Valor | Para |
 |---|---|---|
-| `shadow-card` | `0 1px 2px rgb(3 42 31 / 0.04), 0 10px 24px -14px rgb(3 42 31 / 0.10)` | Tarjetas de la landing (con borde `line`), paso y pregunta activos |
+| `shadow-card` | filo de luz interior + `0 1px 2px …/0.05` + `0 16px 32px -18px …/0.16` | Tarjetas claras de la landing (con borde `line`), paso y pregunta activos |
+| `shadow-badge` | filo de luz interior + `0 10px 20px -10px rgb(0 107 75 / 0.6)` | Insignias de icono con degradado verde |
+| `shadow-dark` | filo de luz interior + `0 30px 60px -30px …/0.55` | Bloques `brand-900` de la landing |
+| `shadow-deep` | `0 12px 30px -12px …/0.45` + `0 40px 90px -30px …/0.7` | Tarjeta de acceso sobre el fondo verde |
 | `shadow-soft` | `0 10px 30px rgb(3 42 31 / 0.06)` | Reservada (antes: tarjetas de la landing) |
 | `shadow-lift` | `0 18px 40px rgb(3 42 31 / 0.12)` | Hover de tarjetas, paso/pregunta activa, menús desplegables, popovers |
 | `shadow-float` | `0 24px 60px rgb(3 42 31 / 0.18)` | Diálogos, contenedor de acceso, tarjetas flotantes del hero |
 
-Prohibido: opacidades > 0.18, `blur` > 60 px, sombras de color (lima/verde brillante), sombras internas decorativas.
+Prohibido en la app: opacidades > 0.18, `blur` > 60 px, sombras de color (lima/verde brillante), sombras internas decorativas. Las cuatro sombras de la landing y el acceso de la tabla son la única excepción.
 En la app las tarjetas van **sin sombra**, solo con borde `line`; la sombra aparece al elevar (menús, diálogos).
 
-Brillos decorativos (`blur-3xl`): solo en la landing, verde o lima, opacidad ≤ 20 %, **máximo uno por sección**. Nunca en la app ni en el acceso. Desde el rediseño la landing no usa ninguno.
+Fondos decorativos (aurora, puntos): solo en la landing y el acceso, verde o lima, hechos con degradados radiales (no `filter: blur`), con los componentes de `components/landing/decor.tsx`. Nunca en la app. Ver §13.
 
 ---
 
@@ -175,7 +178,7 @@ Base 4 px (escala de Tailwind). Objetivo táctil mínimo **44 px** (`min-h-11`/`
 | Tarjeta | app `p-5 sm:p-6`; landing `p-5 sm:p-6`; panel interno `p-4` |
 | Formulario | campos `space-y-4`; grupos `gap-4` en rejilla de 2 columnas desde `sm` |
 
-Fondos por zona: landing `surface-page` de principio a fin, sin bandas de color (las únicas excepciones son el marco crema de la portada y la tarjeta `brand-900` del cierre; ver §13); acceso `cream-200` liso, sin imagen de fondo; app `surface`.
+Fondos por zona: landing `surface-page` con bloques `brand-900` enmarcados (ver §13); acceso `surface-dark` (verde oscuro con degradado radial y puntos) con la tarjeta blanca encima; app `surface`.
 Encabezados de sección de la landing: `components/landing/section-heading.tsx` (píldora + H2 + texto), no copiados a mano.
 Maquetas de pantallas en la landing (demos, vistas previas): por dentro usan los tokens de la app (`line`, `surface`, `field`, `chart-*`); el panel que las contiene va en `surface-page`.
 
@@ -217,10 +220,10 @@ En una misma barra no se mezclan píldoras y rectángulos.
 | Tipo | Clases |
 |---|---|
 | Tarjeta de app | `rounded-3xl border border-line bg-card` (sin sombra) |
-| Tarjeta de landing | `rounded-3xl border border-line bg-white shadow-card` (`card` de `components/landing/styles.ts`); sin hover si no es clicable |
+| Tarjeta de landing | `card` (clara) o `cardDark` (verde oscuro) de `components/landing/styles.ts`; sin hover si no es clicable |
 | Panel interno | `rounded-2xl bg-surface-page` (landing) / `rounded-2xl bg-surface` (app) |
 | Tarjeta KPI | tarjeta de app + rótulo `text-sm font-semibold text-muted-foreground` + cifra `font-brand text-3xl font-extrabold tabular-nums text-heading` |
-| Mosaico de icono | `size-11 rounded-2xl` · principal `bg-brand-600 text-lime-500` · secundario `bg-brand-50 text-brand-600` |
+| Mosaico de icono | App: `size-11 rounded-2xl` · principal `bg-brand-600 text-lime-500` · secundario `bg-brand-50 text-brand-600`. Landing: insignia `iconBadge` / `iconBadgeLime` (§13) |
 | Estado vacío | `rounded-3xl border border-dashed border-brand-600/30 bg-white px-6 py-10 text-center` |
 | Tarjeta oscura | `bg-brand-900 text-white`, mismos radios |
 
@@ -363,41 +366,78 @@ Al traer uno:
 
 ---
 
-## 13. Landing
+## 13. Landing y acceso
 
-La landing (`/`) es **una sola página continua, blanca y verde**. La app (`/app`) y el acceso no cambian con esta sección.
+La landing (`/`) es **una sola página continua en verde**: fondo claro con bloques en verde oscuro, profundidad y detalle. El acceso comparte el fondo oscuro. La app (`/app`) no cambia con esta sección.
 
-### Fondo y color
-- Fondo único `surface-page` (`#f6f7f6`) en toda la página: barra, secciones y pie. **Sin fondos alternados ni bandas de color de borde a borde.**
-- Solo dos bloques tienen color propio, y ambos van dentro de una tarjeta redondeada: el **marco de la portada** (`rounded-3xl bg-cream-200`, el crema de los cuadros del chef) y el **cierre** (`rounded-5xl bg-brand-900`).
-- Tarjetas: blancas, borde fino `line` de 1 px y `shadow-card`. Paneles internos (demos, vistas previas): `surface-page`.
-- Verde de marca para botones, acentos, el punto de la sección activa y la parte final de los títulos. Lima solo como acento puntual: punto del chip, checks, círculo del CTA, barra del paso activo, la barra del mejor plato.
-- Planes es una tarjeta compacta dentro del flujo (texto a la izquierda, botón a la derecha), no una banda.
+### Superficies
+| Superficie | Clases | Dónde |
+|---|---|---|
+| Página | `bg-surface-page` (`#f6f7f6`) | Toda la landing: barra, secciones claras y pie |
+| Tarjeta clara | `card`: `rounded-3xl border border-line bg-linear-to-b from-white to-surface-page shadow-card` | Bento, franja de cifras, vista previa de Cómo funciona |
+| Bloque oscuro | `cardDark`: `surface-dark rounded-3xl border border-white/10 shadow-dark` | Tarjeta destacada del bento, panel de Qué ganas, bloque Planes + cierre (`rounded-5xl`) |
+| Panel interno | `panel`: `rounded-2xl border border-line-soft bg-surface-page`; dentro de un bloque oscuro, panel blanco `shadow-lift` | Demos y vistas previas |
+| Marco de la portada | `rounded-3xl bg-cream-200` | Solo la portada: es el crema de los cuadros del chef |
+| Acceso | `<main>` con `surface-dark` + `DotGrid tone="dark"`; tarjeta blanca `shadow-deep ring-1 ring-white/10` | `/ingresar`, `/registro`, `/recuperar`, `/nueva-clave` |
+
+- `surface-dark` (`app/globals.css`): `brand-900` con dos degradados radiales muy sutiles (lima arriba a la derecha, verde abajo a la izquierda).
+- **Sin crema fuera del marco de la portada.** Los bloques oscuros siempre van enmarcados (redondeados, dentro del contenedor), nunca como banda de borde a borde.
+- Texto sobre verde oscuro: blanco para títulos, `sidebar-foreground` para párrafos, `lime-300` para rótulos y cifras. Todos pasan AA sobre `brand-900`. Foco sobre verde: `focusRingDark` o anillo blanco con separación `brand-900`.
+
+### Profundidad (`components/landing/decor.tsx`)
+- `Aurora` (`tone="light" | "dark"`): tres manchas verdes/lima hechas con `radial-gradient(closest-side, …)`. Va detrás del marco de la portada y dentro del bloque de cierre.
+- `DotGrid` (`tone`): patrón de puntos de 22 px (`.dot-grid`) que se desvanece hacia los bordes (`.fade-radial`). En zonas claras `text-brand-900/10`; en oscuras `text-white/10`.
+- Todo decorativo lleva `aria-hidden` y `pointer-events-none`. No se usa `filter: blur` en fondos.
+- Bordes de 1 px: `line` en claro, `white/10` en oscuro; el "brillo" es el filo de luz interior de las sombras.
+
+### Iconos
+- Insignia `iconBadge`: 56 px, `rounded-2xl`, degradado `brand-500 → brand-700`, icono Lucide blanco `size-7`, `shadow-badge`. Sobre bloques oscuros, `iconBadgeLime` (degradado lima, icono `brand-900`).
+- La misma receta, más chica, en los checks de Qué ganas (36 px) y en el paso activo de Cómo funciona (44 px, redondo).
 
 ### Ritmo
-- Todas las secciones usan `section` (`py-section scroll-mt-nav`) y `container` de `components/landing/styles.ts`. `--spacing-section` = `clamp(2.25rem, 4.5vw, 4rem)`: entre dos bloques nunca hay más de 128 px.
+- Todas las secciones usan `section` (`relative py-section scroll-mt-nav`) y `container`. `--spacing-section` = `clamp(2.25rem, 4.5vw, 4rem)`.
 - Chip → H2 `mt-3`; H2 → texto `mt-3`; encabezado → contenido `mt-8`. Rejillas de tarjetas con `gap-3` (12 px).
-- "Qué incluye" es un bento de una sola rejilla (`lg:grid-cols-6`): 3 demos grandes y 6 tarjetas chicas, todas `col-span-2`.
+- Orden: portada · franja de cifras · Qué incluye · Cómo funciona · Qué ganas · Preguntas · Planes + cierre · pie.
+
+### Secciones
+- **Portada**: aurora detrás del marco (con parallax leve), malla verde tenue dentro del marco del lado del texto, cuatro tarjetas flotantes con valores de ejemplo (solo escritorio) y CTA con destello. Textos e interacción del chef no se tocan.
+- **Franja de cifras** (`proof-strip.tsx`): cuatro datos **del propio producto** (9 funciones, IGV 18 %, 4 pasos, recálculo al instante) y un marquee con tipos de negocio. **Nunca testimonios, logos de clientes ni reseñas.**
+- **Qué incluye**: bento de 12 columnas con tamaños distintos (7 + 5, 6 + 3 + 3, 3 × 4). Tres demos en vivo; "Costo y precio por plato" es la tarjeta oscura con `BorderBeam`. Las seis tarjetas chicas llevan un micro-visual propio (`micro-visuals.tsx`), siempre con valores marcados como ejemplo.
+- **Cómo funciona**: línea de tiempo vertical; un tramo une cada paso con el siguiente y se llena de verde al completarlo. Paso activo en tarjeta blanca con insignia.
+- **Qué ganas**: lista clara a la izquierda, panel `cardDark` a la derecha con las barras en lima.
+- **Planes + cierre**: un solo bloque `cardDark rounded-5xl` con aurora, chip "Próximamente", título grande, CTA lima con destello, tarjeta de cristal "Planes" y el chef. La caja de la imagen es más alta que el bloque para recortar el borde inferior (marca de agua) sin deformar.
 
 ### Barra superior (`components/landing/site-header.tsx`)
 - `sticky top-0`, alto `h-nav` (64 px). Arriba es transparente; al bajar más de 8 px: `bg-white/80 backdrop-blur-[14px]` y línea inferior `line`.
-- Rejilla `1fr auto 1fr`: logo · enlaces centrados · Iniciar sesión + Crear cuenta.
+- Rejilla `1fr auto 1fr`: logo · enlaces centrados (Qué incluye, Cómo funciona, Preguntas, Planes; el orden de la página) · Iniciar sesión + Crear cuenta.
 - La sección que cruza el centro de la pantalla (IntersectionObserver) se marca con `aria-current` y un punto `bg-primary` bajo el enlace.
 - Móvil: botón de menú (`aria-expanded`, `aria-controls`) que abre un panel dentro de la misma barra translúcida. Escape lo cierra y devuelve el foco al botón; elegir un enlace también lo cierra.
 
 ### Títulos de sección (`components/landing/section-heading.tsx`)
 - Chip: `rounded-full border border-line bg-white text-small font-bold text-brand-700` con un punto `lime-500`.
-- H2: `font-brand text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-display tracking-display text-heading`. La parte final va en `text-primary` con la prop `accent` (`title="Qué" accent="incluye"`). Los títulos de una sola palabra (Planes, Preguntas) van enteros en `heading`.
+- H2: `font-brand text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-display tracking-display text-heading`. La parte final va en `text-primary` con la prop `accent` (`title="Qué" accent="incluye"`).
 
 ### Pie (`components/landing/site-footer.tsx`)
 - Fila: marca (logo, frase, redes en círculos de 44 px con `aria-label`) + 3 columnas con título `text-small text-muted-foreground` (Producto, Cuenta, Empresa). 2 columnas en tablet, 1 en móvil.
 - Debajo, la palabra "costea" gigante, decorativa (`aria-hidden`): degradado de `brand-100` a transparente recortado al texto.
 - Barra final con línea superior `line`: copyright a la izquierda, enlaces legales a la derecha.
 
+### Componentes de Magic UI (`components/ui/`, licencia MIT, instalados con el CLI de shadcn y adaptados)
+| Componente | Dónde | Adaptación |
+|---|---|---|
+| `number-ticker` | Franja de cifras | El servidor entrega el valor final; cuenta una vez al entrar; formato es-PE; sin colores propios |
+| `marquee` | Tipos de negocio | Solo horizontal; copias con `aria-hidden`; quieto con movimiento reducido |
+| `border-beam` | Tarjeta oscura del bento y bloque de cierre | Colores con tokens (lima → verde); animación en CSS en vez de motion |
+| `shimmer-button` | CTA "Crear mi cuenta" de la portada y del cierre | Reescrito como `ShimmerLink` (enlace) con la forma del CTA de §6 y tokens |
+
+No se usa `dot-pattern` de Magic UI (pinta un `<circle>` animable por punto: miles de nodos); el patrón es CSS (`.dot-grid`). Tampoco `bento-grid` (arrastra dependencias que no usamos): el bento es una rejilla propia.
+
 ### Movimiento (paquete `motion`, import desde `"motion/react"`)
 - `components/motion/reveal.tsx`: `Reveal` (un bloque) y `Stagger` (los hijos directos en cascada de 70 ms; sirve como rejilla). Entrada única al hacer scroll: opacidad + `translateY(18px)`, 600 ms, curva `EASE` `[0.22, 1, 0.36, 1]`.
 - **El HTML sale visible del servidor.** Solo se oculta, ya con JS, lo que está por debajo de la pantalla; por eso no hay CLS y con JS lento o sin JS el contenido se lee igual. No usar `initial={{ opacity: 0 }}` en contenido de la landing.
+- `components/motion/parallax.tsx`: `Parallax`, desplazamiento vertical de ±28–40 px ligado al scroll. **Solo para fondos decorativos** (las dos auroras).
+- `components/motion/in-view.tsx`: `InView` marca `data-inview`; con `"false"`, `app/globals.css` pausa todas las animaciones CSS de dentro. **Todo lo que anima en bucle (marquee, destello del CTA, haz del borde) va dentro de un `InView`**: nada corre fuera de pantalla.
 - Barras de "Qué ganas": crecen al entrar con `translateX` dentro de un riel con `overflow-hidden` (no se anima `width`).
-- Acordeón de Preguntas: `motion.div` con `initial={false}` y `height: "auto"` (350 ms). Es la única animación de la landing que no es `transform`/`opacity`, porque responde a un clic.
-- Botones primarios: clase `btn-sheen` (`app/globals.css`): suben 1 px y los cruza un brillo. Solo con `hover: hover`.
-- Nada en bucle salvo lo que ya tenía la portada. Con `prefers-reduced-motion`: sin desplazamientos, todo visible de inmediato.
+- Acordeón de Preguntas: `motion.div` con `initial={false}` y `height: "auto"` (350 ms). Responde a un clic, por eso anima la altura.
+- Botones primarios secundarios (barra, menú): clase `btn-sheen`. El CTA principal usa `ShimmerLink`.
+- Con `prefers-reduced-motion`: sin desplazamientos ni bucles (el destello y el haz no se montan, el marquee queda quieto), todo visible de inmediato.
