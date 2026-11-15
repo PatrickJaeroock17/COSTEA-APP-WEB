@@ -1,7 +1,8 @@
 ﻿import Link from "next/link";
 import { ChevronDown, MousePointer2 } from "lucide-react";
 import { ChefScrub } from "@/components/landing/chef-scrub";
-import { SiteHeader } from "@/components/landing/site-header";
+import { container } from "@/components/landing/styles";
+import { cn } from "@/lib/utils";
 
 // Altura de la caja del chef en móvil, como proporción del escenario. Bájala si la corbata queda tapada por el texto; súbela para ampliar al chef.
 const CHEF_HEIGHT_RATIO = 0.74;
@@ -20,11 +21,12 @@ export function Hero() {
   return (
     // Móvil: altura = pantalla + 1300 px de recorrido; el escenario queda anclado y el scroll gira al chef (HERO-MOVIL.md).
     // Escritorio: composición de HERO-REFERENCIA.md.
+    // El crema vive solo dentro de un marco redondeado sobre el fondo de la página (DESIGN.md §13); la barra fija queda encima.
     <section
       style={{ ["--p" as string]: 0 }}
-      className="relative h-[calc(100svh+1300px)] w-full overflow-clip bg-[#f4e6c9] md:h-auto md:overflow-hidden"
+      className={cn(container, "relative h-[calc(100svh+1300px)] md:h-auto")}
     >
-      <div className="sticky top-0 h-svh overflow-hidden md:static md:h-auto md:min-h-[max(100vh,780px)] md:overflow-visible">
+      <div className="sticky top-nav h-[calc(100svh-var(--spacing-nav)-0.5rem)] overflow-hidden rounded-3xl bg-cream-200 md:relative md:top-auto md:h-auto md:min-h-[clamp(620px,calc(100svh-var(--spacing-nav)-1rem),820px)]">
         {/* Chef: detrás de todo */}
         <ChefScrub
           className="absolute inset-x-0 top-0 h-[max(var(--chef-h),150vw)] md:inset-y-0 md:left-auto md:h-auto md:w-[78%]"
@@ -37,8 +39,6 @@ export function Hero() {
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[340px] bg-[linear-gradient(to_top,#f4e6c9_0%,rgba(244,230,201,0.94)_40%,rgba(244,230,201,0)_100%)] md:hidden"
         />
 
-        <SiteHeader />
-
         {/* Tarjetas flotantes (valores de ejemplo, solo escritorio) */}
         <div className="hero-bob pointer-events-none absolute right-[6%] top-[30%] z-[2] hidden rounded-2xl bg-white px-4 py-3 shadow-[0_12px_30px_rgba(3,42,31,0.18)] [--bob-dur:5s] md:block">
           <p className="text-xs font-semibold text-[#5b6b65]">Costo completo (ejemplo)</p>
@@ -50,7 +50,7 @@ export function Hero() {
         </div>
 
         {/* Contenido */}
-        <div className="absolute inset-x-0 bottom-0 z-[1] flex flex-col px-5 pb-5 md:relative md:inset-auto md:min-h-[inherit] md:justify-center md:px-16 md:pb-16 md:pt-28">
+        <div className="absolute inset-x-0 bottom-0 z-[1] flex flex-col px-5 pb-5 md:relative md:inset-auto md:min-h-[inherit] md:justify-center md:px-16 md:py-16">
           <div className="flex max-w-[540px] flex-col items-start gap-3 md:gap-6">
             <span className="hidden rounded-full bg-white/70 px-3.5 py-[7px] text-[13px] font-bold text-[#00563d] md:inline-block">
               Costos y presupuestos para restaurantes
@@ -69,7 +69,7 @@ export function Hero() {
             <div className="mt-1.5 flex w-full flex-wrap items-center gap-3 md:mt-0 md:w-auto">
               <Link
                 href="/registro"
-                className="flex min-h-14 w-full items-center justify-between rounded-full bg-[#006b4b] pl-6 pr-2 text-base font-extrabold text-white transition-colors hover:bg-[#00563d] md:w-auto md:gap-6"
+                className="btn-sheen flex min-h-14 w-full items-center justify-between rounded-full bg-[#006b4b] pl-6 pr-2 text-base font-extrabold text-white transition-colors hover:bg-[#00563d] md:w-auto md:gap-6"
               >
                 Crear mi cuenta
                 <ArrowCircle />
