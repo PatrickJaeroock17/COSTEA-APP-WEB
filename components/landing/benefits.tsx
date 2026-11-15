@@ -1,9 +1,11 @@
-﻿import { Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { BenefitsDemo } from "@/components/landing/benefits-demo";
+import { Photo } from "@/components/landing/media";
 import { SectionHeading } from "@/components/landing/section-heading";
 import { container, section } from "@/components/landing/styles";
 import { Reveal } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
+import ceviche from "@/public/media/que-ganas-ceviche.jpg";
 
 const gains = [
   "Saber el costo real de cada plato, con insumos, mano de obra y gastos.",
@@ -13,7 +15,7 @@ const gains = [
   "Tener tus números ordenados en un solo lugar, separados por restaurante.",
 ];
 
-/** Lado claro (lista) frente a un panel verde oscuro (demo): el contraste de la sección (DESIGN.md §13). */
+/** Lado claro (lista) frente a una foto grande con el panel verde oscuro (demo) montado encima (DESIGN.md §13). */
 export function Benefits() {
   return (
     <section className={section}>
@@ -31,9 +33,21 @@ export function Benefits() {
             ))}
           </ul>
         </Reveal>
-        <Reveal delay={0.1}>
-          <BenefitsDemo />
-        </Reveal>
+        {/* El plato real arriba y, montado sobre su borde inferior, el panel con sus números */}
+        <div>
+          <Reveal>
+            <Photo
+              src={ceviche}
+              alt="Ceviche con langostino, conchas, cancha y choclo en un plato de cerámica azul"
+              sizes="(min-width: 1024px) 54vw, 100vw"
+              tint="base"
+              className="aspect-[16/10] lg:ml-10"
+            />
+          </Reveal>
+          <Reveal delay={0.1} className="relative z-10 -mt-12 sm:-mt-20 lg:mr-10">
+            <BenefitsDemo />
+          </Reveal>
+        </div>
       </div>
     </section>
   );

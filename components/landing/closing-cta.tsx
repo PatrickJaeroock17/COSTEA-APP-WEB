@@ -1,5 +1,5 @@
-﻿import Image from "next/image";
 import { Aurora, DotGrid } from "@/components/landing/decor";
+import { LoopVideo } from "@/components/landing/media";
 import { cardDark, container } from "@/components/landing/styles";
 import { InView } from "@/components/motion/in-view";
 import { Parallax } from "@/components/motion/parallax";
@@ -8,9 +8,10 @@ import { BorderBeam } from "@/components/ui/border-beam";
 import { CtaArrow } from "@/components/ui/button";
 import { ShimmerLink } from "@/components/ui/shimmer-button";
 import { cn } from "@/lib/utils";
+import poster from "@/public/media/cierre-emplatado-poster.jpg";
 
 /**
- * Planes + cierre en un solo bloque verde oscuro (DESIGN.md §13): aurora, título grande, botón lima y el chef.
+ * Planes + cierre en un solo bloque verde oscuro (DESIGN.md §13): aurora, título grande, botón lima y un video de emplatado.
  * Los planes siguen sin definir: se mantiene el aviso, sin precios ni contenido inventado.
  */
 export function ClosingCta() {
@@ -24,14 +25,21 @@ export function ClosingCta() {
             </Parallax>
             <DotGrid tone="dark" />
 
-            {/* El chef asoma por la derecha y se funde con el verde. La caja es más alta que el bloque:
-                así el borde inferior de la imagen (con la marca de agua) queda recortado, sin deformarla. */}
-            <div
-              aria-hidden
-              className="absolute right-0 top-0 h-[116%] w-full opacity-25 [mask-image:linear-gradient(to_right,transparent_8%,black_72%)] md:w-[56%] md:opacity-100"
+            {/* Video de emplatado a la derecha, fundido hacia el verde. Encima, un velo de marca
+                que deja el lado del texto en brand-900 casi pleno: el texto mantiene contraste AA. */}
+            <LoopVideo
+              mp4="/media/cierre-emplatado.mp4"
+              webm="/media/cierre-emplatado.webm"
+              poster={poster}
+              posterSrc="/media/cierre-emplatado-poster.jpg"
+              alt=""
+              sizes="(min-width: 768px) 60vw, 100vw"
+              className="absolute inset-y-0 right-0 w-full opacity-30 [mask-image:linear-gradient(to_right,transparent_0%,black_70%)] md:w-[62%] md:opacity-100"
+              videoClassName="object-[60%_50%]"
             >
-              <Image src="/chef/f051.webp" alt="" fill sizes="(min-width: 768px) 90vw, 180vw" className="object-cover object-[58%_0%]" />
-            </div>
+              <div aria-hidden className="pointer-events-none absolute inset-0 bg-linear-to-r from-brand-900/90 via-brand-900/35 to-brand-700/15" />
+              <div aria-hidden className="pointer-events-none absolute inset-0 bg-linear-to-t from-brand-900/60 via-transparent to-brand-900/25" />
+            </LoopVideo>
 
             <div className="relative z-10 flex flex-col px-6 py-12 sm:px-12 md:max-w-[60%] md:py-16 lg:px-16 lg:py-20">
               <span className="inline-flex items-center gap-2 self-start rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-small font-bold text-lime-300">

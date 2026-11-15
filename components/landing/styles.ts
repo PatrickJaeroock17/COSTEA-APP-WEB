@@ -22,3 +22,6 @@ export const iconBadge =
 /** La misma insignia sobre bloques oscuros: lima con icono verde oscuro. */
 export const iconBadgeLime =
   "grid size-14 shrink-0 place-items-center rounded-2xl bg-linear-to-br from-lime-300 to-lime-500 text-brand-900 shadow-badge ring-1 ring-inset ring-white/40 [&_svg]:size-7";
+
+/** Marco de foto o video: mismo radio y sombra que las tarjetas. La proporción (`aspect-*`) o el alto llegan aparte. */
+export const mediaFrame = "relative isolate overflow-hidden rounded-3xl bg-brand-100 shadow-card";

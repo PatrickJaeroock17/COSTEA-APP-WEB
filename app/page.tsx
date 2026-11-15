@@ -1,7 +1,8 @@
-﻿import { Benefits } from "@/components/landing/benefits";
+import { Benefits } from "@/components/landing/benefits";
 import { ClosingCta } from "@/components/landing/closing-cta";
 import { Faq } from "@/components/landing/faq";
 import { Features } from "@/components/landing/features";
+import { Gallery } from "@/components/landing/gallery";
 import { Hero } from "@/components/landing/hero";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { ProofStrip } from "@/components/landing/proof-strip";
@@ -17,6 +18,7 @@ export default function Home() {
         <Hero />
         <ProofStrip />
         <Features />
+        <Gallery />
         <HowItWorks />
         <Benefits />
         <Faq />

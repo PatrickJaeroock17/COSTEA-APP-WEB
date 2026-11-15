@@ -397,15 +397,25 @@ La landing (`/`) es **una sola página continua en verde**: fondo claro con bloq
 ### Ritmo
 - Todas las secciones usan `section` (`relative py-section scroll-mt-nav`) y `container`. `--spacing-section` = `clamp(2.25rem, 4.5vw, 4rem)`.
 - Chip → H2 `mt-3`; H2 → texto `mt-3`; encabezado → contenido `mt-8`. Rejillas de tarjetas con `gap-3` (12 px).
-- Orden: portada · franja de cifras · Qué incluye · Cómo funciona · Qué ganas · Preguntas · Planes + cierre · pie.
+- Orden: portada · franja de cifras · Qué incluye · galería · Cómo funciona · Qué ganas · Preguntas · Planes + cierre · pie.
 
 ### Secciones
 - **Portada**: aurora detrás del marco (con parallax leve), malla verde tenue dentro del marco del lado del texto y CTA con destello. Sin tarjetas flotantes: el marco lleva solo texto, botones y el chef. Textos e interacción del chef no se tocan.
 - **Franja de cifras** (`proof-strip.tsx`): cuatro datos **del propio producto** (9 funciones, IGV 18 %, 4 pasos, recálculo al instante) y un marquee con tipos de negocio. **Nunca testimonios, logos de clientes ni reseñas.**
 - **Qué incluye**: bento de 12 columnas con tamaños distintos (7 + 5, 6 + 3 + 3, 3 × 4). Tres demos en vivo; "Costo y precio por plato" es la tarjeta oscura con `BorderBeam`. Las seis tarjetas chicas llevan un micro-visual propio (`micro-visuals.tsx`), siempre con valores marcados como ejemplo.
-- **Cómo funciona**: línea de tiempo vertical; un tramo une cada paso con el siguiente y se llena de verde al completarlo. Paso activo en tarjeta blanca con insignia.
-- **Qué ganas**: lista clara a la izquierda, panel `cardDark` a la derecha con las barras en lima.
-- **Planes + cierre**: un solo bloque `cardDark rounded-5xl` con aurora, chip "Próximamente", título grande, CTA lima con destello, tarjeta de cristal "Planes" y el chef. La caja de la imagen es más alta que el bloque para recortar el borde inferior (marca de agua) sin deformar.
+- **Galería** (`gallery.tsx`): tira sin texto entre Qué incluye y Cómo funciona: tres fotos y un video corto. Escritorio: una fila de cuatro piezas de anchos y altos distintos, alineadas abajo. Móvil: rejilla de 2 columnas (foto ancha, dos verticales, foto ancha). Sin pies de foto.
+- **Cómo funciona**: línea de tiempo vertical; un tramo une cada paso con el siguiente y se llena de verde al completarlo. Paso activo en tarjeta blanca con insignia. La vista previa lleva arriba la foto real del paso (`rounded-2xl`, velo `brand-900` al pie) y, montado sobre su borde inferior (`-mt-14`), el panel blanco `shadow-lift` con la vista de ejemplo.
+- **Qué ganas**: lista clara a la izquierda; a la derecha, una foto grande del plato (`16/10`) y el panel `cardDark` con las barras en lima montado sobre su borde inferior, desplazados uno del otro 40 px en escritorio.
+- **Planes + cierre**: un solo bloque `cardDark rounded-5xl` con aurora, chip "Próximamente", título grande, CTA lima con destello, tarjeta de cristal "Planes" y, a la derecha, un video de emplatado que se funde con el verde (`mask-image`). Encima del video van dos velos `brand-900` (horizontal y vertical): el lado del texto queda casi pleno y el texto mantiene AA. En móvil el video ocupa todo el bloque al 30 % de opacidad.
+
+### Medios: fotos y videos reales (`components/landing/media.tsx`, archivos en `public/media/`)
+- Solo stock con licencia gratuita para uso comercial (Pexels, Unsplash, Pixabay). Cada archivo se anota en `public/media/CREDITOS.md` (fuente, autor, URL, licencia). Los originales van en `medios-fuente/`, fuera del repositorio.
+- Son ilustrativas: **sin pies de foto ni textos que las presenten como clientes de Costea**. Se prefieren manos, platos, insumos y cocina; nada de caras en primer plano.
+- Marco `mediaFrame` (`styles.ts`): `relative isolate overflow-hidden rounded-3xl bg-brand-100 shadow-card`. Dentro de una tarjeta, `rounded-2xl` sin sombra. La proporción siempre se reserva con `aspect-*` o un alto fijo: sin CLS.
+- Velo de marca (`Tint`): `soft` (`from-brand-900/30`) para teñir apenas; `base` (`from-brand-900/70`) cuando un panel se apoya sobre el pie de la foto. Sin filtros ni colores nuevos: no hizo falta ningún token.
+- `Photo`: `next/image` con import estático (`placeholder="blur"`), `sizes` real de cada hueco, AVIF/WebP (`images.formats` en `next.config.ts`) y carga diferida. Ninguna foto está en la primera pantalla, así que ninguna lleva `priority`.
+- `LoopVideo`: póster optimizado siempre visible; el `<video muted autoPlay loop playsInline preload="none" poster>` (WebM + MP4 H.264) solo se monta la primera vez que entra en pantalla y se pausa al salir. No se monta con `prefers-reduced-motion`, con ahorro de datos (`navigator.connection.saveData`), en redes 2G ni sin JS: queda el póster.
+- Videos: sin audio, ≤ 8 s, ≤ 1080p, ≤ 2 MB (`ffmpeg -an -crf 28`). La receta está en `CREDITOS.md`.
 
 ### Barra superior (`components/landing/site-header.tsx`)
 - `sticky top-0`, alto `h-nav` (64 px). Arriba es transparente; al bajar más de 8 px: `bg-white/80 backdrop-blur-[14px]` y línea inferior `line`.

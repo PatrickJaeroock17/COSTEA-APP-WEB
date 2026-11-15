@@ -1,14 +1,19 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Check } from "lucide-react";
 import { useInView, usePrefersReducedMotion } from "@/components/landing/reveal";
 import { DotGrid } from "@/components/landing/decor";
-import { card, container, panel, section } from "@/components/landing/styles";
+import { card, container, section } from "@/components/landing/styles";
 import { Reveal } from "@/components/motion/reveal";
 import { priceFromMargin, soles } from "@/lib/costing/price";
 import { SectionHeading } from "@/components/landing/section-heading";
 import { cn, focusRing } from "@/lib/utils";
+import fotoRestaurante from "@/public/media/paso-1-restaurante.jpg";
+import fotoInsumos from "@/public/media/paso-2-insumos.jpg";
+import fotoPlato from "@/public/media/paso-3-plato.jpg";
+import fotoPlan from "@/public/media/paso-4-planificacion.jpg";
 
 const STEP_MS = 5500;
 
@@ -166,6 +171,14 @@ function PreviewPlan() {
 
 const previews = [PreviewRestaurant, PreviewLoad, PreviewPrices, PreviewPlan];
 
+/** Una foto real por paso (ilustrativas, de stock: public/media/CREDITOS.md). */
+const photos = [
+  { src: fotoRestaurante, alt: "Salón de un restaurante con mesas de madera listas para el servicio" },
+  { src: fotoInsumos, alt: "Pescados, langostinos y limón frescos sobre hielo" },
+  { src: fotoPlato, alt: "Ceviche con cancha, choclo y camote servido en un plato azul" },
+  { src: fotoPlan, alt: "Manos que hacen cuentas con una calculadora sobre un cuaderno" },
+];
+
 /* ───────────── Sección ───────────── */
 
 export function HowItWorks() {
@@ -265,7 +278,29 @@ export function HowItWorks() {
               <i className="size-2.5 rounded-full bg-line-strong" />
               <span className="ml-2 text-caption font-semibold text-muted-foreground">Vista de ejemplo</span>
             </div>
-            <div key={active} className={cn(panel, "min-h-75 p-4 animate-in fade-in slide-in-from-bottom-2 duration-500 sm:p-5")}>
+            {/* Foto del paso: las cuatro apiladas; cambia con fundido */}
+            <div className="relative isolate aspect-[16/10] overflow-hidden rounded-2xl bg-brand-100 sm:aspect-[2/1]">
+              {photos.map((p, i) => (
+                <Image
+                  key={p.alt}
+                  src={p.src}
+                  alt={i === active ? p.alt : ""}
+                  aria-hidden={i === active ? undefined : true}
+                  fill
+                  sizes="(min-width: 1024px) 620px, 100vw"
+                  placeholder="blur"
+                  className={cn(
+                    "object-cover transition-opacity duration-500 ease-out motion-reduce:transition-none",
+                    i === active ? "opacity-100" : "opacity-0",
+                  )}
+                />
+              ))}
+              <div aria-hidden className="pointer-events-none absolute inset-0 bg-linear-to-t from-brand-900/70 via-brand-900/15 to-transparent" />
+            </div>
+            <div
+              key={active}
+              className="relative mx-3 -mt-14 min-h-75 rounded-2xl border border-line-soft bg-white p-4 shadow-lift animate-in fade-in slide-in-from-bottom-2 duration-500 sm:mx-5 sm:p-5"
+            >
               <Preview />
             </div>
           </div>
