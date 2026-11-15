@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
-import { Reveal, useInView, usePrefersReducedMotion } from "@/components/landing/reveal";
+import { useInView, usePrefersReducedMotion } from "@/components/landing/reveal";
+import { card, container, panel, section } from "@/components/landing/styles";
+import { Reveal } from "@/components/motion/reveal";
 import { priceFromMargin, soles } from "@/lib/costing/price";
 import { SectionHeading } from "@/components/landing/section-heading";
 import { cn, focusRing } from "@/lib/utils";
@@ -136,7 +138,7 @@ function PreviewPlan() {
       <div className="flex items-center justify-between">
         <p className="text-xs font-extrabold uppercase tracking-label text-muted-foreground">Presupuesto vs. ventas</p>
         <p className="flex items-center gap-3 text-caption font-semibold text-ink-soft">
-          <span className="flex items-center gap-1"><i className="size-2.5 rounded-sm bg-chart-4" /> Presupuesto</span>
+          <span className="flex items-center gap-1"><i className="size-2.5 rounded-sm bg-brand-200" /> Presupuesto</span>
           <span className="flex items-center gap-1"><i className="size-2.5 rounded-sm bg-chart-1" /> Ventas</span>
         </p>
       </div>
@@ -146,7 +148,7 @@ function PreviewPlan() {
             <div className="flex h-36 w-full items-end justify-center gap-1.5">
               <div
                 style={{ height: `${w.plan}%`, animationDelay: `${i * 120}ms` }}
-                className="w-1/2 grow-y origin-bottom rounded-t-lg bg-chart-4"
+                className="w-1/2 grow-y origin-bottom rounded-t-lg bg-brand-200"
               />
               <div
                 style={{ height: `${w.real}%`, animationDelay: `${i * 120 + 80}ms` }}
@@ -181,19 +183,19 @@ export function HowItWorks() {
   const Preview = previews[active];
 
   return (
-    <section id="como-funciona" className="scroll-mt-4 bg-cream-200 py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+    <section id="como-funciona" className={section}>
+      <div className={container}>
         <Reveal>
-          <SectionHeading eyebrow="En cuatro pasos" title="Cómo funciona" />
+          <SectionHeading eyebrow="En cuatro pasos" title="Cómo" accent="funciona" />
         </Reveal>
 
         <div
           ref={ref}
           onPointerEnter={() => setPaused(true)}
           onPointerLeave={() => setPaused(false)}
-          className="mt-12 grid gap-8 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-14"
+          className="mt-8 grid gap-6 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-10"
         >
-          <ol className="space-y-3">
+          <ol className="space-y-2.5">
             {steps.map((s, i) => {
               const on = i === active;
               return (
@@ -203,11 +205,9 @@ export function HowItWorks() {
                     onClick={() => setActive(i)}
                     aria-current={on ? "step" : undefined}
                     className={cn(
-                      "relative w-full overflow-hidden rounded-3xl p-5 text-left transition-all duration-300 sm:p-6",
+                      "relative w-full overflow-hidden rounded-3xl border p-5 text-left transition-[background-color,border-color,box-shadow] duration-300 sm:p-6",
                       focusRing,
-                      on
-                        ? "bg-white shadow-lift"
-                        : "bg-white/50 hover:bg-white/80",
+                      on ? "border-line bg-white shadow-card" : "border-transparent hover:bg-white/70",
                     )}
                   >
                     <span className="flex items-start gap-4">
@@ -245,14 +245,14 @@ export function HowItWorks() {
             })}
           </ol>
 
-          <div className="rounded-4xl border border-cream-300/70 bg-white p-4 shadow-soft sm:p-5 lg:sticky lg:top-8">
+          <div className={cn(card, "p-4 sm:p-5 lg:sticky lg:top-[calc(var(--spacing-nav)+1rem)]")}>
             <div className="mb-3 flex items-center gap-1.5" aria-hidden>
-              <i className="size-2.5 rounded-full bg-cream-300" />
-              <i className="size-2.5 rounded-full bg-cream-300" />
-              <i className="size-2.5 rounded-full bg-cream-300" />
+              <i className="size-2.5 rounded-full bg-line-strong" />
+              <i className="size-2.5 rounded-full bg-line-strong" />
+              <i className="size-2.5 rounded-full bg-line-strong" />
               <span className="ml-2 text-caption font-semibold text-muted-foreground">Vista de ejemplo</span>
             </div>
-            <div key={active} className="min-h-75 rounded-2xl bg-cream-50 p-4 animate-in fade-in slide-in-from-bottom-2 duration-500 sm:p-5">
+            <div key={active} className={cn(panel, "min-h-75 p-4 animate-in fade-in slide-in-from-bottom-2 duration-500 sm:p-5")}>
               <Preview />
             </div>
           </div>

@@ -1,29 +1,35 @@
 import { cn } from "@/lib/utils";
 
-/** Encabezado de sección de la landing (DESIGN.md §2): píldora, H2 y texto opcional. `tone="dark"` sobre brand-900. */
+/**
+ * Encabezado de sección de la landing (DESIGN.md §13): chip, H2 y texto opcional.
+ * `accent` es la parte final del título y va en verde de marca: title="Qué" accent="incluye".
+ */
 export function SectionHeading({
   eyebrow,
   title,
+  accent,
   text,
-  tone = "light",
   className,
   textClassName,
 }: {
   eyebrow: string;
   title: string;
+  accent?: string;
   text?: string;
-  tone?: "light" | "dark";
   className?: string;
   textClassName?: string;
 }) {
-  const dark = tone === "dark";
   return (
     <div className={className}>
-      <span className={cn("inline-block rounded-full px-3.5 py-1.75 text-small font-bold", dark ? "bg-white/10 text-lime-300" : "bg-white/70 text-brand-700")}>
+      <span className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1.5 text-small font-bold text-brand-700">
+        <i aria-hidden className="size-1.5 rounded-full bg-lime-500" />
         {eyebrow}
       </span>
-      <h2 className={cn("mt-4 font-brand text-4xl leading-display font-extrabold tracking-display sm:text-5xl", dark ? "text-white" : "text-heading")}>{title}</h2>
-      {text && <p className={cn("mt-4 max-w-2xl text-lg leading-relaxed", dark ? "text-sidebar-foreground" : "text-ink-soft", textClassName)}>{text}</p>}
+      <h2 className="mt-3 font-brand text-4xl leading-display font-extrabold tracking-display text-heading sm:text-5xl lg:text-6xl">
+        {title}
+        {accent && <span className="text-primary"> {accent}</span>}
+      </h2>
+      {text && <p className={cn("mt-3 max-w-2xl text-lg leading-relaxed text-ink-soft", textClassName)}>{text}</p>}
     </div>
   );
 }

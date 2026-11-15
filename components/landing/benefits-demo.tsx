@@ -2,6 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Decimal from "decimal.js";
+import { motion, useReducedMotion } from "motion/react";
+import { card } from "@/components/landing/styles";
+import { EASE } from "@/components/motion/reveal";
 import { IGV, soles } from "@/lib/costing/price";
 import { cn, focusRing } from "@/lib/utils";
 
@@ -18,6 +21,7 @@ type Sort = "margin" | "result";
 export function BenefitsDemo() {
   const [sort, setSort] = useState<Sort>("margin");
   const [selected, setSelected] = useState("Ceviche clásico");
+  const reduced = useReducedMotion();
 
   const rows = useMemo(() => {
     const list = DISHES.map((d) => {
@@ -43,7 +47,7 @@ export function BenefitsDemo() {
         <p className="font-brand text-xl font-extrabold tabular-nums text-white">{(sel.margin.toNumber() * 100).toFixed(0)} %</p>
       </div>
 
-      <div className="rounded-4xl border border-cream-300/70 bg-white p-5 pb-10 pt-10 shadow-soft sm:p-7 sm:pb-11 sm:pt-11">
+      <div className={cn(card, "p-5 pb-10 pt-10 sm:p-7 sm:pb-11 sm:pt-11")}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="font-brand text-lg font-extrabold text-heading">Tu carta, plato por plato</p>
           <div className="flex rounded-full bg-field p-1 text-xs font-bold" role="group" aria-label="Ordenar por">
@@ -84,7 +88,7 @@ export function BenefitsDemo() {
                   className={cn(
                     "w-full rounded-2xl px-4 py-3 text-left transition-colors",
                     focusRing,
-                    on ? "bg-brand-50 ring-1 ring-primary/30" : "bg-surface hover:bg-field",
+                    on ? "bg-brand-50 ring-1 ring-primary/30" : "bg-surface-page hover:bg-field",
                   )}
                 >
                   <span className="flex items-center justify-between gap-3 text-sm">
@@ -94,9 +98,13 @@ export function BenefitsDemo() {
                     </span>
                   </span>
                   <span className="mt-2 block h-2 overflow-hidden rounded-full bg-line">
-                    <span
-                      className={cn("block h-full rounded-full transition-[width] duration-700", i === 0 ? "bg-lime-500" : "bg-primary")}
-                      style={{ width: `${pct}%` }}
+                    {/* La barra ocupa todo el riel y se desliza desde la izquierda: solo transform, sin cambiar el ancho */}
+                    <motion.span
+                      className={cn("block h-full rounded-full", i === 0 ? "bg-lime-500" : "bg-primary")}
+                      initial={reduced ? false : { x: "-100%" }}
+                      whileInView={{ x: `${pct - 100}%` }}
+                      viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+                      transition={{ duration: 0.7, ease: EASE, delay: 0.1 + i * 0.07 }}
                     />
                   </span>
                 </button>

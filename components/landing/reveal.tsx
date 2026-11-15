@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { cn } from "@/lib/utils";
 
 /** true cuando el elemento entra en pantalla (una vez, o mientras esté visible si `once` es false). */
 export function useInView<T extends Element>(once = true, margin = "0px 0px -10% 0px") {
@@ -23,32 +22,6 @@ export function useInView<T extends Element>(once = true, margin = "0px 0px -10%
     return () => io.disconnect();
   }, [once, margin]);
   return [ref, inView] as const;
-}
-
-/** Aparición suave al entrar en pantalla. Con movimiento reducido se muestra directamente. */
-export function Reveal({
-  children,
-  delay = 0,
-  className,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const [ref, inView] = useInView<HTMLDivElement>();
-  return (
-    <div
-      ref={ref}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={cn(
-        "transition-[opacity,transform] duration-700 ease-out",
-        !inView && "motion-safe:translate-y-6 motion-safe:opacity-0",
-        className,
-      )}
-    >
-      {children}
-    </div>
-  );
 }
 
 const REDUCED = "(prefers-reduced-motion: reduce)";

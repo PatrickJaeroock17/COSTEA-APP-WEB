@@ -1,11 +1,10 @@
 ﻿import { Boxes, Calculator, CalendarClock, ChefHat, FileCheck2, Package, Receipt, ShoppingCart, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { KardexDemo, PriceDemo, RecipeDemo } from "@/components/landing/feature-demos";
-import { Reveal } from "@/components/landing/reveal";
 import { SectionHeading } from "@/components/landing/section-heading";
-
-/** Tarjeta de la landing (DESIGN.md §7). */
-const card = "rounded-4xl border border-cream-300/70 bg-white shadow-soft";
+import { card, container, panel, section } from "@/components/landing/styles";
+import { Reveal, Stagger } from "@/components/motion/reveal";
+import { cn } from "@/lib/utils";
 
 function Demo({
   icon: Icon,
@@ -19,13 +18,13 @@ function Demo({
   children: React.ReactNode;
 }) {
   return (
-    <article className={`${card} flex h-full flex-col p-6 sm:p-7`}>
+    <article className={cn(card, "flex h-full flex-col p-5 sm:col-span-2 sm:p-6")}>
       <span className="grid size-11 place-items-center rounded-2xl bg-brand-600 text-lime-500">
         <Icon className="size-5" aria-hidden />
       </span>
       <h3 className="mt-4 font-brand text-xl font-extrabold text-heading">{title}</h3>
       <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{text}</p>
-      <div className="mt-5 flex-1 rounded-2xl bg-cream-50 p-4">{children}</div>
+      <div className={cn(panel, "mt-5 flex-1 p-4")}>{children}</div>
     </article>
   );
 }
@@ -41,50 +40,40 @@ const more: { icon: LucideIcon; title: string; text: string }[] = [
 
 export function Features() {
   return (
-    <section id="incluye" className="scroll-mt-4 bg-cream-100 py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+    <section id="incluye" className={section}>
+      <div className={container}>
         <Reveal>
           <SectionHeading
             eyebrow="Todo en un solo lugar"
-            title="Qué incluye"
+            title="Qué"
+            accent="incluye"
             text="Desde el kilo de pescado hasta el precio de la carta. Prueba las demos: son los mismos cálculos que usa el sistema."
           />
         </Reveal>
 
-        <div className="mt-12 grid gap-5 lg:grid-cols-3">
-          <Reveal>
-            <Demo icon={ChefHat} title="Platos y recetas" text="Arma cada plato con sus ingredientes. Si cambia un precio, el costo se recalcula.">
-              <RecipeDemo />
-            </Demo>
-          </Reveal>
-          <Reveal delay={120}>
-            <Demo icon={Calculator} title="Costo y precio por plato" text="Elige el margen y obtén el precio sugerido con IGV, con la fórmula del sistema.">
-              <PriceDemo />
-            </Demo>
-          </Reveal>
-          <Reveal delay={240}>
-            <Demo icon={Boxes} title="Inventario" text="Kardex con costo promedio ponderado: cada compra actualiza el costo de tus insumos.">
-              <KardexDemo />
-            </Demo>
-          </Reveal>
-        </div>
-
-        {/* Informativas, no clicables: sin elevación al pasar el mouse. */}
-        <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {more.map(({ icon: Icon, title, text }, i) => (
-            <Reveal key={title} delay={(i % 3) * 100}>
-              <article className={`${card} flex h-full gap-4 p-5 sm:p-6`}>
-                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-600">
-                  <Icon className="size-5" aria-hidden />
-                </span>
-                <div>
-                  <h3 className="font-brand text-lg font-extrabold text-heading">{title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-ink-soft">{text}</p>
-                </div>
-              </article>
-            </Reveal>
+        {/* Bento: 3 demos grandes y 6 tarjetas chicas en una sola rejilla. Las chicas son informativas, sin hover. */}
+        <Stagger className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+          <Demo icon={ChefHat} title="Platos y recetas" text="Arma cada plato con sus ingredientes. Si cambia un precio, el costo se recalcula.">
+            <RecipeDemo />
+          </Demo>
+          <Demo icon={Calculator} title="Costo y precio por plato" text="Elige el margen y obtén el precio sugerido con IGV, con la fórmula del sistema.">
+            <PriceDemo />
+          </Demo>
+          <Demo icon={Boxes} title="Inventario" text="Kardex con costo promedio ponderado: cada compra actualiza el costo de tus insumos.">
+            <KardexDemo />
+          </Demo>
+          {more.map(({ icon: Icon, title, text }) => (
+            <article key={title} className={cn(card, "flex h-full gap-4 p-5 lg:col-span-2")}>
+              <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-600">
+                <Icon className="size-5" aria-hidden />
+              </span>
+              <div>
+                <h3 className="font-brand text-lg font-extrabold text-heading">{title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-ink-soft">{text}</p>
+              </div>
+            </article>
           ))}
-        </div>
+        </Stagger>
       </div>
     </section>
   );
