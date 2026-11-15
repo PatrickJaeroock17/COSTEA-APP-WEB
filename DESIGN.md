@@ -155,7 +155,7 @@ Tres niveles más la sombra de tarjeta de la landing, todos tintados con `brand-
 | `shadow-deep` | `0 12px 30px -12px …/0.45` + `0 40px 90px -30px …/0.7` | Tarjeta de acceso sobre el fondo verde |
 | `shadow-soft` | `0 10px 30px rgb(3 42 31 / 0.06)` | Reservada (antes: tarjetas de la landing) |
 | `shadow-lift` | `0 18px 40px rgb(3 42 31 / 0.12)` | Hover de tarjetas, paso/pregunta activa, menús desplegables, popovers |
-| `shadow-float` | `0 24px 60px rgb(3 42 31 / 0.18)` | Diálogos, contenedor de acceso, tarjetas flotantes del hero |
+| `shadow-float` | `0 24px 60px rgb(3 42 31 / 0.18)` | Diálogos, contenedor de acceso, tarjetas flotantes de Qué ganas |
 
 Prohibido en la app: opacidades > 0.18, `blur` > 60 px, sombras de color (lima/verde brillante), sombras internas decorativas. Las cuatro sombras de la landing y el acceso de la tabla son la única excepción.
 En la app las tarjetas van **sin sombra**, solo con borde `line`; la sombra aparece al elevar (menús, diálogos).
@@ -400,7 +400,7 @@ La landing (`/`) es **una sola página continua en verde**: fondo claro con bloq
 - Orden: portada · franja de cifras · Qué incluye · Cómo funciona · Qué ganas · Preguntas · Planes + cierre · pie.
 
 ### Secciones
-- **Portada**: aurora detrás del marco (con parallax leve), malla verde tenue dentro del marco del lado del texto, cuatro tarjetas flotantes con valores de ejemplo (solo escritorio) y CTA con destello. Textos e interacción del chef no se tocan.
+- **Portada**: aurora detrás del marco (con parallax leve), malla verde tenue dentro del marco del lado del texto y CTA con destello. Sin tarjetas flotantes: el marco lleva solo texto, botones y el chef. Textos e interacción del chef no se tocan.
 - **Franja de cifras** (`proof-strip.tsx`): cuatro datos **del propio producto** (9 funciones, IGV 18 %, 4 pasos, recálculo al instante) y un marquee con tipos de negocio. **Nunca testimonios, logos de clientes ni reseñas.**
 - **Qué incluye**: bento de 12 columnas con tamaños distintos (7 + 5, 6 + 3 + 3, 3 × 4). Tres demos en vivo; "Costo y precio por plato" es la tarjeta oscura con `BorderBeam`. Las seis tarjetas chicas llevan un micro-visual propio (`micro-visuals.tsx`), siempre con valores marcados como ejemplo.
 - **Cómo funciona**: línea de tiempo vertical; un tramo une cada paso con el siguiente y se llena de verde al completarlo. Paso activo en tarjeta blanca con insignia.

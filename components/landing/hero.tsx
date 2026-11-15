@@ -1,4 +1,4 @@
-﻿import { ChevronDown, MousePointer2 } from "lucide-react";
+import { ChevronDown, MousePointer2 } from "lucide-react";
 import { ChefScrub } from "@/components/landing/chef-scrub";
 import { Aurora } from "@/components/landing/decor";
 import { container } from "@/components/landing/styles";
@@ -51,31 +51,6 @@ export function Hero() {
           aria-hidden
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[340px] bg-[linear-gradient(to_top,#f4e6c9_0%,rgba(244,230,201,0.94)_40%,rgba(244,230,201,0)_100%)] md:hidden"
         />
-
-        {/* Tarjetas flotantes (valores de ejemplo, solo escritorio) */}
-        <div className="hero-bob pointer-events-none absolute right-[6%] top-[30%] z-[2] hidden rounded-2xl bg-white px-4 py-3 shadow-[0_12px_30px_rgba(3,42,31,0.18)] [--bob-dur:5s] md:block">
-          <p className="text-xs font-semibold text-[#5b6b65]">Costo completo (ejemplo)</p>
-          <p className="font-brand text-2xl font-extrabold text-[#032a1f]">S/ 10.00</p>
-        </div>
-        <div className="hero-bob pointer-events-none absolute bottom-[16%] left-[49%] z-[2] hidden rounded-2xl bg-[#006b4b] px-4 py-3 shadow-[0_12px_30px_rgba(3,42,31,0.18)] [--bob-delay:0.6s] [--bob-dur:5.8s] md:block">
-          <p className="text-xs font-semibold text-[#d8ee9c]">Margen (ejemplo)</p>
-          <p className="font-brand text-2xl font-extrabold text-white">33 %</p>
-        </div>
-
-        {/* Más flotantes (valores de ejemplo, solo escritorio): el precio que sale del costo y margen de arriba, y la utilidad por plato */}
-        <div className="hero-bob pointer-events-none absolute bottom-[21%] right-[4.5%] z-[2] hidden rounded-2xl bg-lime-500 px-4 py-3 shadow-float [--bob-delay:1.1s] [--bob-dur:6.4s] lg:block">
-          <p className="text-xs font-semibold text-brand-800">Precio con IGV (ejemplo)</p>
-          <p className="font-brand text-2xl font-extrabold text-brand-900">S/ 17.61</p>
-        </div>
-        <div className="hero-bob pointer-events-none absolute left-[46%] top-[13%] z-[2] hidden rounded-2xl border border-white/60 bg-white/85 px-3.5 py-3 shadow-float backdrop-blur-sm [--bob-delay:0.3s] [--bob-dur:6.8s] lg:block">
-          <p className="text-xs font-semibold text-muted-foreground">Utilidad por plato (ejemplo)</p>
-          <div aria-hidden className="mt-2 flex h-9 items-end gap-1.5">
-            <i className="h-[45%] w-4 rounded-t-sm bg-brand-200" />
-            <i className="h-[62%] w-4 rounded-t-sm bg-brand-300" />
-            <i className="h-[78%] w-4 rounded-t-sm bg-primary" />
-            <i className="h-full w-4 rounded-t-sm bg-lime-500" />
-          </div>
-        </div>
 
         {/* Contenido */}
         <div className="absolute inset-x-0 bottom-0 z-[1] flex flex-col px-5 pb-5 md:relative md:inset-auto md:min-h-[inherit] md:justify-center md:px-16 md:py-16">
@@ -135,11 +110,3 @@ export function Hero() {
     </section>
   );
 }
-
-
-
-
-
-
-
-
