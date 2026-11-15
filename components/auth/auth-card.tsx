@@ -2,7 +2,11 @@ import Link from "next/link";
 import { ArrowLeft, MousePointer2 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { ChefScrub } from "@/components/landing/chef-scrub";
-import { cn, focusRing } from "@/lib/utils";
+import { DotGrid } from "@/components/landing/decor";
+import { cn } from "@/lib/utils";
+
+/** Foco del enlace que va sobre la foto: anillo blanco con separación oscura, visible sobre cualquier parte de la imagen. */
+const focusOnPhoto = "outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900";
 
 /** Tarjeta flotante de acceso: el chef 3D a la izquierda (sigue al cursor) y el formulario a la derecha. */
 export function AuthCard({
@@ -17,15 +21,17 @@ export function AuthCard({
   children: React.ReactNode;
 }) {
   return (
-    // data-chef-area: el chef sigue al cursor en toda la pantalla. Fondo crema liso (DESIGN.md §5).
-    <main data-chef-area className="flex min-h-screen items-center justify-center bg-cream-200 p-3 sm:p-8">
-      <div className="grid w-full max-w-260 overflow-hidden rounded-5xl bg-card p-2.5 shadow-float sm:p-3 md:grid-cols-[1.05fr_1fr]">
-        <div className="relative h-40 overflow-hidden rounded-3xl bg-cream-300 sm:h-64 md:h-auto md:min-h-155">
+    // data-chef-area: el chef sigue al cursor en toda la pantalla.
+    // Fondo verde oscuro con degradado radial y puntos tenues; la tarjeta blanca va encima (DESIGN.md §13).
+    <main data-chef-area className="surface-dark relative isolate flex min-h-screen items-center justify-center p-2.5 sm:p-8">
+      <DotGrid tone="dark" className="-z-10" />
+      <div className="grid w-full max-w-260 overflow-hidden rounded-5xl bg-card p-2.5 shadow-deep ring-1 ring-white/10 sm:p-3 md:grid-cols-[1.05fr_1fr]">
+        <div className="relative h-40 overflow-hidden rounded-3xl bg-brand-800 sm:h-64 md:h-auto md:min-h-155">
           <ChefScrub className="absolute inset-0 [&_img]:object-[50%_26%] md:[&_img]:object-[50%_15%]" center={0.33} posX={0.46} fade={false} desktopOnly />
           <div aria-hidden className="absolute inset-0 bg-linear-to-t from-brand-900/85 via-brand-900/10 to-transparent" />
           <Link
             href="/"
-            className={cn("absolute left-3 top-3 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white/80 px-4 text-sm font-bold text-heading backdrop-blur transition-colors hover:bg-white sm:left-4 sm:top-4", focusRing)}
+            className={cn("absolute left-3 top-3 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white/80 px-4 text-sm font-bold text-heading backdrop-blur transition-colors hover:bg-white sm:left-4 sm:top-4", focusOnPhoto)}
           >
             <ArrowLeft className="size-4" aria-hidden /> Inicio
           </Link>
