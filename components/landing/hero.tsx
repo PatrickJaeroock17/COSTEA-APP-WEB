@@ -1,7 +1,10 @@
-﻿import Link from "next/link";
-import { ChevronDown, MousePointer2 } from "lucide-react";
+﻿import { ChevronDown, MousePointer2 } from "lucide-react";
 import { ChefScrub } from "@/components/landing/chef-scrub";
+import { Aurora } from "@/components/landing/decor";
 import { container } from "@/components/landing/styles";
+import { InView } from "@/components/motion/in-view";
+import { Parallax } from "@/components/motion/parallax";
+import { ShimmerLink } from "@/components/ui/shimmer-button";
 import { cn } from "@/lib/utils";
 
 // Altura de la caja del chef en móvil, como proporción del escenario. Bájala si la corbata queda tapada por el texto; súbela para ampliar al chef.
@@ -26,7 +29,17 @@ export function Hero() {
       style={{ ["--p" as string]: 0 }}
       className={cn(container, "relative h-[calc(100svh+1300px)] md:h-auto")}
     >
+      {/* Aurora verde difusa detrás del marco: asoma por los lados y baja hacia la franja de cifras */}
+      <Parallax className="absolute inset-x-[-12%] -top-nav -z-10 h-[min(100svh,56rem)] md:h-[130%]" distance={40}>
+        <Aurora />
+      </Parallax>
       <div className="sticky top-nav h-[calc(100svh-var(--spacing-nav)-0.5rem)] overflow-hidden rounded-3xl bg-cream-200 md:relative md:top-auto md:h-auto md:min-h-[clamp(620px,calc(100svh-var(--spacing-nav)-1rem),820px)]">
+        {/* Malla verde tenue sobre el crema, del lado del texto */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(48%_60%_at_0%_0%,var(--color-brand-200),transparent_70%),radial-gradient(40%_50%_at_18%_100%,var(--color-lime-300),transparent_70%)] opacity-40 md:block"
+        />
+
         {/* Chef: detrás de todo */}
         <ChefScrub
           className="absolute inset-x-0 top-0 h-[max(var(--chef-h),150vw)] md:inset-y-0 md:left-auto md:h-auto md:w-[78%]"
@@ -49,6 +62,21 @@ export function Hero() {
           <p className="font-brand text-2xl font-extrabold text-white">33 %</p>
         </div>
 
+        {/* Más flotantes (valores de ejemplo, solo escritorio): el precio que sale del costo y margen de arriba, y la utilidad por plato */}
+        <div className="hero-bob pointer-events-none absolute bottom-[21%] right-[4.5%] z-[2] hidden rounded-2xl bg-lime-500 px-4 py-3 shadow-float [--bob-delay:1.1s] [--bob-dur:6.4s] lg:block">
+          <p className="text-xs font-semibold text-brand-800">Precio con IGV (ejemplo)</p>
+          <p className="font-brand text-2xl font-extrabold text-brand-900">S/ 17.61</p>
+        </div>
+        <div className="hero-bob pointer-events-none absolute left-[46%] top-[13%] z-[2] hidden rounded-2xl border border-white/60 bg-white/85 px-3.5 py-3 shadow-float backdrop-blur-sm [--bob-delay:0.3s] [--bob-dur:6.8s] lg:block">
+          <p className="text-xs font-semibold text-muted-foreground">Utilidad por plato (ejemplo)</p>
+          <div aria-hidden className="mt-2 flex h-9 items-end gap-1.5">
+            <i className="h-[45%] w-4 rounded-t-sm bg-brand-200" />
+            <i className="h-[62%] w-4 rounded-t-sm bg-brand-300" />
+            <i className="h-[78%] w-4 rounded-t-sm bg-primary" />
+            <i className="h-full w-4 rounded-t-sm bg-lime-500" />
+          </div>
+        </div>
+
         {/* Contenido */}
         <div className="absolute inset-x-0 bottom-0 z-[1] flex flex-col px-5 pb-5 md:relative md:inset-auto md:min-h-[inherit] md:justify-center md:px-16 md:py-16">
           <div className="flex max-w-[540px] flex-col items-start gap-3 md:gap-6">
@@ -67,13 +95,12 @@ export function Hero() {
             </p>
 
             <div className="mt-1.5 flex w-full flex-wrap items-center gap-3 md:mt-0 md:w-auto">
-              <Link
-                href="/registro"
-                className="btn-sheen flex min-h-14 w-full items-center justify-between rounded-full bg-[#006b4b] pl-6 pr-2 text-base font-extrabold text-white transition-colors hover:bg-[#00563d] md:w-auto md:gap-6"
-              >
-                Crear mi cuenta
-                <ArrowCircle />
-              </Link>
+              <InView className="w-full md:w-auto">
+                <ShimmerLink href="/registro" className="w-full md:w-auto">
+                  Crear mi cuenta
+                  <ArrowCircle />
+                </ShimmerLink>
+              </InView>
               <a
                 href="#como-funciona"
                 className="hidden min-h-14 items-center rounded-full border-[1.5px] border-[#006b4b] bg-white/60 px-7 text-base font-extrabold text-[#006b4b] transition-colors hover:bg-white/80 md:inline-flex"
