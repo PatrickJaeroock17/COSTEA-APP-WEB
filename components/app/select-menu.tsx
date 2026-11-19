@@ -75,6 +75,7 @@ export function SelectMenu({
         ref={triggerRef}
         type="button"
         aria-label={label}
+        title={current}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}

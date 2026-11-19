@@ -146,7 +146,7 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
             value={pendingId ?? restaurantId ?? ""}
             onChange={(id) => id && chooseRestaurant(id)}
             footer={(close) => <MenuLink href="/app/configuracion?seccion=restaurantes" label="Nuevo restaurante" close={close} />}
-            className="min-w-0 flex-1 sm:flex-none"
+            className="min-w-0 flex-1 sm:max-w-md sm:flex-none"
           />
           <SelectMenu
             icon={CalendarDays}

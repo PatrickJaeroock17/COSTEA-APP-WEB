@@ -74,15 +74,7 @@ async function Content({ searchParams }: Props) {
 
   // Resultado: ya hay precio de carta.
   if (sp.listo && dish.price) {
-    const now = quickPrice(perUnit, String(DEFAULT_FOOD_COST), r.igvRate, dish.price);
-    return (
-      <ResultView
-        dish={{ id: dish.id, name: dish.name, category: dish.menu_category, perUnit, pending: dish.cost.pricePending, current: dish.price }}
-        money={money}
-        suggested={{ gross: suggested.gross.toFixed(2), net: suggested.net.toFixed(2) }}
-        currentRatio={now.currentRatio ? `${now.currentRatio.times(100).toDecimalPlaces(1).toFixed()} %` : null}
-      />
-    );
+    return <ResultView dish={{ id: dish.id, name: dish.name, category: dish.menu_category, perUnit, pending: dish.cost.pricePending, current: dish.price }} money={money} />;
   }
 
   // Paso 3: el precio de carta, con el sugerido ya escrito.

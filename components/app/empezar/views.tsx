@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ChevronDown, CircleCheck, Sparkles } from "lucide-react";
-import { QuickPriceCard, type QuickDish } from "@/components/app/costos/quick-costs";
+import { FirstResult, type QuickDish } from "@/components/app/costos/quick-costs";
 import { FirstPriceForm, PickDishForm, StepHeader } from "@/components/app/empezar/steps";
 import { buttonVariants } from "@/components/ui/button";
 import { formatMoney } from "@/lib/format";
@@ -92,19 +92,7 @@ export function PriceView({ dishName, perUnit, productId, defaultAmount, suggest
 }
 
 /** Resultado del primer costo. */
-export function ResultView({
-  dish,
-  money,
-  suggested,
-  currentRatio,
-}: {
-  dish: QuickDish;
-  money: Money;
-  suggested: { gross: string; net: string };
-  currentRatio: string | null;
-}) {
-  const { currency } = money;
-  const perUnit = dish.perUnit!;
+export function ResultView({ dish, money }: { dish: QuickDish; money: Money }) {
   return (
       <>
         <div className="mb-8 flex items-start gap-3 rounded-3xl bg-success-soft p-5 sm:p-6" role="status">
@@ -115,30 +103,7 @@ export function ResultView({
           </div>
         </div>
 
-        <ul className="grid gap-4 sm:grid-cols-3">
-          <li className={cn(card, "p-5 sm:p-5")}>
-            <p className="text-base font-semibold text-muted-foreground">Costo de insumos por porción</p>
-            <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-heading">{formatMoney(perUnit, currency)}</p>
-          </li>
-          <li className={cn(card, "p-5 sm:p-5")}>
-            <p className="text-base font-semibold text-muted-foreground">Costo sobre el precio (food cost)</p>
-            <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-heading">
-              {currentRatio ?? "—"}
-            </p>
-            <p className="mt-1 text-base text-muted-foreground">De cada S/ 100 sin IGV, esto se va en insumos.</p>
-          </li>
-          <li className={cn(card, "p-5 sm:p-5")}>
-            <p className="text-base font-semibold text-muted-foreground">Precio sugerido (con IGV)</p>
-            <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-primary">{formatMoney(suggested.gross, currency)}</p>
-            <p className="mt-1 text-base text-muted-foreground">
-              Sin IGV: {formatMoney(suggested.net, currency)} · <span className="font-bold text-brand-700">solo insumos</span>
-            </p>
-          </li>
-        </ul>
-
-        <div className="mt-6">
-          <QuickPriceCard dish={dish} money={money} />
-        </div>
+        <FirstResult dish={dish} money={money} />
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/app/costos" className={cn(buttonVariants({ size: "lg" }), "h-auto min-h-14 max-w-full shrink whitespace-normal px-6 py-3 text-center text-lg")}>

@@ -206,6 +206,43 @@ export function QuickPriceCard({ dish, money, initialTarget }: { dish: QuickDish
   );
 }
 
+/** Resultado del primer costo: tres cifras y, debajo, el objetivo editable que mueve el precio sugerido. */
+export function FirstResult({ dish, money, initialTarget }: { dish: QuickDish; money: Money; initialTarget?: string }) {
+  const { raw, set, parsed } = useTarget(initialTarget);
+  const target = "value" in parsed ? parsed.value : String(DEFAULT_FOOD_COST);
+  const { currency, igvRate, igvLabel } = money;
+  const q = quickPrice(dish.perUnit!, target, igvRate, dish.current);
+  const tile = "rounded-3xl border border-line bg-card p-5";
+  return (
+    <>
+      <ul className="grid gap-4 sm:grid-cols-3">
+        <li className={tile}>
+          <p className="text-base font-semibold text-muted-foreground">Costo de insumos por porción</p>
+          <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-heading">{formatMoney(dish.perUnit!, currency)}</p>
+        </li>
+        <li className={tile}>
+          <p className="text-base font-semibold text-muted-foreground">Costo sobre el precio (food cost)</p>
+          <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-heading">{percentText(q.currentRatio)}</p>
+          <p className="mt-1 text-base text-muted-foreground">De cada S/ 100 sin IGV, esto se va en insumos.</p>
+        </li>
+        <li className={tile}>
+          <p className="text-base font-semibold text-muted-foreground">Precio sugerido (con IGV {igvLabel})</p>
+          <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-primary">{formatMoney(q.gross, currency)}</p>
+          <p className="mt-1 text-base text-muted-foreground">
+            Sin IGV: {formatMoney(q.net, currency)} · <span className="font-bold text-brand-700">solo insumos</span>
+          </p>
+        </li>
+      </ul>
+      <section aria-labelledby="objetivo-resultado" className="mt-4 rounded-3xl border border-line bg-card p-5 sm:p-6">
+        <h2 id="objetivo-resultado" className="sr-only">
+          Objetivo de costo de insumos
+        </h2>
+        <TargetField raw={raw} onChange={set} error={"error" in parsed ? parsed.error : undefined} />
+      </section>
+    </>
+  );
+}
+
 /** Enlace a subir de nivel, al pie de la vista de costo rápido. */
 export function MoreCostingHint() {
   return (

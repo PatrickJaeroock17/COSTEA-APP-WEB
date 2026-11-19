@@ -37,14 +37,14 @@ export function ActivateFullCosting({ onDone }: { onDone?: () => void }) {
         onClick={() => change(3, onDone)}
         disabled={pending}
         className={cn(
-          "flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-lime-500 px-4 text-body font-extrabold text-brand-900 transition-colors hover:bg-lime-400 disabled:cursor-wait disabled:opacity-70",
+          "flex min-h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-lime-500 px-3 text-body font-extrabold text-brand-900 transition-colors hover:bg-lime-400 disabled:cursor-wait disabled:opacity-70",
           focusRingDark,
         )}
       >
         {pending ? <Loader2 className="size-5 animate-spin" aria-hidden /> : <Sparkles className="size-5" aria-hidden />}
-        Activar costeo completo
+        Activar todo
       </button>
-      <p className="mt-2 text-small text-sidebar-icon">Se muestran todos los módulos. Tus datos no cambian y puedes volver cuando quieras.</p>
+      <p className="mt-2 text-small text-sidebar-icon">Activa el costeo completo: se muestran todos los módulos. Tus datos no cambian y puedes volver cuando quieras.</p>
       {error && (
         <p role="alert" className="mt-2 text-small font-semibold text-white">
           {error}
