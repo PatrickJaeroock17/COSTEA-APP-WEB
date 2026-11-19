@@ -4,6 +4,7 @@ import { ChevronRight, Tag } from "lucide-react";
 import { CreateRestaurant } from "@/components/app/create-restaurant";
 import { EmptyState, PageHeader } from "@/components/app/page-header";
 import { ActivatePlan, CreatePlanForm } from "@/components/app/costos/forms";
+import { MoreCostingHint, QuickCosts, type QuickDish } from "@/components/app/costos/quick-costs";
 import { PlanStatusBox } from "@/components/app/costos/status";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +12,8 @@ import { Table, TableBody, TableCell, TableEmpty, TableFooter, TableHead, TableH
 import { canEdit, getAppContext } from "@/lib/auth";
 import { D } from "@/lib/costing/decimal";
 import { evaluatePlan, getDishOptions, getPlans } from "@/lib/data/plan";
+import { getProductSummaries } from "@/lib/data/products";
+import { limaToday } from "@/lib/materials";
 import { formatDate, formatMoney, formatQty } from "@/lib/format";
 import { periodDates } from "@/lib/materials";
 import { PRICING_MODES } from "@/lib/pricing";
@@ -18,7 +21,7 @@ import { igvLabel } from "@/lib/restaurants";
 
 export const metadata = { title: "costea — Costo y precio por plato" };
 
-type Props = { searchParams: Promise<{ plan?: string; creado?: string }> };
+type Props = { searchParams: Promise<{ plan?: string; creado?: string; fc?: string }> };
 
 export default function CostosPage({ searchParams }: Props) {
   return (
@@ -36,6 +39,8 @@ async function Content({ searchParams }: Props) {
   const [sp, ctx] = await Promise.all([searchParams, getAppContext()]);
   if (!ctx.restaurant) return <CreateRestaurant name={ctx.user.name.split(" ")[0]} />;
   const r = ctx.restaurant;
+  // Niveles 1 y 2: costo rápido por plato, sin plan de producción (solo insumos).
+  if (r.costLevel < 3) return <QuickView sp={sp} restaurant={r} />;
   const period = ctx.period;
   const header = (
     <PageHeader
@@ -194,6 +199,37 @@ async function Content({ searchParams }: Props) {
           </TableFooter>
         </Table>
       </Card>
+    </>
+  );
+}
+
+async function QuickView({ sp, restaurant: r }: { sp: { fc?: string }; restaurant: NonNullable<Awaited<ReturnType<typeof getAppContext>>["restaurant"]> }) {
+  const products = (await getProductSummaries(r.id, limaToday())).filter((p) => p.active);
+  const dishes: QuickDish[] = products.map((p) => ({
+    id: p.id,
+    name: p.name,
+    category: p.menu_category,
+    perUnit: p.cost.perUnit ? p.cost.perUnit.toFixed() : null,
+    pending: p.cost.pricePending,
+    current: p.price,
+  }));
+  return (
+    <>
+      <PageHeader icon={Tag} title="Costo y precio por plato" text="Cuánto te cuesta cada plato con sus insumos y a qué precio venderlo." />
+      {dishes.length ? (
+        <QuickCosts dishes={dishes} money={{ currency: r.currency, igvRate: r.igvRate, igvLabel: igvLabel(r.igvRate) }} initialTarget={sp.fc} />
+      ) : (
+        <div className="mt-6">
+          <EmptyState title="Aún no tienes platos con receta" text="Trae un plato del catálogo con su receta lista o crea uno propio, y aquí verás su costo y precio.">
+            <Link href="/app/platos" className={buttonVariants({ size: "lg" })}>
+              Ir a Platos y recetas
+            </Link>
+          </EmptyState>
+        </div>
+      )}
+      <div className="mt-8">
+        <MoreCostingHint />
+      </div>
     </>
   );
 }

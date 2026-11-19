@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AlertTriangle, ArrowLeft, BookOpen, ChefHat, History, Pencil, Receipt, Scale } from "lucide-react";
+import { QuickPriceCard } from "@/components/app/costos/quick-costs";
 import { card } from "@/components/app/form";
 import { IngredientForm, ProductDataForm, ProductStatus, RemoveIngredient, SalePriceForm, ScaleForm } from "@/components/app/platos/recipe-forms";
 import { canEdit, getAppContext } from "@/lib/auth";
@@ -15,7 +16,7 @@ import { igvLabel } from "@/lib/restaurants";
 
 export const metadata = { title: "costea — Plato" };
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ version?: string; creado?: string; catalogo?: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ version?: string; creado?: string; catalogo?: string; fc?: string }> };
 
 export default function PlatoPage(props: Props) {
   return (
@@ -115,6 +116,16 @@ async function Detail({ params, searchParams }: Props) {
           note={net ? `Sin IGV ${formatMoney(net, r.currency)}${foodCost ? ` · food cost ${foodCost.times(100).toDecimalPlaces(1).toFixed()} %` : ""}` : "Fíjalo abajo o en la pestaña Precios."}
         />
       </div>
+
+      {isCurrent && (
+        <div className="mt-4">
+          <QuickPriceCard
+            dish={{ id: p.id, name: p.name, category: p.menu_category, perUnit: cost.perUnit ? cost.perUnit.toFixed() : null, pending: cost.pricePending, current: price }}
+            money={{ currency: r.currency, igvRate: r.igvRate, igvLabel: igvLabel(r.igvRate) }}
+            initialTarget={sp.fc}
+          />
+        </div>
+      )}
 
       {shortages.length > 0 && isCurrent && (
         <div className="mt-4 rounded-xl bg-warning-soft px-4 py-3 text-sm text-warning-text">
