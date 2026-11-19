@@ -30,31 +30,47 @@ const card = "rounded-3xl border border-line bg-card p-6 sm:p-8";
 /** El plato de ejemplo: un ceviche si el catálogo lo tiene; si no, el primero. */
 const exampleOf = (dishes: CatalogDish[]) => dishes.find((d) => /ceviche/i.test(d.name)) ?? dishes[0];
 
+/** Cada paso entra con un deslizamiento corto: la `key` remonta el bloque al cambiar de paso. */
 async function Content({ searchParams }: Props) {
+  const { step, node } = await resolve({ searchParams });
+  return (
+    <div key={step} className="enter-step">
+      {node}
+    </div>
+  );
+}
+
+async function resolve({ searchParams }: Props): Promise<{ step: string; node: React.ReactNode }> {
   const [sp, ctx] = await Promise.all([searchParams, getAppContext()]);
   const r = ctx.restaurant;
   const first = ctx.user.name.split(" ")[0];
 
   // Paso 1: el restaurante (solo el nombre). El mes de trabajo se crea solo junto con el restaurante.
   if (!r) {
-    return (
-      <>
-        <StepHeader step={1} />
-        <CreateRestaurant name={first} />
-        <p className="mt-4 text-base text-muted-foreground">Creamos también tu mes de trabajo, para que no tengas que hacerlo tú.</p>
-      </>
-    );
+    return {
+      step: "1",
+      node: (
+        <>
+          <StepHeader step={1} />
+          <CreateRestaurant name={first} />
+          <p className="mt-4 text-base text-muted-foreground">Creamos también tu mes de trabajo, para que no tengas que hacerlo tú.</p>
+        </>
+      ),
+    };
   }
   if (!canEdit(r.role)) {
-    return (
-      <div className={card}>
-        <h1 className="font-brand text-2xl font-extrabold text-heading">Solo puedes mirar este restaurante</h1>
-        <p className="mt-2 text-lg text-ink-soft">Pide al dueño o a un editor que cargue el primer plato.</p>
-        <Link href="/app" className={cn(buttonVariants({ size: "lg" }), "mt-6 h-14 px-6 text-lg")}>
-          Ir al inicio
-        </Link>
-      </div>
-    );
+    return {
+      step: "solo-lectura",
+      node: (
+        <div className={card}>
+          <h1 className="font-brand text-2xl font-extrabold text-heading">Solo puedes mirar este restaurante</h1>
+          <p className="mt-2 text-lg text-ink-soft">Pide al dueño o a un editor que cargue el primer plato.</p>
+          <Link href="/app" className={cn(buttonVariants({ size: "lg" }), "mt-6 h-14 px-6 text-lg")}>
+            Ir al inicio
+          </Link>
+        </div>
+      ),
+    };
   }
 
   const products = (await getProductSummaries(r.id, limaToday())).filter((p) => p.active && p.cost.perUnit);
@@ -65,7 +81,7 @@ async function Content({ searchParams }: Props) {
   if (!dish) {
     const catalog = await getCatalogDishes();
     const example = exampleOf(catalog);
-    return <ChooseDishView example={example} others={catalog.filter((d) => d.id !== example?.id)} blocked={r.currency !== "PEN"} />;
+    return { step: "2", node: <ChooseDishView example={example} others={catalog.filter((d) => d.id !== example?.id)} blocked={r.currency !== "PEN"} /> };
   }
 
   const perUnit = dish.cost.perUnit!.toFixed();
@@ -74,18 +90,21 @@ async function Content({ searchParams }: Props) {
 
   // Resultado: ya hay precio de carta.
   if (sp.listo && dish.price) {
-    return <ResultView dish={{ id: dish.id, name: dish.name, category: dish.menu_category, perUnit, pending: dish.cost.pricePending, current: dish.price }} money={money} />;
+    return { step: "4", node: <ResultView dish={{ id: dish.id, name: dish.name, category: dish.menu_category, perUnit, pending: dish.cost.pricePending, current: dish.price }} money={money} /> };
   }
 
   // Paso 3: el precio de carta, con el sugerido ya escrito.
-  return (
-    <PriceView
-      dishName={dish.name}
-      perUnit={perUnit}
-      productId={dish.id}
-      defaultAmount={dish.price ?? suggested.gross.toFixed(2)}
-      suggestedGross={suggested.gross.toFixed(2)}
-      money={money}
-    />
-  );
+  return {
+    step: "3",
+    node: (
+      <PriceView
+        dishName={dish.name}
+        perUnit={perUnit}
+        productId={dish.id}
+        defaultAmount={dish.price ?? suggested.gross.toFixed(2)}
+        suggestedGross={suggested.gross.toFixed(2)}
+        money={money}
+      />
+    ),
+  };
 }

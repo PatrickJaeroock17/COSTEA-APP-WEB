@@ -22,7 +22,9 @@ export function StepHeader({ step }: { step: 1 | 2 | 3 }) {
           const n = i + 1;
           return (
             <li key={label} className="flex-1" aria-current={n === step ? "step" : undefined}>
-              <span className={cn("block h-2.5 rounded-full", n < step ? "bg-primary" : n === step ? "bg-lime-500" : "bg-line")} />
+              <span className="relative block h-2.5 overflow-hidden rounded-full bg-line">
+                {n <= step && <span className={cn("bar-fill absolute inset-0 rounded-full", n < step ? "bg-primary" : "bg-lime-500")} style={{ animationDelay: n === step ? "0.15s" : "0s" }} />}
+              </span>
               <span className="sr-only">
                 {label}
                 {n < step ? " (listo)" : n === step ? " (paso actual)" : ""}

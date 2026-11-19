@@ -130,7 +130,7 @@ async function Content({ searchParams }: Props) {
         </div>
       )}
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:grid-cols-2">
+      <div className="cascade mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 print:grid-cols-2">
         {(
           [
             { k: "Ventas netas estimadas", v: formatMoney(t.sales, cur), n: `Sin IGV · ${result.rows.length} ${result.rows.length === 1 ? "plato" : "platos"} en el plan`, icon: Wallet },

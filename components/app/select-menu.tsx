@@ -106,7 +106,7 @@ export function SelectMenu({
           role="listbox"
           aria-label={label}
           onKeyDown={onListKey}
-          className="absolute left-0 top-full z-30 mt-2 max-h-72 min-w-full overflow-auto rounded-2xl border border-line bg-popover p-1.5 shadow-lift animate-in fade-in zoom-in-95 duration-150"
+          className="absolute left-0 top-full z-30 mt-2 max-h-72 min-w-full overflow-auto rounded-2xl border border-line bg-popover p-1.5 shadow-lift enter-pop origin-top"
         >
           {options.map((o) => (
             <li key={o.value} role="option" aria-selected={o.value === value}>

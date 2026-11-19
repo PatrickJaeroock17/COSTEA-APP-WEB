@@ -8,6 +8,7 @@ import { type HomeSummary, getHomeSummary } from "@/lib/data/home";
 import { formatMoney } from "@/lib/format";
 import { AlertTriangle, Check, Lock } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { ValueTicker } from "@/components/motion/value-ticker";
 import { cn } from "@/lib/utils";
 import { isVisibleAt } from "@/lib/cost-level";
 
@@ -173,7 +174,7 @@ async function Inicio() {
       </div>
 
       {level < 3 && home.dishes.withRecipe === 0 && (
-        <section className="mt-8 rounded-3xl border border-brand-600/30 bg-brand-50 p-6 sm:p-8" aria-labelledby="empieza">
+        <section className="enter-up mt-8 rounded-3xl border border-brand-600/30 bg-brand-50 p-6 sm:p-8" aria-labelledby="empieza">
           <h2 id="empieza" className="font-brand text-2xl font-extrabold text-heading sm:text-3xl">Tu primer costo en 3 pasos</h2>
           <p className="mt-2 max-w-2xl text-lg text-ink-soft">
             Elige un plato de ejemplo, escribe su precio y mira cuánto te cuesta. Toma menos de 5 minutos y no necesitas saber de contabilidad.
@@ -185,30 +186,30 @@ async function Inicio() {
       )}
 
       {level === 3 && (
-      <div className="mt-8 grid gap-4 md:grid-cols-3">
+      <div className="cascade mt-8 grid gap-4 md:grid-cols-3">
         {kpis.map((k) => (
           <div key={k.label} className={cn(card, "p-6")}>
             <p className="text-body font-medium text-muted-foreground">{k.label}</p>
-            <p className="mt-2 font-brand text-4xl font-extrabold tracking-title text-heading">{k.value}</p>
+            <p className="mt-2 font-brand text-4xl font-extrabold tracking-title text-heading"><ValueTicker id={`inicio-${k.label}`} text={k.value} /></p>
             <p className="mt-1.5 text-sm text-muted-foreground">{k.note}</p>
           </div>
         ))}
         <div className={cn(card, "p-6 md:col-span-3")}>
           <p className="text-body font-medium text-muted-foreground">Utilidad estimada</p>
-          <p className="mt-2 font-brand text-4xl font-extrabold tracking-title text-heading">{t ? formatMoney(t.profit, restaurant.currency) : "S/ 3,600"}</p>
+          <p className="mt-2 font-brand text-4xl font-extrabold tracking-title text-heading"><ValueTicker id="inicio-utilidad" text={t ? formatMoney(t.profit, restaurant.currency) : "S/ 3,600"} /></p>
           <p className="mt-1.5 text-sm text-muted-foreground">Ventas menos costos del mes</p>
         </div>
       </div>
       )}
 
-      <div className={cn("grid gap-6 lg:items-start", showAlerts && "lg:grid-cols-[1.5fr_1fr]", level === 3 ? "mt-6" : "mt-8")}>
+      <div className={cn("cascade grid gap-6 lg:items-start", showAlerts && "lg:grid-cols-[1.5fr_1fr]", level === 3 ? "mt-6" : "mt-8")}>
         <section className={cn(card, "p-6 sm:p-7")} aria-labelledby="config">
           <div className="flex items-center justify-between gap-4">
             <h2 id="config" className="font-brand text-2xl font-extrabold text-heading">{level === 3 ? "Configura tu restaurante" : "Tu primer costo, paso a paso"}</h2>
             <span className="text-sm font-bold text-primary">{done} de {steps.length} listos</span>
           </div>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={done}>
-            <div className="h-full rounded-full bg-primary" style={{ width: `${(done / steps.length) * 100}%` }} />
+            <div className="bar-slide h-full w-full rounded-full bg-primary" style={{ transform: `translateX(${-100 + (done / steps.length) * 100}%)` }} />
           </div>
           <ul className="mt-2 divide-y divide-line">
             {steps.map((s) => (

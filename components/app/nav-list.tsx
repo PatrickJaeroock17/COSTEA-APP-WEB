@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Lock, SlidersHorizontal } from "lucide-react";
 import { ActivateFullCosting } from "@/components/app/cost-level";
 import { type CostLevel, isVisibleAt } from "@/lib/cost-level";
@@ -19,6 +20,18 @@ export function NavList({ onNavigate, level = 3, editable = false }: { onNavigat
   const groups = NAV_GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => isVisibleAt(i.href, level)) })).filter((g) => g.items.length);
   const locked = NAV_GROUPS.flatMap((g) => g.items).filter((i) => !isVisibleAt(i.href, level));
 
+  // Módulos que acaban de dejar de estar bloqueados (p. ej. tras «Activar todo»): entran en cascada. La carga inicial no se anima.
+  const [prevLevel, setPrevLevel] = useState(level);
+  const [fresh, setFresh] = useState<string[]>([]);
+  if (level !== prevLevel) {
+    setPrevLevel(level);
+    setFresh(NAV_GROUPS.flatMap((g) => g.items).filter((i) => isVisibleAt(i.href, level) && !isVisibleAt(i.href, prevLevel)).map((i) => i.href));
+  }
+  const freshProps = (href: string) => {
+    const i = fresh.indexOf(href);
+    return i < 0 ? {} : { className: "enter-up", style: { animationDelay: `${i * 70}ms` } };
+  };
+
   return (
     <nav aria-label="Principal" className="space-y-5">
       {groups.map((g) => (
@@ -28,7 +41,7 @@ export function NavList({ onNavigate, level = 3, editable = false }: { onNavigat
             {g.items.map(({ href, label, icon: Icon }) => {
               const on = isActive(href);
               return (
-                <li key={href}>
+                <li key={href} {...freshProps(href)}>
                   <Link
                     href={href}
                     onClick={onNavigate}

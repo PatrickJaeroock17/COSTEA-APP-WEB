@@ -95,7 +95,7 @@ async function Content({ searchParams }: Props) {
 function MineTab({ products, archived, currency, igvRate, hasAny }: { products: ProductSummary[]; archived: boolean; currency: string; igvRate: string; hasAny: boolean }) {
   if (!hasAny) {
     return (
-      <EmptyState title="Aún no tienes platos" text="Trae un plato del catálogo con su receta lista o crea uno propio.">
+      <EmptyState icon={ChefHat} title="Aún no tienes platos" text="Trae un plato del catálogo con su receta lista o crea uno propio.">
         <Link href="/app/platos?tab=catalogo" className="inline-flex min-h-11 items-center rounded-xl bg-brand-600 px-5 text-sm font-extrabold text-white">
           Ver catálogo de platos
         </Link>
@@ -115,13 +115,13 @@ function MineTab({ products, archived, currency, igvRate, hasAny }: { products: 
       {!products.length ? (
         <p className="text-muted-foreground">{archived ? "No hay platos archivados." : "No hay platos activos."}</p>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="cascade grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => {
             const fc = foodCost(p, igvRate);
             const empty = !p.cost.lines.length;
             return (
               <li key={p.id}>
-                <Link href={`/app/platos/${p.id}`} className="flex h-full flex-col rounded-[24px] border border-line bg-white p-5 transition-shadow hover:shadow-[0_12px_30px_rgba(3,42,31,0.08)]">
+                <Link href={`/app/platos/${p.id}`} className="card-hover flex h-full flex-col rounded-[24px] border border-line bg-white p-5">
                   <span className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{p.menu_category ?? "Sin categoría"}</span>
                   <span className="mt-1 font-brand text-lg font-extrabold leading-snug text-heading">{p.name}</span>
                   <span className="mt-1 text-xs text-muted-foreground">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { AlertTriangle, ArrowRight, Info } from "lucide-react";
+import { ValueTicker } from "@/components/motion/value-ticker";
 import { buttonVariants } from "@/components/ui/button";
 import { fieldClass } from "@/components/ui/input";
 import { formatMoney } from "@/lib/format";
@@ -159,7 +160,7 @@ export function QuickCosts({ dishes, money, initialTarget }: { dishes: QuickDish
         <TargetField raw={raw} onChange={set} error={"error" in parsed ? parsed.error : undefined} />
       </section>
 
-      <ul className="space-y-4">
+      <ul className="cascade space-y-4">
         {dishes.map((d) => (
           <li key={d.id} className="rounded-3xl border border-line bg-card p-5 sm:p-6">
             <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
@@ -215,19 +216,19 @@ export function FirstResult({ dish, money, initialTarget }: { dish: QuickDish; m
   const tile = "rounded-3xl border border-line bg-card p-5";
   return (
     <>
-      <ul className="grid gap-4 sm:grid-cols-3">
+      <ul className="cascade grid gap-4 sm:grid-cols-3">
         <li className={tile}>
           <p className="text-base font-semibold text-muted-foreground">Costo de insumos por porción</p>
-          <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-heading">{formatMoney(dish.perUnit!, currency)}</p>
+          <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-heading"><ValueTicker id="primer-costo" text={formatMoney(dish.perUnit!, currency)} /></p>
         </li>
         <li className={tile}>
           <p className="text-base font-semibold text-muted-foreground">Costo sobre el precio (food cost)</p>
-          <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-heading">{percentText(q.currentRatio)}</p>
+          <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-heading"><ValueTicker id="primer-foodcost" text={percentText(q.currentRatio)} /></p>
           <p className="mt-1 text-base text-muted-foreground">De cada S/ 100 sin IGV, esto se va en insumos.</p>
         </li>
         <li className={tile}>
           <p className="text-base font-semibold text-muted-foreground">Precio sugerido (con IGV {igvLabel})</p>
-          <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-primary">{formatMoney(q.gross, currency)}</p>
+          <p className="mt-1 font-brand text-3xl font-extrabold tabular-nums text-primary"><ValueTicker id="primer-precio-sug" text={formatMoney(q.gross, currency)} /></p>
           <p className="mt-1 text-base text-muted-foreground">
             Sin IGV: {formatMoney(q.net, currency)} · <span className="font-bold text-brand-700">solo insumos</span>
           </p>

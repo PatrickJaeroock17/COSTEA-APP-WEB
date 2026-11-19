@@ -21,7 +21,7 @@ export function ChooseDishView({ example, others, blocked }: { example: DishChoi
         <p className="mt-3 text-lg text-ink-soft">Con un plato listo ves tu primer costo en menos de un minuto. Después puedes cambiar lo que quieras.</p>
 
         {example && !blocked ? (
-          <section className={cn(card, "mt-6 border-brand-600/30 bg-brand-50")} aria-labelledby="ejemplo">
+          <section className={cn(card, "enter-up mt-6 border-brand-600/30 bg-brand-50")} aria-labelledby="ejemplo">
             <p className="flex items-center gap-2 text-base font-bold text-brand-700">
               <Sparkles className="size-5" aria-hidden />
               Plato de ejemplo
@@ -96,7 +96,7 @@ export function ResultView({ dish, money }: { dish: QuickDish; money: Money }) {
   return (
       <>
         <div className="mb-8 flex items-start gap-3 rounded-3xl bg-success-soft p-5 sm:p-6" role="status">
-          <CircleCheck className="mt-0.5 size-7 shrink-0 text-primary" aria-hidden />
+          <CircleCheck className="pop-in mt-0.5 size-7 shrink-0 text-primary" aria-hidden />
           <div>
             <h1 className="font-brand text-2xl font-extrabold text-heading sm:text-3xl">¡Listo! Ya calculaste tu primer costo</h1>
             <p className="mt-1 text-lg text-ink-soft">{dish.name}</p>
@@ -105,7 +105,7 @@ export function ResultView({ dish, money }: { dish: QuickDish; money: Money }) {
 
         <FirstResult dish={dish} money={money} />
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="enter-up mt-8 flex flex-wrap gap-3" style={{ animationDelay: "0.25s" }}>
           <Link href="/app/costos" className={cn(buttonVariants({ size: "lg" }), "h-auto min-h-14 max-w-full shrink whitespace-normal px-6 py-3 text-center text-lg")}>
             Ver el costo de todos mis platos
             <ArrowRight className="size-5" aria-hidden />
