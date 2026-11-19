@@ -337,3 +337,21 @@
   [data-report-charts] [role="progressbar"] > div { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   [data-report-charts] { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
+
+/* Barra de scroll discreta para el menú lateral (sobre fondo oscuro): sin flechas ni pista, pulgar fino y redondeado.
+   En reposo casi no se ve; aparece al pasar el cursor o al hacer scroll sobre el contenedor. */
+.scrollbar-subtle {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.scrollbar-subtle:hover,
+.scrollbar-subtle:focus-within {
+  scrollbar-color: color-mix(in srgb, var(--color-sidebar-icon) 20%, transparent) transparent;
+}
+.scrollbar-subtle::-webkit-scrollbar { width: 6px; height: 6px; background: transparent; }
+.scrollbar-subtle::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-subtle::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+.scrollbar-subtle::-webkit-scrollbar-thumb { background-color: transparent; border-radius: 9999px; }
+.scrollbar-subtle:hover::-webkit-scrollbar-thumb,
+.scrollbar-subtle:focus-within::-webkit-scrollbar-thumb { background-color: color-mix(in srgb, var(--color-sidebar-icon) 20%, transparent); }
+.scrollbar-subtle::-webkit-scrollbar-thumb:hover { background-color: color-mix(in srgb, var(--color-sidebar-icon) 35%, transparent); }

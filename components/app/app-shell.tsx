@@ -111,7 +111,7 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
     <div className="min-h-screen bg-background text-foreground">
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-sidebar flex-col bg-sidebar px-4 pb-4 pt-6 lg:flex print:hidden">
         <Logo variant="dark" className="px-3" />
-        <div className="mt-8 flex-1 overflow-y-auto pr-1">
+        <div className="scrollbar-subtle mt-8 flex-1 overflow-y-auto pr-1">
           <NavList level={costLevel} editable={canChangeLevel} />
         </div>
         <UserCard user={user} />
@@ -127,7 +127,7 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
               <X className="size-5" aria-hidden />
             </button>
           </div>
-          <div className="mt-6 flex-1 overflow-y-auto pr-1">
+          <div className="scrollbar-subtle mt-6 flex-1 overflow-y-auto pr-1">
             <NavList onNavigate={() => setDrawer(false)} level={costLevel} editable={canChangeLevel} />
           </div>
           <UserCard user={user} onNavigate={() => setDrawer(false)} />
