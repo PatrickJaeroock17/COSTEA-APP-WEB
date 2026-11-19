@@ -847,14 +847,14 @@ isOneToOne: false
                   ]
                 },"restaurants": {
                   Row: {
-                    "active": boolean,"created_at": string,"currency": string,"default_tax_rate": number | null,"id": string,"igv_rate": number,"legal_name": string,"owner_id": string,"tax_id": string | null,"tax_id_kind": string,"trade_name": string | null,"updated_at": string
+                    "active": boolean,"cost_level": number,"created_at": string,"currency": string,"default_tax_rate": number | null,"id": string,"igv_rate": number,"legal_name": string,"owner_id": string,"tax_id": string | null,"tax_id_kind": string,"trade_name": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "active"?: boolean,"created_at"?: string,"currency"?: string,"default_tax_rate"?: number | null,"id"?: string,"igv_rate"?: number,"legal_name": string,"owner_id"?: string,"tax_id"?: string | null,"tax_id_kind"?: string,"trade_name"?: string | null,"updated_at"?: string
+                    "active"?: boolean,"cost_level"?: number,"created_at"?: string,"currency"?: string,"default_tax_rate"?: number | null,"id"?: string,"igv_rate"?: number,"legal_name": string,"owner_id"?: string,"tax_id"?: string | null,"tax_id_kind"?: string,"trade_name"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "active"?: boolean,"created_at"?: string,"currency"?: string,"default_tax_rate"?: number | null,"id"?: string,"igv_rate"?: number,"legal_name"?: string,"owner_id"?: string,"tax_id"?: string | null,"tax_id_kind"?: string,"trade_name"?: string | null,"updated_at"?: string
+                    "active"?: boolean,"cost_level"?: number,"created_at"?: string,"currency"?: string,"default_tax_rate"?: number | null,"id"?: string,"igv_rate"?: number,"legal_name"?: string,"owner_id"?: string,"tax_id"?: string | null,"tax_id_kind"?: string,"trade_name"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -928,6 +928,9 @@ isOneToOne: false
                            },
 "restaurant_money_data":
 { Args: { "rid": string }; Returns: boolean
+                           },
+"set_cost_level":
+{ Args: { "p_restaurant": string; "p_level": number }; Returns: number
                            },
 "category_prefix":
 { Args: { "category": string }; Returns: string

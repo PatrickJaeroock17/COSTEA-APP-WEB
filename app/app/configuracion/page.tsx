@@ -1,7 +1,8 @@
 ﻿import Link from "next/link";
 import { Suspense } from "react";
-import { Building2, CalendarDays, Lock, Ruler, Settings, Store } from "lucide-react";
+import { Building2, CalendarDays, Layers, Lock, Ruler, Settings, Store } from "lucide-react";
 import { CreateRestaurant } from "@/components/app/create-restaurant";
+import { LevelPicker } from "@/components/app/cost-level";
 import { card } from "@/components/app/form";
 import { RestaurantForm } from "@/components/app/settings/restaurant-form";
 import { PeriodForm } from "@/components/app/settings/period-form";
@@ -16,6 +17,7 @@ export const metadata = { title: "costea — Configuración" };
 
 const SECTIONS = [
   { key: "restaurante", label: "Restaurante", icon: Building2 },
+  { key: "nivel", label: "Nivel de costeo", icon: Layers },
   { key: "periodos", label: "Meses de trabajo", icon: CalendarDays },
   { key: "unidades", label: "Unidades", icon: Ruler },
   { key: "restaurantes", label: "Mis restaurantes", icon: Store },
@@ -90,6 +92,7 @@ async function Content({ searchParams }: Props) {
       </nav>
       <div className="mt-6">
         {section === "restaurante" && <RestaurantSection ctx={ctx} created={creado === "1"} />}
+        {section === "nivel" && <LevelSection ctx={ctx} />}
         {section === "periodos" && <PeriodsSection ctx={ctx} />}
         {section === "unidades" && <UnitsSection ctx={ctx} />}
         {section === "restaurantes" && <RestaurantsSection ctx={ctx} />}
@@ -137,6 +140,20 @@ async function RestaurantSection({ ctx, created }: { ctx: AppContext; created: b
         currencyLocked={Boolean(locked)}
         initial={{ legalName: r.legalName, tradeName: r.tradeName ?? "", taxIdKind: r.taxIdKind, taxId: r.taxId ?? "", currency: r.currency, igvRate: r.igvRate }}
       />
+    </SectionCard>
+  );
+}
+
+function LevelSection({ ctx }: { ctx: AppContext }) {
+  const r = ctx.restaurant!;
+  const editable = canEdit(r.role);
+  return (
+    <SectionCard
+      title="Nivel de costeo"
+      text="Elige cuántas herramientas ver en el menú. Cambiar de nivel solo muestra u oculta módulos: tus datos y tus cálculos no cambian, y puedes volver cuando quieras."
+    >
+      {!editable && <ReadOnlyNote>Solo el dueño o un editor puede cambiar el nivel.</ReadOnlyNote>}
+      <LevelPicker level={r.costLevel} readOnly={!editable} />
     </SectionCard>
   );
 }

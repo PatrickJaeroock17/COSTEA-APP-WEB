@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { PERIOD_COOKIE, RESTAURANT_COOKIE, canEdit, getAppContext, getUser } from "@/lib/auth";
+import { parseCostLevel } from "@/lib/cost-level";
 import { parseIgvRate, parseMonthKey, validateRestaurant } from "@/lib/restaurants";
 import { createClient } from "@/lib/supabase/server";
 
@@ -197,4 +198,18 @@ export async function saveUnits(_prev: WorkspaceState, fd: FormData): Promise<Wo
   if (error) return { error: dbError(error, "No pudimos guardar las unidades.") };
   refresh();
   return { message: "Unidades guardadas." };
+}
+
+
+/** Cambia el nivel de costeo del restaurante activo (presentación: no altera cálculos ni datos). */
+export async function setCostLevel(level: number): Promise<{ error?: string }> {
+  await requireUser();
+  const { restaurant } = await getAppContext();
+  if (!restaurant) return { error: "Primero crea tu restaurante." };
+  if (!canEdit(restaurant.role)) return { error: "Solo el dueño o un editor puede cambiar el nivel de costeo." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_cost_level", { p_restaurant: restaurant.id, p_level: parseCostLevel(level) });
+  if (error) return { error: dbError(error, "No pudimos cambiar el nivel. Inténtalo otra vez.") };
+  refresh();
+  return {};
 }

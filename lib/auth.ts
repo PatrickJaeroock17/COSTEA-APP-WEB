@@ -3,6 +3,7 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { type CostLevel, parseCostLevel } from "@/lib/cost-level";
 import { displayName, periodLabel } from "@/lib/restaurants";
 
 export const RESTAURANT_COOKIE = "costea_restaurante";
@@ -21,6 +22,8 @@ export type ActiveRestaurant = {
   currency: string;
   /** Tasa de IGV del restaurante como fracción exacta ("0.180000"). */
   igvRate: string;
+  /** Nivel de costeo: 1 rápido, 2 con mi tiempo, 3 completo (solo presentación). */
+  costLevel: CostLevel;
   role: Role;
 };
 export type AppContext = {
@@ -56,7 +59,7 @@ export const getAppContext = cache(async (): Promise<AppContext> => {
     supabase.from("profiles").select("name").eq("id", user.id).maybeSingle(),
     supabase
       .from("restaurants")
-      .select("id, legal_name, trade_name, tax_id_kind, tax_id, currency, igv_rate::text")
+      .select("id, legal_name, trade_name, tax_id_kind, tax_id, currency, igv_rate::text, cost_level")
       .eq("active", true)
       .order("created_at"),
   ]);
@@ -87,6 +90,7 @@ export const getAppContext = cache(async (): Promise<AppContext> => {
       taxId: active.tax_id,
       currency: active.currency,
       igvRate: (active as unknown as { igv_rate: string }).igv_rate,
+      costLevel: parseCostLevel((active as unknown as { cost_level: number }).cost_level),
       role: (member?.role as Role) ?? "viewer",
     };
     periods = (periodRows ?? []).map((p) => ({

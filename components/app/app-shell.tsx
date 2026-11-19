@@ -9,6 +9,7 @@ import { NavList } from "@/components/app/nav-list";
 import { SelectMenu } from "@/components/app/select-menu";
 import { signOut } from "@/lib/actions/auth";
 import { selectPeriod, selectRestaurant } from "@/lib/actions/workspace";
+import type { CostLevel } from "@/lib/cost-level";
 import { SETTINGS_ITEM } from "@/lib/nav";
 import { cn, focusRing, focusRingDark } from "@/lib/utils";
 
@@ -20,6 +21,9 @@ export type ShellProps = {
   periodId: number | null;
   /** Mostrar la insignia «Cifras de ejemplo» (el mes no tiene plan con cálculo completo). */
   sampleData: boolean;
+  /** Nivel de costeo del restaurante y si el usuario puede cambiarlo. */
+  costLevel: CostLevel;
+  canChangeLevel: boolean;
 };
 
 function MenuLink({ href, label, close }: { href: string; label: string; close: () => void }) {
@@ -53,7 +57,7 @@ function UserCard({ user, onNavigate }: { user: ShellProps["user"]; onNavigate?:
     </div>
   );
 }
-export function AppShell({ children, user, restaurants, restaurantId, periods, periodId, sampleData }: ShellProps & { children: React.ReactNode }) {
+export function AppShell({ children, user, restaurants, restaurantId, periods, periodId, sampleData, costLevel, canChangeLevel }: ShellProps & { children: React.ReactNode }) {
   const router = useRouter();
   const [drawer, setDrawer] = useState(false);
   const [, startTransition] = useTransition();
@@ -108,7 +112,7 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-sidebar flex-col bg-sidebar px-4 pb-4 pt-6 lg:flex print:hidden">
         <Logo variant="dark" className="px-3" />
         <div className="mt-8 flex-1 overflow-y-auto pr-1">
-          <NavList />
+          <NavList level={costLevel} editable={canChangeLevel} />
         </div>
         <UserCard user={user} />
       </aside>
@@ -124,7 +128,7 @@ export function AppShell({ children, user, restaurants, restaurantId, periods, p
             </button>
           </div>
           <div className="mt-6 flex-1 overflow-y-auto pr-1">
-            <NavList onNavigate={() => setDrawer(false)} />
+            <NavList onNavigate={() => setDrawer(false)} level={costLevel} editable={canChangeLevel} />
           </div>
           <UserCard user={user} onNavigate={() => setDrawer(false)} />
         </aside>

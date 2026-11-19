@@ -3,11 +3,13 @@ import { Suspense } from "react";
 import { CreateRestaurant } from "@/components/app/create-restaurant";
 import { getAppContext } from "@/lib/auth";
 import { D } from "@/lib/costing/decimal";
+import type { CostLevel } from "@/lib/cost-level";
 import { type HomeSummary, getHomeSummary } from "@/lib/data/home";
 import { formatMoney } from "@/lib/format";
 import { AlertTriangle, Check, Lock } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { isVisibleAt } from "@/lib/cost-level";
 
 // Caso de comprobación de GUIA_RAPIDA.md: se muestra como ejemplo mientras el mes no tiene un plan con cálculo completo.
 const EXAMPLE = [
@@ -33,10 +35,11 @@ const pct = (d: InstanceType<typeof D> | null) => (d ? `${d.times(100).toDecimal
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
 /** Pasos de configuración a partir del resumen real del mes. */
-function buildSteps(h: HomeSummary, currency: string): Step[] {
+function buildSteps(h: HomeSummary, currency: string, level: CostLevel): Step[] {
   const raw: Omit<Step, "state" | "n">[] = [];
   const doneFlags: boolean[] = [];
   const add = (title: string, href: string, done: boolean, text: string) => {
+    if (!isVisibleAt(href, level)) return; // Solo los pasos de los módulos del nivel de costeo.
     raw.push({ title, href, text });
     doneFlags.push(done);
   };
@@ -75,12 +78,16 @@ function buildSteps(h: HomeSummary, currency: string): Step[] {
   add(
     "Costo y precio por plato",
     "/app/costos",
-    h.calculable,
-    h.calculable
-      ? "Cálculo completo con el plan del mes"
-      : h.plan
-        ? plural(h.plan.issues.length, "pendiente en el cálculo", "pendientes en el cálculo")
-        : "Se calcula con el plan del mes",
+    level < 3 ? h.dishes.withRecipe > 0 && h.materials.priced > 0 : h.calculable,
+    level < 3
+      ? h.dishes.withRecipe > 0
+        ? "Costo por porción y precio de carta de tus platos"
+        : "Se calcula cuando tu plato tiene receta"
+      : h.calculable
+        ? "Cálculo completo con el plan del mes"
+        : h.plan
+          ? plural(h.plan.issues.length, "pendiente en el cálculo", "pendientes en el cálculo")
+          : "Se calcula con el plan del mes",
   );
   add(
     "Plan de producción",
@@ -93,9 +100,9 @@ function buildSteps(h: HomeSummary, currency: string): Step[] {
 }
 
 /** Avisos solo cuando el dato real lo justifica. */
-function buildAlerts(h: HomeSummary): Alert[] {
+function buildAlerts(h: HomeSummary, level: CostLevel): Alert[] {
   const alerts: Alert[] = [];
-  if (h.period && !h.expenses.salesExpense && !h.expenses.noExpensesDeclared) {
+  if (level === 3 && h.period && !h.expenses.salesExpense && !h.expenses.noExpensesDeclared) {
     alerts.push({ tone: "warn", title: "Gastos de ventas sin registrar", text: "El costo completo por plato queda incompleto hasta registrarlos." });
   }
   if (h.materials.withoutPrice + h.materials.planPriceIssues.length > 0) {
@@ -110,10 +117,10 @@ function buildAlerts(h: HomeSummary): Alert[] {
         .join(" "),
     });
   }
-  if (h.plan && h.plan.status !== "calculable") {
+  if (level === 3 && h.plan && h.plan.status !== "calculable") {
     alerts.push({ tone: "warn", title: "El plan del mes tiene pendientes", text: h.plan.issues.slice(0, 2).join(" ") || "Revisa el plan de producción." });
   }
-  if (h.staff.active) {
+  if (level >= 2 && h.staff.active) {
     alerts.push(
       h.staff.missing.length
         ? { tone: "warn", title: "Personal sin costo del mes", text: `Falta: ${h.staff.missing.join(", ")}.` }
@@ -128,9 +135,11 @@ async function Inicio() {
   const { user, restaurant } = ctx;
   if (!restaurant) return <CreateRestaurant name={user.name.split(" ")[0]} />;
   const home = await getHomeSummary(ctx);
-  const steps = buildSteps(home, restaurant.currency);
+  const level = restaurant.costLevel;
+  const steps = buildSteps(home, restaurant.currency, level);
   const done = steps.filter((s) => s.state === "done").length;
-  const alerts = buildAlerts(home);
+  const alerts = buildAlerts(home, level);
+  const showAlerts = level === 3 || alerts.length > 0;
   const next = steps.find((s) => s.state !== "done");
   const t = home.calculable ? home.totals! : null;
   const kpis = t
@@ -152,7 +161,7 @@ async function Inicio() {
           <h1 className="font-brand text-4xl font-extrabold tracking-display text-heading sm:text-5xl">Hola, {user.name.split(" ")[0]}</h1>
           <p className="mt-2 text-lg text-muted-foreground">
             Así va el costeo de tu restaurante{home.period ? ` en ${home.period.label}` : " este mes"}.
-            {!t && <span className="text-sm"> (Cifras de ejemplo hasta completar el plan del mes.)</span>}
+            {!t && level === 3 && <span className="text-sm"> (Cifras de ejemplo hasta completar el plan del mes.)</span>}
           </p>
         </div>
         <Link
@@ -163,6 +172,7 @@ async function Inicio() {
         </Link>
       </div>
 
+      {level === 3 && (
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         {kpis.map((k) => (
           <div key={k.label} className={cn(card, "p-6")}>
@@ -177,11 +187,12 @@ async function Inicio() {
           <p className="mt-1.5 text-sm text-muted-foreground">Ventas menos costos del mes</p>
         </div>
       </div>
+      )}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:items-start">
+      <div className={cn("grid gap-6 lg:items-start", showAlerts && "lg:grid-cols-[1.5fr_1fr]", level === 3 ? "mt-6" : "mt-8")}>
         <section className={cn(card, "p-6 sm:p-7")} aria-labelledby="config">
           <div className="flex items-center justify-between gap-4">
-            <h2 id="config" className="font-brand text-2xl font-extrabold text-heading">Configura tu restaurante</h2>
+            <h2 id="config" className="font-brand text-2xl font-extrabold text-heading">{level === 3 ? "Configura tu restaurante" : "Tu primer costo, paso a paso"}</h2>
             <span className="text-sm font-bold text-primary">{done} de {steps.length} listos</span>
           </div>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={done}>
@@ -214,6 +225,7 @@ async function Inicio() {
           </ul>
         </section>
 
+        {showAlerts && (
         <section className={cn(card, "p-6 sm:p-7")} aria-labelledby="atencion">
           <h2 id="atencion" className="font-brand text-2xl font-extrabold text-heading">Requiere tu atención</h2>
           <ul className="mt-5 space-y-3">
@@ -232,6 +244,7 @@ async function Inicio() {
             ))}
           </ul>
         </section>
+        )}
       </div>
     </div>
   );
