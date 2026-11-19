@@ -69,7 +69,7 @@ async function Content({ searchParams }: Props) {
           </CardHeader>
           <CardContent>
             {!dishes.length ? (
-              <EmptyState title="Aún no hay platos con receta" text="Crea o trae platos en Platos y recetas.">
+              <EmptyState icon={Tag} title="Aún no hay platos con receta" text="Crea o trae platos en Platos y recetas.">
                 <Link href="/app/platos" className={buttonVariants({ size: "lg" })}>
                   Ir a Platos y recetas
                 </Link>
@@ -220,7 +220,7 @@ async function QuickView({ sp, restaurant: r }: { sp: { fc?: string }; restauran
         <QuickCosts dishes={dishes} money={{ currency: r.currency, igvRate: r.igvRate, igvLabel: igvLabel(r.igvRate) }} initialTarget={sp.fc} />
       ) : (
         <div className="mt-6">
-          <EmptyState title="Aún no tienes platos con receta" text="Trae un plato del catálogo con su receta lista o crea uno propio, y aquí verás su costo y precio.">
+          <EmptyState icon={Tag} title="Aún no tienes platos con receta" text="Trae un plato del catálogo con su receta lista o crea uno propio, y aquí verás su costo y precio.">
             <Link href="/app/platos" className={buttonVariants({ size: "lg" })}>
               Ir a Platos y recetas
             </Link>

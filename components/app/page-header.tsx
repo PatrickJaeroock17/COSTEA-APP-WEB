@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import { Sparkles, type LucideIcon } from "lucide-react";
 
 /** Encabezado de módulo: mosaico de icono, título, texto y acciones a la derecha (DESIGN.md §2 y §7). */
 export function PageHeader({
@@ -29,12 +29,15 @@ export function PageHeader({
 }
 
 /** Estado vacío con llamada a la acción. */
-export function EmptyState({ title, text, children }: { title: string; text?: string; children?: React.ReactNode }) {
+export function EmptyState({ title, text, icon: Icon = Sparkles, children }: { title: string; text?: string; icon?: LucideIcon; children?: React.ReactNode }) {
   return (
-    <div className="rounded-3xl border border-dashed border-brand-600/30 bg-white px-6 py-10 text-center">
+    <div className="rounded-3xl border border-dashed border-brand-600/30 bg-white px-6 py-12 text-center">
+      <span className="mx-auto mb-4 grid size-16 place-items-center rounded-2xl bg-brand-100 text-brand-600">
+        <Icon className="size-8" aria-hidden />
+      </span>
       <p className="font-brand text-lg font-extrabold text-heading">{title}</p>
       {text && <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{text}</p>}
-      {children && <div className="mt-5 flex justify-center gap-2">{children}</div>}
+      {children && <div className="mt-6 flex flex-wrap justify-center gap-2">{children}</div>}
     </div>
   );
 }

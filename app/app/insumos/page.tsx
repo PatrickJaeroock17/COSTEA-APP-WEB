@@ -155,7 +155,7 @@ function MineSection({
 
       {!summaries.length ? (
         <div className="mt-6">
-          <EmptyState title="Aún no tienes insumos" text="Agrégalos desde el catálogo general o crea uno propio con su precio.">
+          <EmptyState icon={Package} title="Aún no tienes insumos" text="Agrégalos desde el catálogo general o crea uno propio con su precio.">
             <Link href="/app/insumos?tab=catalogo" className="inline-flex min-h-11 items-center rounded-xl bg-brand-600 px-5 text-sm font-extrabold text-white">
               Ver catálogo general
             </Link>
