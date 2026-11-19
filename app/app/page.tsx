@@ -2,7 +2,10 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CreateRestaurant } from "@/components/app/create-restaurant";
 import { getAppContext } from "@/lib/auth";
-import { D } from "@/lib/costing/decimal";
+import { D, sum } from "@/lib/costing/decimal";
+import { getProductSummaries } from "@/lib/data/products";
+import { limaToday } from "@/lib/materials";
+import { DEFAULT_FOOD_COST, percentText, quickPrice } from "@/lib/quick-price";
 import type { CostLevel } from "@/lib/cost-level";
 import { type HomeSummary, getHomeSummary } from "@/lib/data/home";
 import { formatMoney } from "@/lib/format";
@@ -143,6 +146,18 @@ async function Inicio() {
   const showAlerts = level === 3 || alerts.length > 0;
   const next = steps.find((s) => s.state !== "done");
   const t = home.calculable ? home.totals! : null;
+
+  // Resumen de platos (solo insumos, igual que Costo y precio): aparece con los 3 pasos listos y al menos un plato costeado.
+  const costed = level < 3 && steps.length > 0 && done === steps.length ? (await getProductSummaries(restaurant.id, limaToday())).filter((p) => p.active && p.cost.perUnit) : [];
+  const ratios = costed.map((p) => quickPrice(p.cost.perUnit!, String(DEFAULT_FOOD_COST), restaurant.igvRate, p.price).currentRatio).filter((x) => x !== null);
+  const priciest = costed.reduce<(typeof costed)[number] | null>((m, p) => (!m || p.cost.perUnit!.gt(m.cost.perUnit!) ? p : m), null);
+  const dishStats = costed.length
+    ? [
+        { label: "Platos costeados", id: "platos", text: String(costed.length), note: "Con receta y precio de insumos" },
+        { label: "Food cost promedio", id: "fc", text: ratios.length ? percentText(sum(ratios).div(ratios.length)) : "—", note: ratios.length ? "Insumos sobre el precio sin IGV" : "Fija el precio de carta de tus platos" },
+        { label: "Plato con mayor costo de insumos", id: "max", text: formatMoney(priciest!.cost.perUnit, restaurant.currency), note: priciest!.name },
+      ]
+    : [];
   const kpis = t
     ? [
         { label: "Ventas netas del mes", value: formatMoney(t.sales, restaurant.currency), note: `Sin IGV · ${home.plan!.name}` },
@@ -172,6 +187,20 @@ async function Inicio() {
           {next ? `Continuar: ${next.title.toLowerCase()}` : "Ver costo y precio"}
         </Link>
       </div>
+
+      {dishStats.length > 0 && (
+        <div className="cascade mt-8 grid gap-4 md:grid-cols-3">
+          {dishStats.map((k) => (
+            <div key={k.id} className={cn(card, "p-6")}>
+              <p className="text-body font-medium text-muted-foreground">{k.label}</p>
+              <p className="mt-2 font-brand text-4xl font-extrabold tracking-title text-heading">
+                <ValueTicker id={`inicio-plato-${k.id}`} text={k.text} />
+              </p>
+              <p className="mt-1.5 truncate text-sm text-muted-foreground">{k.note}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {level < 3 && home.dishes.withRecipe === 0 && (
         <section className="enter-up mt-8 rounded-3xl border border-brand-600/30 bg-brand-50 p-6 sm:p-8" aria-labelledby="empieza">

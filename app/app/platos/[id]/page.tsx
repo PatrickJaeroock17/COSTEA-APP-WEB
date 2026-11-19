@@ -85,7 +85,7 @@ async function Detail({ params, searchParams }: Props) {
             Versión {version.number} · {formatDate(version.created_at)}
           </span>
           <span className="rounded-full bg-card px-3 py-1 font-semibold text-ink-soft">
-            Rinde {portions} {portions === "1" ? "porción" : "porciones"}
+            Rinde {portions} {Number(portions) === 1 ? "porción" : "porciones"}
           </span>
           {p.source_key && <span className="rounded-full bg-brand-50 px-3 py-1 font-semibold text-brand-700">Receta del catálogo</span>}
           {!p.active && <span className="rounded-full bg-field px-3 py-1 font-bold text-muted-foreground">Archivado</span>}
@@ -155,7 +155,7 @@ async function Detail({ params, searchParams }: Props) {
       )}
 
       <div className="mt-6">
-        <Section icon={ChefHat} title="Receta" text={`Cantidades para ${portions} ${portions === "1" ? "porción" : "porciones"}. Los importes no se redondean línea por línea.`}>
+        <Section icon={ChefHat} title="Receta" text={`Cantidades para ${portions} ${Number(portions) === 1 ? "porción" : "porciones"}. Los importes no se redondean línea por línea.`}>
           {cost.lines.length ? (
             <div className="-mx-5 overflow-x-auto px-5 sm:-mx-7 sm:px-7">
               <table className="w-full min-w-[780px] text-sm">

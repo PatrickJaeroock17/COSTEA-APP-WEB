@@ -55,7 +55,7 @@ async function Content({ searchParams }: Props) {
 
   return (
     <>
-      <PageHeader icon={ChefHat} title="Platos y recetas" text="Cada cambio en una receta crea una versión nueva; las anteriores se conservan. El costo de materiales usa el promedio del kardex cuando existe.">
+      <PageHeader icon={ChefHat} title="Platos y recetas" text="Cada cambio en una receta crea una versión nueva; las anteriores se conservan. El costo usa el precio promedio de tus compras cuando las registras.">
         {editable && <NewProduct categories={categories} />}
       </PageHeader>
       {params.eliminado && (
@@ -125,7 +125,7 @@ function MineTab({ products, archived, currency, igvRate, hasAny }: { products: 
                   <span className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{p.menu_category ?? "Sin categoría"}</span>
                   <span className="mt-1 font-brand text-lg font-extrabold leading-snug text-heading">{p.name}</span>
                   <span className="mt-1 text-xs text-muted-foreground">
-                    Versión {p.version.number} · rinde {formatQty(p.version.output_quantity)} {p.version.output_quantity === "1" ? "porción" : "porciones"}
+                    Versión {p.version.number} · rinde {formatQty(p.version.output_quantity)} {new D(p.version.output_quantity).eq(1) ? "porción" : "porciones"}
                     {p.source_key ? " · del catálogo" : ""}
                   </span>
                   <span className="mt-4 flex-1" />
