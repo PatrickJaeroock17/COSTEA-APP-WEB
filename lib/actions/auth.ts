@@ -31,6 +31,8 @@ function translate(message: string) {
   if (m.includes("provider is not enabled") || m.includes("unsupported provider"))
     return "El ingreso con Google aún no está activado en Supabase.";
   if (m.includes("same password") || m.includes("different from the old")) return "La nueva contraseña debe ser distinta de la anterior.";
+  // Mensaje no reconocido: se registra en el servidor (sin datos del usuario) para poder diagnosticarlo en los logs.
+  console.error("[auth] error sin traducir:", message);
   return "No pudimos completar la operación. Inténtalo otra vez.";
 }
 
