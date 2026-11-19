@@ -355,3 +355,50 @@
 .scrollbar-subtle:hover::-webkit-scrollbar-thumb,
 .scrollbar-subtle:focus-within::-webkit-scrollbar-thumb { background-color: color-mix(in srgb, var(--color-sidebar-icon) 20%, transparent); }
 .scrollbar-subtle::-webkit-scrollbar-thumb:hover { background-color: color-mix(in srgb, var(--color-sidebar-icon) 35%, transparent); }
+
+/* ── Movimiento del acceso y de la app (solo transform y opacity) ── */
+
+/* Aurora del acceso: tres manchas que derivan muy lento (20–30 s). Pausada fuera de pantalla por InView. */
+@keyframes aurora-a { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(9%, 7%, 0) scale(1.12); } }
+@keyframes aurora-b { from { transform: translate3d(0, 0, 0) scale(1.05); } to { transform: translate3d(-10%, 9%, 0) scale(0.94); } }
+@keyframes aurora-c { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(8%, -8%, 0) scale(1.1); } }
+.aurora-drift-a { animation: aurora-a 24s ease-in-out infinite alternate; will-change: transform; }
+.aurora-drift-b { animation: aurora-b 28s ease-in-out infinite alternate; will-change: transform; }
+.aurora-drift-c { animation: aurora-c 21s ease-in-out infinite alternate; will-change: transform; }
+
+/* Entradas cortas: fade + subida. Funcionan sin JS y no dejan nada oculto si la animación no corre. */
+@keyframes enter-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes enter-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes enter-pop { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: none; } }
+.enter-up { animation: enter-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.enter-fade { animation: enter-fade 0.2s ease-out both; }
+.enter-pop { animation: enter-pop 0.15s ease-out both; }
+@keyframes enter-slide { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@keyframes pop-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+@keyframes fill-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* Contenido de cada página de /app (template.tsx): fade + 8 px, 220 ms. El menú no se anima. */
+.enter-page { animation: enter-page 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes enter-page { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.enter-step { animation: enter-slide 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.pop-in { animation: pop-in 0.4s cubic-bezier(0.34, 1.4, 0.64, 1) 0.15s both; }
+@keyframes bar-slide { from { transform: translateX(-100%); } }
+.bar-slide { animation: bar-slide 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both; }
+.bar-fill { transform-origin: left; animation: fill-x 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+/* Cascada de tarjetas: hijos directos de la rejilla, 60 ms entre sí (máx. 8). Solo tarjetas, nunca filas de tablas. */
+.cascade > * { animation: enter-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.cascade > :nth-child(2) { animation-delay: 60ms; }
+.cascade > :nth-child(3) { animation-delay: 120ms; }
+.cascade > :nth-child(4) { animation-delay: 180ms; }
+.cascade > :nth-child(5) { animation-delay: 240ms; }
+.cascade > :nth-child(6) { animation-delay: 300ms; }
+.cascade > :nth-child(n + 7) { animation-delay: 360ms; }
+/* Tarjetas clicables: realce de borde y sombra, sin mover nada */
+.card-hover { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+@media (hover: hover) { .card-hover:hover { border-color: color-mix(in oklab, var(--color-brand-600) 35%, transparent); box-shadow: var(--shadow-lift); } }
+/* Diálogos nativos: aparecen con fade + escala 0.98 */
+dialog[open] { animation: enter-pop 0.2s ease-out both; }
+dialog[open]::backdrop { animation: enter-fade 0.2s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .aurora-drift-a, .aurora-drift-b, .aurora-drift-c, .enter-up, .enter-fade, .enter-pop, .enter-page, .enter-step, .pop-in, .bar-fill, .bar-slide,
+  .cascade > *, dialog[open], dialog[open]::backdrop { animation: none; }
+}

@@ -76,7 +76,7 @@ export function FormAlert({ error, message }: { error?: string; message?: string
   return (
     <p
       role={error ? "alert" : "status"}
-      className={cn("flex items-start gap-2 rounded-xl px-4 py-3 text-sm leading-snug", error ? "bg-danger-soft text-danger-text" : "bg-success-soft text-success-text")}
+      className={cn("enter-fade flex items-start gap-2 rounded-xl px-4 py-3 text-sm leading-snug", error ? "bg-danger-soft text-danger-text" : "bg-success-soft text-success-text")}
     >
       {error ? <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden /> : <CheckCircle2 className="mt-0.5 size-4 shrink-0" aria-hidden />}
       {error ?? message}

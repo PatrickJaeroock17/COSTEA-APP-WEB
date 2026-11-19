@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowLeft, MousePointer2 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { ChefScrub } from "@/components/landing/chef-scrub";
-import { DotGrid } from "@/components/landing/decor";
+import { Aurora, DotGrid } from "@/components/landing/decor";
+import { InView } from "@/components/motion/in-view";
 import { cn } from "@/lib/utils";
 
 /** Foco del enlace que va sobre la foto: anillo blanco con separación oscura, visible sobre cualquier parte de la imagen. */
@@ -24,8 +25,11 @@ export function AuthCard({
     // data-chef-area: el chef sigue al cursor en toda la pantalla.
     // Fondo verde oscuro con degradado radial y puntos tenues; la tarjeta blanca va encima (DESIGN.md §13).
     <main data-chef-area className="surface-dark relative isolate flex min-h-screen items-center justify-center p-2.5 sm:p-8">
+      <InView className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <Aurora tone="dark" drift className="opacity-80" />
+      </InView>
       <DotGrid tone="dark" className="-z-10" />
-      <div className="grid w-full max-w-260 overflow-hidden rounded-5xl bg-card p-2.5 shadow-deep ring-1 ring-white/10 sm:p-3 md:grid-cols-[1.05fr_1fr]">
+      <div className="enter-up grid w-full max-w-260 overflow-hidden rounded-5xl bg-card p-2.5 shadow-deep ring-1 ring-white/10 sm:p-3 md:grid-cols-[1.05fr_1fr]">
         <div className="relative h-40 overflow-hidden rounded-3xl bg-brand-800 sm:h-64 md:h-auto md:min-h-155">
           <ChefScrub className="absolute inset-0 [&_img]:object-[50%_26%] md:[&_img]:object-[50%_15%]" center={0.33} posX={0.46} fade={false} desktopOnly />
           <div aria-hidden className="absolute inset-0 bg-linear-to-t from-brand-900/85 via-brand-900/10 to-transparent" />
