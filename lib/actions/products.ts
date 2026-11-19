@@ -91,7 +91,8 @@ export async function personalizeDish(_prev: ProductState, fd: FormData): Promis
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("personalize_dish", { p_restaurant: r.id, p_dish: dish });
   if (error || !data) return { error: dbMessage(error, "No pudimos traer el plato del catálogo."), values: { dishId: String(dish) } };
-  redirect(`/app/platos/${data}?catalogo=1`);
+  // Primer ingreso guiado: el paso 3 continúa con este plato.
+  redirect(text(fd, "next") === "empezar" ? `/app/empezar?plato=${data}` : `/app/platos/${data}?catalogo=1`);
 }
 
 /* ───────────── Receta (cada cambio crea una versión) ───────────── */
@@ -204,6 +205,13 @@ export async function saveSalePrice(_prev: ProductState, fd: FormData): Promise<
   if (error) return { error: dbMessage(error, "No pudimos guardar el precio."), values };
   refresh();
   return { message: "Precio guardado. Se aplicará a las nuevas ventas." };
+}
+
+/** Primer ingreso guiado, paso 3: guarda el precio de carta y muestra el resultado. */
+export async function saveFirstPrice(prev: ProductState, fd: FormData): Promise<ProductState> {
+  const res = await saveSalePrice(prev, fd);
+  if (res.error) return res;
+  redirect(`/app/empezar?plato=${int(fd, "productId")}&listo=1`);
 }
 
 /* ───────────── Estado ───────────── */

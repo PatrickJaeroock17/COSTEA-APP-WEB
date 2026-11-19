@@ -98,7 +98,8 @@ export async function createRestaurant(_prev: WorkspaceState, fd: FormData): Pro
     return { error: message, fieldErrors: error?.code === "23505" ? { taxId: message } : undefined, values: echo };
   }
   await setActiveRestaurant(id);
-  redirect(text(fd, "next") === "configuracion" ? "/app/configuracion?seccion=restaurante&creado=1" : "/app");
+  // El paso de bienvenida (solo el nombre) sigue al primer costo guiado; el formulario completo vuelve a Configuración o al Inicio.
+  redirect(text(fd, "next") === "configuracion" ? "/app/configuracion?seccion=restaurante&creado=1" : fd.has("restaurant") ? "/app/empezar" : "/app");
 }
 
 /** Edita los datos del restaurante activo (solo el dueño). Los periodos existentes conservan su impuesto. */

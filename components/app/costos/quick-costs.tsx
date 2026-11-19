@@ -101,7 +101,7 @@ function DishResult({ dish, target, money }: { dish: QuickDish; target: string |
           <AlertTriangle className="size-5 shrink-0" aria-hidden />
           Aún no hay costo: agrega los insumos de la receta con su precio.
         </p>
-        <Link href={`/app/platos/${dish.id}`} className={cn(buttonVariants({ variant: "outline" }), "h-12 px-5 text-base")}>
+        <Link href={`/app/platos/${dish.id}`} className={cn(buttonVariants({ variant: "outline" }), "h-auto min-h-12 whitespace-normal px-5 py-2 text-base")}>
           Completar la receta
         </Link>
       </div>
@@ -215,7 +215,7 @@ export function MoreCostingHint() {
         Puedes sumar el trabajo de tu equipo (nivel «Con mi tiempo») o también los gastos del local, el plan de producción y los reportes (nivel «Costo completo»).
         Tus datos no cambian.
       </p>
-      <Link href="/app/configuracion?seccion=nivel" className={cn(buttonVariants({ size: "lg" }), "mt-4 h-12 px-6 text-base")}>
+      <Link href="/app/configuracion?seccion=nivel" className={cn(buttonVariants({ size: "lg" }), "mt-4 h-auto min-h-12 max-w-full shrink whitespace-normal px-6 py-2 text-center text-base")}>
         Ver niveles de costeo
         <ArrowRight className="size-5" aria-hidden />
       </Link>

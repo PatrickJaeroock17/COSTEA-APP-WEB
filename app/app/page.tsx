@@ -172,6 +172,18 @@ async function Inicio() {
         </Link>
       </div>
 
+      {level < 3 && home.dishes.withRecipe === 0 && (
+        <section className="mt-8 rounded-3xl border border-brand-600/30 bg-brand-50 p-6 sm:p-8" aria-labelledby="empieza">
+          <h2 id="empieza" className="font-brand text-2xl font-extrabold text-heading sm:text-3xl">Tu primer costo en 3 pasos</h2>
+          <p className="mt-2 max-w-2xl text-lg text-ink-soft">
+            Elige un plato de ejemplo, escribe su precio y mira cuánto te cuesta. Toma menos de 5 minutos y no necesitas saber de contabilidad.
+          </p>
+          <Link href="/app/empezar" className={cn(buttonVariants({ size: "lg" }), "mt-6 h-auto min-h-14 whitespace-normal px-8 py-3 text-lg")}>
+            Empezar ahora
+          </Link>
+        </section>
+      )}
+
       {level === 3 && (
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         {kpis.map((k) => (
